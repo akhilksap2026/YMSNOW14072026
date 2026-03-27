@@ -1,0 +1,41 @@
+The current seed data is unusable for a demo: all 18 trailers have 50+ hour dwell times (looks like total system failure), all move tasks have priority "normal" (priority system appears non-functional), and 4 moves are in an undocumented "escalated" status with no jockey assigned (invisible in all views).
+
+A-1. RESEED TRAILER DWELL TIMES
+Update the checkInTime timestamps for all active visits in the database so they have a realistic distribution. Use relative offsets from NOW():
+- 4 trailers: checked in 1–4 hours ago (fresh arrivals, status in_yard)
+- 5 trailers: checked in 6–14 hours ago (normal operations, status in_yard or at_dock)
+- 3 trailers: checked in 16–22 hours ago (approaching threshold, status loading/unloading)
+- 4 trailers: checked in 26–54 hours ago (legitimately aged, 2 of these should have active holds)
+- 2 trailers: checked in 1–3 hours ago (status at_dock, recently assigned)
+Write a Drizzle migration or seed update script that sets these timestamps. Do NOT delete any visit records — only update checkInTime values.
+
+A-2. FIX MOVE TASK PRIORITIES
+The moves table currently stores priority as "normal" for all records. Update to a realistic mix:
+- 2 moves: priority = "critical"
+- 3 moves: priority = "high"  
+- 4 moves: priority = "medium"
+- 2 moves: priority = "low"
+Also verify the priority enum/type in the Drizzle schema includes: critical, high, medium, low, normal. If "normal" is not in the enum, add it as an alias for "medium". Update the seed data accordingly.
+
+A-3. RESOLVE ORPHANED "ESCALATED" MOVES
+4 move tasks (for trailers SWFT-53201, FXFE-28900, YRCW-33087, JBHU-832400) have status "escalated" with assignedTo = null. This status is not handled in any UI view so these trailers are invisible to supervisors.
+- If "escalated" is a valid status: add it as a visible queue tab in the Move Tasks module labelled "Escalated" with a red badge, and add these 4 moves to the Dashboard Action Required panel
+- If "escalated" is a data error: update these move statuses to "open" and assign them to available jockeys from the demo user set
+
+A-4. FIX TODAY'S APPOINTMENT TIMESTAMPS
+Update 2–3 appointments to have scheduledDate = today (current date) with timeWindowStart values 30–90 minutes from NOW(). This ensures the Gate Check-In "Expected Today" panel shows live upcoming arrivals rather than past appointments. Keep status as "confirmed" or "booked" for these records.
+
+A-5. ADD BRAND COLOUR TO CARRIERS TABLE
+Add a brandColour column (varchar 7, nullable) to the carriers table via Drizzle migration.
+Populate with these values for the existing demo carriers:
+- Werner Enterprises: #1B3A6B
+- Swift Transportation: #E8231A
+- Schneider National: #F15A22
+- J.B. Hunt Transport Services: #006341
+- XPO Logistics: #E31837
+- FedEx Freight: #4D148C
+- Old Dominion Freight: #003087
+- YRC Worldwide: #FFB81C
+- Heartland Express: #C8102E
+- Estes Express Lines: #003087
+All other carriers: null (will use auto-generated colour as fallback)

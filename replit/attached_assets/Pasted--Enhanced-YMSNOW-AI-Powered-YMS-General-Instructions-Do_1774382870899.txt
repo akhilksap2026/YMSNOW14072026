@@ -1,0 +1,93 @@
+“Enhanced YMSNOW — AI-Powered YMS”
+General Instructions
+Do NOT modify or remove existing slides
+Only append new slides at the end
+Maintain same design, styling, and layout consistency
+Keep slides visual-first (less text, more structure)
+Use cards / icons / sections instead of long paragraphs
+Slide 1: AI Overview
+
+Title: Enhanced YMSNOW — AI-Powered Operations
+
+Content:
+
+Position AI as an assistive layer over YMS
+Key messaging:
+Real-time decision support
+Intelligent automation
+Improved operational efficiency
+
+Add a simple layered visual:
+YMS Core → Data → AI Engine → User Actions
+
+Slide 2: AI Features
+
+Title: AI Capabilities
+
+Display features in a card/grid layout:
+
+Include:
+
+AI Chatbot with natural language interaction (query yard status, actions)
+Email Intelligence:
+Read incoming emails
+Generate alerts
+Suggest actionable steps
+Predictive Alerts:
+Yard congestion detection
+Dock delays
+SLA breach warnings
+Smart Recommendations:
+Dock assignment suggestions
+Jockey allocation
+Workflow Automation:
+Auto-trigger moves / alerts based on conditions
+
+Each feature must have 1 short description (1 line max)
+
+Slide 3: AI Control & Governance
+
+Title: AI Control & Explainability
+
+Content:
+
+Role-based AI access:
+Different access for Admin / Supervisor / Operator
+AI Explainability:
+Show reason behind each AI suggestion
+Show data used for decision
+Controls:
+Enable/disable AI features
+Approval-based execution
+Full audit trail of AI actions
+
+Visual:
+
+Represent as a control panel / settings layout
+Slide 4: AI in Action (Workflow)
+
+Title: AI-Driven Yard Workflow
+
+Create a step-by-step flow diagram:
+
+Example scenario:
+
+Email received from carrier
+AI reads and summarizes content
+Detects scheduling conflict
+Suggests:
+Slot change
+Dock reassignment
+Supervisor approves
+System creates move task
+
+Use arrows and clear step boxes (not paragraphs)
+
+Technical Constraints
+Keep implementation lightweight
+Do not introduce heavy dependencies
+Do not break existing presentation rendering
+Expected Output
+4 clean, structured slides
+Visually aligned with current deck
+Ready for demo/presentation

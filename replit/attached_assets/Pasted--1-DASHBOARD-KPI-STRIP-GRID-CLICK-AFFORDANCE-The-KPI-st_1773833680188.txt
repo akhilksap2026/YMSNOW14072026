@@ -1,0 +1,197 @@
+━━━ 1. DASHBOARD — KPI STRIP GRID + CLICK AFFORDANCE ━━━
+
+The KPI strip is a horizontally-scrolling row that hides Overdue Moves and Ready Out off screen. Fix this:
+
+a) Change the KPI container from a flex row with overflow-x:scroll to a CSS grid:
+   grid-template-columns: repeat(3, 1fr) on screens ≥ 1024px
+   grid-template-columns: repeat(2, 1fr) on screens < 1024px
+   All 6 cards (Yard Inventory, Utilisation, On Hold, Aged Trailers, Overdue Moves, Ready Out) must always be visible without scrolling.
+
+b) Add click affordance to every KPI card:
+   - cursor: pointer on hover
+   - Subtle border darkening on hover (use existing shadcn hover utilities)
+   - A small chevron icon (›) positioned bottom-right inside each card
+   - The existing deep-link navigation must still work
+
+c) Add a progress bar variant to the Yard Inventory card only:
+   - Below the number "18", add a thin progress bar showing yards used vs total capacity
+   - Label: "18 / 40 slots · 45% full" (derive total from /api/yard/zones/capacity or hardcode 40 for now)
+   - Bar colour: green if <70%, amber if 70–90%, red if >90%
+
+━━━ 2. DASHBOARD — ACTION REQUIRED PANEL ━━━
+
+The panel shows 28 items in random order with no way to act on them. Fix:
+
+a) Sort items by operational urgency in this fixed order:
+   1. Active holds (red dot)
+   2. Overdue move tasks (red dot)  
+   3. Awaiting slot assignment (amber dot)
+   4. Ready for exit (green dot)
+   5. Aged trailers >24h (amber dot)
+
+b) Add an inline action button to each item row:
+   - "View Holds →" navigates to /exceptions
+   - "View Moves →" navigates to /moves
+   - "Assign Slots →" navigates to /yard/inventory?filter=awaiting_slot
+   - "Process Exit →" navigates to /gate/check-out
+   - "View Aged →" navigates to /yard/inventory?filter=aged
+   Button should be a small ghost button that appears on row hover.
+
+c) Add an age indicator showing the oldest record: "4 active holds (oldest: 3h 12m ago)". Derive this from the existing exceptions/moves data already fetched on the dashboard.
+
+━━━ 3. GLOBAL — DWELL TIME COLOUR CODING ━━━
+
+Apply a single colour rule consistently across THREE locations:
+
+Rule: dwellMinutes < 480 → green text, 480–1440 → amber text, >1440 → red text + row background tint
+
+Apply to:
+a) Dashboard Gate Activity feed — colour the dwell time text (e.g. "56h 26m" in red)
+   Add a red left-border stripe (border-left: 3px solid red) on rows >24h
+   Add a small "⚠ Aged" pill badge next to the dwell time on rows >24h
+
+b) Dashboard Live Dock Floor widget — add time-at-dock below each trailer:
+   "D-01 WERN-49087 · 2h 14m" with the time in the appropriate colour
+
+c) Yard Inventory table — colour the Dwell Time column using the same rule
+   Default sort: put aged trailers (>24h) at the top of each status group
+
+Create a shared utility function getDwellColour(minutes: number): string that returns the appropriate Tailwind text colour class. Import and use this function in all three locations.
+
+━━━ 4. DASHBOARD — EXCEPTIONS WIDGET ━━━
+
+a) Remove text truncation from hold note text in the Exceptions & Holds widget
+   Use CSS -webkit-line-clamp: 2 to allow up to 2 full lines
+   Do NOT use JavaScript truncation with "..."
+
+b) Move the hold type label (Documentation Hold, Security Hold, etc.) to a small badge ABOVE the note text instead of as the primary heading:
+   documentation_hold → blue badge "DOC"
+   security_hold → red badge "SEC"  
+   damage_hold → amber badge "DMG"
+   customs_hold → purple badge "CST"
+   carrier_dispute → pink badge "CRR"
+
+c) Move Queue widget header: change "Move Queue · 2" to show the full breakdown:
+   "Move Queue · [inProgress] in progress · [pending] pending"
+   Derive counts from the moves summary data already fetched on the dashboard.
+
+━━━ 5. GATE CHECK-IN — FAST LANE MODE ━━━
+
+When a carrier arrives and their trailer number matches a today's expected appointment exactly, show a streamlined single-card confirmation instead of the 5-step workflow.
+
+a) In the Gate Check-In search flow, after the user types a trailer number and it matches a confirmed today appointment:
+   Show a "Fast Lane Check-In" card containing:
+   - Green header: "✓ Appointment Match Found"
+   - Appointment details pre-filled: trailer #, carrier name, movement type, scheduled time window
+   - Driver name field (editable, pre-populated from appointment if present)
+   - Gate selector dropdown
+   - One large primary button: "Confirm Check-In" 
+   - Small link below: "Switch to detailed check-in ›" which shows the existing 5-step flow
+
+b) On "Confirm Check-In":
+   - Create the visit record using the existing check-in API endpoint
+   - Link to the appointment record
+   - Transition to the post-check-in slot assignment step (same as the existing workflow chain)
+
+c) Keep the existing full 5-step flow (Find Visit → Verify Driver → Photos/Seal → Assign or Hold → Gate Pass) as the default for walk-ins (Unscheduled Arrival button) and when no appointment match is found.
+
+d) Fix the Expected Today right panel:
+   - Make it scrollable: max-height: 380px, overflow-y: auto
+   - Show ALL today's remaining appointments sorted by timeWindowStart (not just 2)
+   - Add a "View all →" link that navigates to /appointments?filter=today
+
+e) Add live count badges to Check-In and Check-Out tabs:
+   "Check-In (N expected)" where N = today's unprocessed confirmed/booked appointments
+   "Check-Out (N ready)" where N = visits with status ready_out
+   Update these counts using the data already available in the page's API calls.
+
+━━━ 6. YARD INVENTORY — NEXT STEP AS ACTIONABLE BUTTON ━━━
+
+The "Next Step" column currently shows plain text. Convert it to a clickable action button:
+
+- visitStatus in_yard / checked_in: render a blue outline button "Create Move →"
+  → onClick: opens the Create Move modal pre-populated with this visit's trailer number, carrier, and current slot as "from" location
+  
+- visitStatus at_dock / loading / unloading: render a grey outline button "View Dock →"
+  → onClick: navigates to /dock with a URL param that highlights this door (e.g. /dock?highlight=D-01)
+
+- visitStatus ready_out: render a green outline button "Process Exit →"
+  → onClick: navigates to /gate/check-out with visitId as a URL param so the form is pre-populated
+
+- holdStatus is not "none" (any hold type): render a disabled grey label "Resolve exception first"
+  → No click action, cursor: default, opacity: 0.5
+
+━━━ 7. YARD MAP — INTERACTIVE SLOTS ━━━
+
+The map is currently completely read-only. Make slots interactive:
+
+a) OCCUPIED SLOT click → show a Popover/Tooltip containing:
+   - Trailer number (bold, large)
+   - Carrier name
+   - Dwell time (colour-coded using the getDwellColour utility from item 3)
+   - Visit status badge
+   - Three action buttons stacked vertically:
+     "Create Move Task" → opens Create Move modal pre-filled
+     "Assign Hold" → opens a mini hold creation form (type + description)
+     "Release Slot" → confirmation dialog then calls PATCH on the visit to clear the slot
+
+b) EMPTY SLOT click → show a small Popover containing:
+   - "Slot [name] — Available" header
+   - Search input: "Assign trailer to this slot..."
+   - Type-ahead search against trailers in yard without a slot (visitStatus = checked_in, no currentSlotNumber)
+   - On selection: calls the existing slot assignment API endpoint
+
+c) Add a permanent legend panel fixed to the bottom-left of the map:
+   ● Green = Available   ● Blue = Occupied   ● Red = Hold   ● Grey = Inactive
+   Also add: "6 zones · 18 occupied · 22 available" count summary below the legend
+   This legend must always be visible and cannot be dismissed.
+
+━━━ 8. MOVE TASKS — PRIORITY COLOUR STRIPES ━━━
+
+a) In the Move Tasks TABLE view, add a coloured left-border stripe to each row:
+   priority "critical": border-left: 3px solid #E24B4A (red)
+   priority "high":     border-left: 3px solid #BA7517 (amber)
+   priority "medium":   border-left: 3px solid #378ADD (blue)
+   priority "low":      border-left: 3px solid #888780 (grey)
+   priority "normal":   border-left: 3px solid #378ADD (treat as medium)
+   Additionally: bold the trailer number text for critical priority rows.
+
+b) In the JOCKEY BOARD kanban view, apply the same border colour to each task card.
+
+c) Update the priority filter/sort in the Move Tasks toolbar: default sort should be critical → high → medium → low, then by SLA age descending within each priority level.
+
+━━━ 9. DOCK MANAGEMENT — SLA COUNTDOWN RING ━━━
+
+Replace the plain "Time at Dock" text on each dock door card with a visual SLA countdown:
+
+a) Add a circular progress ring (SVG) around or adjacent to the door number on each card:
+   - Ring radius: 20px, stroke-width: 3px
+   - Calculate elapsed percentage: (minutesAtDock / expectedDurationMinutes) × 100
+   - Expected durations (use these defaults, make configurable later):
+     live_load: 120 minutes
+     live_unload: 90 minutes
+     inbound: 60 minutes
+     outbound: 45 minutes
+   - Colour thresholds:
+     0–74%: stroke = #639922 (green)
+     75–99%: stroke = #BA7517 (amber)
+     ≥100%: stroke = #E24B4A (red) + add CSS pulse animation on the ring
+
+b) Keep the plain text time display (e.g. "1h 48m") below the door number for exact reference.
+
+c) For available (empty) doors: show the ring as a full grey circle with no fill.
+
+━━━ VERIFICATION CHECKLIST ━━━
+After completing Phase 2, verify:
+□ All 6 KPI cards visible without scrolling on a 1280px screen
+□ Clicking any KPI card navigates to the correct module
+□ Yard Inventory card shows "18 / 40 slots" progress bar
+□ Action Required items sorted: holds first, then moves, then slot, then exit, then aged
+□ Each Action Required item has a "View →" button
+□ All trailers >24h dwell show red text in Gate Activity, Inventory, and Dock Floor
+□ Gate Check-In shows Fast Lane card when trailer matches today's appointment
+□ Expected Today panel shows all today's appointments (scrollable)
+□ Yard Map slots are clickable (occupied shows popover, empty shows assign form)
+□ Yard Map legend always visible bottom-left
+□ Move task rows have coloured left-border stripes by priority
+□ Dock door cards show circular progress ring, red+pulsing when SLA breached

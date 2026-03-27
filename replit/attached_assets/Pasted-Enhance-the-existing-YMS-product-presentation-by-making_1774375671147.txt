@@ -1,0 +1,115 @@
+Enhance the existing YMS product presentation by making it client/demo-ready and visually impactful, using the attached product manual as the source of truth.
+
+1. Screenshot Enhancement (CRITICAL)
+Increase screenshot size to occupy 70–80% of the slide
+Ensure:
+High clarity (no compression or blur)
+Minimal surrounding text
+Add:
+1-line caption (what the screen shows)
+1-line decision insight (what user can do here)
+2. Inspection Screen (Specific Requirement)
+Add a dedicated slide for Inspections module
+Use screenshot that clearly shows:
+Checklist view
+Pass/Fail/Conditional flow
+Damage capture / notes
+Highlight visually:
+Compliance validation
+Auto hold creation on failure
+
+👉 Position as:
+“Quality & Compliance Control Layer before exit”
+
+3. Role-Based System (VERY IMPORTANT – Enterprise Angle)
+
+Add a new section:
+
+User Roles & Permissions
+
+Include roles from system:
+
+Admin
+Yard Manager
+Gate Guard
+Yard Jockey
+Dock Operator
+Carrier
+
+For each role, clearly show:
+
+Access rights
+Primary screens used
+Key actions performed
+Role-Specific Dashboards
+
+Create visual slides showing:
+
+Manager Dashboard → KPIs, alerts, control view
+Gate Guard → Check-in/out focused UI
+Jockey → Move task board view
+Dock Operator → Dock panel
+
+👉 Use layout:
+
+Left: Screenshot
+Right: Role responsibilities
+Role-Based Workflow Mapping
+
+Add a visual flow (swimlane style):
+
+Show how each role interacts in lifecycle:
+Gate → Yard → Dock → Exit
+
+👉 This is a high-impact enterprise slide
+
+4. Yard Setup & Flexibility (KEY DIFFERENTIATOR)
+
+Add a new section:
+
+Yard Configuration & Setup
+Show:
+Zone creation
+Slot configuration
+Dock setup
+SLA thresholds
+Flexibility & Configurability
+
+Highlight:
+
+Custom yard layouts
+Configurable workflows
+Scalable module design
+Enterprise adaptability
+
+👉 Position as:
+“Built for any yard, not a fixed template system”
+
+5. Visual Improvements Across Deck
+Replace text-heavy slides with:
+Icons
+Flow diagrams
+Side-by-side comparisons
+Maintain:
+Clean enterprise UI style (Oracle / Stripe level)
+Ensure:
+Consistent color coding across lifecycle
+6. Add These 2 High-Impact Slides
+Before vs After
+Left: Manual yard chaos
+Right: YMS-controlled operations
+Live Demo Flow Slide
+Overlay arrows on Yard Map:
+Truck arrival
+Move creation
+Dock assignment
+
+👉 This becomes your demo storytelling anchor
+
+7. Output Expectation
+Visually rich slides (not text-heavy)
+Clear storytelling for:
+Clients
+Investors
+Leadership demos
+Screens should dominate slides wherever possible

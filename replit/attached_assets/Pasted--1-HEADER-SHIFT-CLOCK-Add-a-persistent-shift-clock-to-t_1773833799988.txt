@@ -1,0 +1,178 @@
+━━━ 1. HEADER — SHIFT CLOCK ━━━
+
+Add a persistent shift clock to the top header bar:
+
+a) Display format: "Shift 07:00 · 4h 22m elapsed"
+   - "07:00" = the time the current user session started (store in sessionStorage as shiftStartTime on app load if not already set)
+   - "4h 22m elapsed" = time since shiftStartTime, updated every 60 seconds via setInterval
+
+b) Position: right side of the header bar, left of the notification bell icon
+   - Font: 12px, color: var(--muted-foreground) or equivalent secondary text colour
+   - Format elapsed time: show "Xh Ym" if >= 60 minutes, "Xm" if < 60 minutes
+
+c) Store shiftStartTime in sessionStorage (key: "ymsnow_shift_start") so it persists across page navigations within the same browser session but resets on tab close.
+
+━━━ 2. SIDEBAR — ROLE-BASED NAVIGATION FILTERING ━━━
+
+Read the current user's role from the auth context / user profile already available in the app (from GET /api/user/profile which returns { role: "admin" | "yard_manager" | "supervisor" | "gate_guard" | "jockey" | "dock_operator" | "carrier" }).
+
+Apply these visibility rules to the sidebar navigation items:
+
+gate_guard:
+  Show: Gate Operations, Notifications
+  Hide: everything else
+
+jockey:
+  Show: Yard Moves, Yard Map, Notifications
+  Hide: everything else
+
+dock_operator:
+  Show: Dock Management, Yard Inventory, Yard Moves, Notifications
+  Hide: everything else
+
+carrier:
+  Show: Appointments (read-only view), Notifications
+  Hide: everything else
+
+supervisor / yard_manager / admin:
+  Show: full sidebar, no changes
+
+Implementation: Use conditional rendering (not CSS display:none) so hidden items are removed from the DOM. Wrap the role check in a useUserRole() custom hook that reads from the existing user context. The sidebar must re-render immediately if the user role changes (e.g. during demo role switching).
+
+━━━ 3. GATE — GUARD MODE AUTO-ACTIVATION ━━━
+
+a) On login / app load, read the user's role from the auth context.
+   If role === "gate_guard": automatically activate Guard Mode without requiring the user to click the button.
+
+b) Show a dismissable banner at the top of the Gate Operations page:
+   "Guard Mode active — simplified interface enabled. Switch to full view ›"
+   The "Switch to full view ›" link deactivates Guard Mode and hides the banner.
+   Store the user's override preference in sessionStorage: "ymsnow_guard_mode_override_{userId}" = "full"
+   If this key exists, do NOT auto-activate Guard Mode for this session.
+
+c) When Guard Mode is active:
+   - The sidebar shows only Gate Operations and Notifications (same as role-based filtering above)
+   - The page header hides breadcrumbs, Revenue Intelligence sections, and admin controls
+   - The Check-In tab shows the Fast Lane mode by default (from Phase 2)
+
+━━━ 4. NOTIFICATIONS — BELL BADGE SEVERITY COLOUR ━━━
+
+Update the notification bell badge colour based on the highest-severity unread notification:
+
+- Any unread notification with severity "critical" or "high": badge background = red (#E24B4A)
+- All unread are severity "medium": badge background = amber (#BA7517)
+- All unread are severity "low", or no unread notifications: badge background = existing blue/grey
+
+Implementation:
+- The notifications array already includes a "severity" field (verified: values are "medium", "high", "critical")
+- Filter to unread notifications (using the isRead field added in Phase 1)
+- Find the max severity among unread items
+- Apply the appropriate badge colour via a computed className or inline style
+- When a new Critical notification arrives (detected via polling or real-time), add a single CSS pulse animation to the badge
+
+━━━ 5. HOLDS — DISTINCT BADGE COLOURS PER TYPE ━━━
+
+Replace the single generic "HOLD" red badge with type-specific coloured badges everywhere a hold is displayed. The exception type field uses these values (verified from live API):
+  documentation_hold → blue badge, label "DOC"
+  security_hold      → red badge, label "SEC"
+  damage_hold        → amber badge, label "DMG"
+  customs_hold       → purple badge, label "CST"
+  carrier_dispute    → pink badge, label "CRR"
+
+Create a shared HoldTypeBadge component that accepts the exception type string and renders the appropriate coloured badge. Apply this component in ALL locations where holds are displayed:
+- Yard Inventory table rows (holdStatus field)
+- Dashboard Exceptions & Holds widget (already partially fixed in Phase 2)
+- Gate Activity feed entries
+- Notifications Centre alert items
+- Dock door cards (when a docked trailer has a hold)
+
+━━━ 6. DOCK MANAGEMENT — MOVEMENT TYPE BADGE + DOOR NUMBER ━━━
+
+a) Increase the dock door number (D-01 through D-10) to font-size: 28px, font-weight: 500. 
+   Position it as the most visually dominant element at the top-centre of each door card.
+   All other card content (trailer number, carrier, time) should be clearly subordinate in size.
+
+b) Add a large coloured movement type badge at the top of each occupied door card:
+   live_load    → blue badge "LIVE LOAD"
+   live_unload  → teal badge "LIVE UNLOAD"  
+   inbound      → green badge "INBOUND"
+   outbound     → amber badge "OUTBOUND"
+   
+   Badge should be placed directly below the door number, before the trailer details.
+   For available (empty) doors: show a grey "AVAILABLE" badge.
+
+━━━ 7. REVENUE INTELLIGENCE — SURFACE IN THE UI ━━━
+
+The /api/revenue/dashboard and /api/revenue/events endpoints return $1.54M in billing data across 56 events (service types: yard_storage, detention_fee, live_load_fee, inspection_fee) but this data has NO UI. Add a Revenue Intelligence section.
+
+a) Add a "Revenue" tab to the Reports & Analytics page (or as a new sidebar item under COMPLIANCE if preferred)
+
+b) The Revenue page should show:
+
+   Top summary cards (using data from /api/revenue/dashboard):
+   - Total Revenue: formatted as $X,XXX,XXX
+   - This Week: formatted currency
+   - Detention Savings: from totalSavings field
+   - Active Billing Events: from activeEvents field
+
+   Revenue events table (from /api/revenue/events):
+   Columns: Visit #, Carrier, Service Type, Description, Quantity, Rate, Total, Status, Date
+   - Colour-code the Service Type cell: yard_storage=blue, detention_fee=red, live_load_fee=green, inspection_fee=amber
+   - Show a subtotal row at the bottom
+   - Add a simple filter by service type
+
+c) Add a small "Revenue" KPI card to the Dashboard (7th card, below the existing 6):
+   Label: "This Week Revenue"
+   Value: formatted currency from /api/revenue/dashboard weekRevenue
+   Clicking deep-links to the Revenue page
+
+━━━ 8. GLOBAL — SKELETON LOADERS ━━━
+
+Add animated skeleton placeholder rows to these pages. Use the existing shadcn/ui Skeleton component. Show skeletons immediately on navigation, replace with real data when the TanStack Query isLoading state becomes false.
+
+Pages to update:
+- Yard Inventory: show 8 skeleton rows matching the table column structure (trailer #, carrier, status, dwell, location, next step)
+- Move Tasks: show 6 skeleton rows matching the task table structure
+- Dock Management: show 10 skeleton door cards matching the dock card dimensions
+- Appointments: show 5 skeleton rows matching the appointment list structure
+
+Each skeleton row should have the same height and column layout as a real data row, with grey animated shimmer blocks in place of text.
+
+━━━ 9. DASHBOARD — REMOVE SYSTEM ADMINISTRATION BANNER ━━━
+
+Remove the "System Administration — System configuration, users, and operational oversight" banner/section header from the Dashboard entirely. Replace it with a role-appropriate subtitle line directly below the "Welcome back, [Name]" greeting:
+
+admin / yard_manager / supervisor: "Yard Operations Overview"
+gate_guard: "Gate Operations — Today's Shift"
+jockey: "Your Move Tasks for This Shift"
+dock_operator: "Dock Floor Operations"
+carrier: "Your Appointments & Trailers"
+
+━━━ 10. APPOINTMENTS — CALENDAR AS DEFAULT VIEW ━━━
+
+The Calendar view already exists and works. Make it the default:
+
+a) Change the default active view state from "list" to "calendar" in the Appointments page component.
+
+b) Persist the user's view preference in localStorage: key "ymsnow_appts_view_{userId}", value "list" or "calendar". On page load, read this preference and apply it.
+
+c) In the Calendar view, highlight appointment time-slot conflicts:
+   If two appointments have overlapping timeWindowStart/timeWindowEnd ranges, display both in red with a "CONFLICT" label.
+   Derive conflicts client-side from the appointments data already fetched.
+
+d) Make the List/Calendar toggle buttons clearly indicate the active state using the existing shadcn/ui active/selected button styles.
+
+━━━ VERIFICATION CHECKLIST ━━━
+After completing Phase 3, verify:
+□ Header shows shift clock "Shift HH:MM · Xh Ym elapsed" and updates every minute
+□ Logging in as gate_guard: sidebar shows only Gate Operations + Notifications
+□ Logging in as jockey: sidebar shows only Yard Moves + Yard Map + Notifications
+□ Gate Guard role auto-activates Guard Mode with dismissable banner
+□ Notification bell badge turns red when any Critical/High unread notification exists
+□ Hold badges show DOC/SEC/DMG/CST/CRR with correct colours in all 5 locations
+□ Dock door numbers are 28px and movement type badge is visible on each occupied card
+□ Revenue page shows $1.54M summary cards and 56 billing events table
+□ Dashboard has a "This Week Revenue" KPI card
+□ Yard Inventory, Move Tasks, Dock Management show skeleton loaders during data fetch
+□ Appointments defaults to Calendar view and persists preference
+□ "System Administration" banner is gone from Dashboard

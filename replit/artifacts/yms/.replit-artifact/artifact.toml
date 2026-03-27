@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "YMSNOW — Yard Management System"
+version = "1.0.0"
+id = "artifacts/yms"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+localPort = 25753
+name = "web"
+paths = ["/"]
+
+[services.development]
+run = "pnpm --filter @workspace/yms run dev"
+
+[services.env]
+PORT = "25753"
+BASE_PATH = "/"
+
+[services.production]
+build = ["pnpm", "--filter", "@workspace/yms", "run", "build"]
+publicDir = "artifacts/yms/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"

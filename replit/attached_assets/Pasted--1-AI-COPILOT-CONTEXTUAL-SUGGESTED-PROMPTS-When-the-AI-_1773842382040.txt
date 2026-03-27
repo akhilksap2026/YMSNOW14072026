@@ -1,0 +1,65 @@
+━━━ 1. AI COPILOT — CONTEXTUAL SUGGESTED PROMPTS ━━━
+
+When the AI Copilot panel/page is opened and the conversation history is empty, show 6 contextual suggested prompt chips instead of a blank chat interface.
+
+a) Fetch the current yard state from /api/dashboard/stats (already available in the app's data cache). Use these values to conditionally show relevant prompts:
+
+Always show:
+  "Summarise today's yard operations so far"
+  "What are the oldest trailers in the yard right now?"
+
+Show only if agedTrailers > 0:
+  "Which trailers have been waiting over [threshold]h? What should I do?"
+  (substitute threshold = the aged trailer threshold from config, default 24)
+
+Show only if overdueMoves > 0:
+  "Which move tasks are overdue and who should I reassign them to?"
+
+Show only if trailersOnHold > 0:
+  "What holds need to be resolved today? Give me a priority order."
+
+Show only if trailersAtDock > 3:
+  "Are any dock doors running behind schedule? Which ones need attention?"
+
+b) Render the prompts as clickable pill chips below a heading "Suggested questions based on current yard state:". Style: rounded pill buttons with a subtle border, 2-column grid layout on wider screens.
+
+c) On click: populate the chat input with the prompt text and immediately submit it (simulate the user typing and sending). The chips should disappear once the first message is sent.
+
+d) If the AI endpoint is unavailable (503 from Phase 1 fix): show the chips as disabled (opacity: 0.5, cursor: not-allowed) with a tooltip "AI Copilot requires API key configuration".
+
+━━━ 2. YARD MAP — ZONE LABELS, FILTER BAR + SIDEBAR LEGEND CLEANUP ━━━
+
+a) Zone label improvements:
+   - Increase zone label font-size to 13px, font-weight: 500
+   - Move zone labels to a header strip ABOVE each zone boundary instead of floating text inside the zone
+   - Add slot count to each zone header: "Staging Area A · 6 slots (4 occupied)"
+
+b) Add a filter bar directly above the Yard Map with two controls:
+   - "Filter by Carrier" dropdown: shows all carriers currently in the yard. On selection, dims non-matching slots to 20% opacity. Matching slots remain full opacity with a subtle highlight border.
+   - "Filter by Status" dropdown: options = All, In Yard, At Dock, On Hold, Available. Same dimming behaviour.
+   - A "Clear filters ×" button appears when any filter is active. Clicking resets both dropdowns.
+
+c) The permanent legend panel from Phase 2 (bottom-left) should also show the active filter summary when filters are applied: "Showing: Werner Enterprises (4 trailers)" in small text below the legend items.
+
+━━━ 3. SIDEBAR — OPERATIONS SECTION NON-COLLAPSIBLE ━━━
+
+The OPERATIONS sidebar section (containing Appointments, Gate Operations, Yard Inventory, Yard Map, Dock Management, Yard Moves) should NOT be collapsible. Accidental collapse during a demo hides all operational navigation.
+
+a) Remove the collapse toggle from the OPERATIONS section header only.
+b) Keep the collapse toggle on COMPLIANCE and CONFIGURATIONS sections (these are less critical during demos).
+c) The OPERATIONS section should always be expanded and the collapse state should not be stored in localStorage for this section.
+
+━━━ 4. SIDEBAR — ACTIVE STATE VISIBILITY ━━━
+
+The current active sidebar item uses a very subtle indicator (thin left border). Make it unmistakable:
+
+a) Active sidebar item styles:
+   - font-weight: 600 (bold text)
+   - border-left: 3px solid (use the app's primary blue colour)
+   - background: slightly tinted background (use bg-accent or equivalent)
+   - The combination of bold + border + tint makes it clear which page you're on even in bright environments
+
+b) Also increase the sidebar badge (e.g. "Yard Moves 11") to be more visible:
+   - Use a filled pill badge (not just a number) with background colour matching the item
+   - Critical badges (Holds & Exceptions with active holds): use red background, white text
+   - Standard counts (Yard Moves): use the existing blue badge style but slightly larger

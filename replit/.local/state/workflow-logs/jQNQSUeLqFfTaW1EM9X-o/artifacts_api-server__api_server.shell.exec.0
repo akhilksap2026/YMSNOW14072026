@@ -1,0 +1,23 @@
+
+> @workspace/api-server@0.0.0 dev /home/runner/workspace/artifacts/api-server
+> NODE_ENV=development tsx ./src/index.ts
+
+Server listening on port 8080
+Database already seeded, skipping.
+RBAC tables already seeded, skipping.
+Resetting database to seed state...
+All tables cleared. Re-seeding...
+Seeding database with comprehensive demo data...
+Database seeded successfully!
+  - 12 carriers 
+  - 5 zones 
+  - 49 slots 
+  - 10 dock doors 
+  - 3 gates 
+  - 42 appointments 
+  - 20 visits (active + closed) 
+  - 15 move tasks (open + assigned + in-progress + completed + rejected) 
+  - 5 exceptions (open + resolved) 
+  - 3 inspections (pass + fail + spot check) 
+  - 30 audit log entries 
+  - 12 user profiles (1 admin, 1 yard manager, 2 gate guards, 3 jockeys, 2 dock ops, 3 carriers)

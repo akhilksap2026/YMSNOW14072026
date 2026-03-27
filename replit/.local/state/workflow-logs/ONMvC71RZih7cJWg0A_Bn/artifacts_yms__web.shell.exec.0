@@ -1,0 +1,676 @@
+
+> @workspace/yms@0.0.0 dev /home/runner/workspace/artifacts/yms
+> vite --config vite.config.ts --host 0.0.0.0
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J
+  [32m[1mVITE[22m v7.3.1[39m  [2mready in [0m[1m256[22m[2m[0m ms[22m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m25753[22m/[39m
+  [32m➜[39m  [1mNetwork[22m: [36mhttp://172.31.70.2:[1m25753[22m/[39m
+[2m[32m  ➜[39m[22m[2m  press [22m[1mh + enter[22m[2m to show help[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m8:45:27 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/login.tsx, /src/index.css[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m8:53:43 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/login.tsx, /src/index.css[22m [33m(x2)[39m
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602057727,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602057731,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602057769,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602057801,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602057835,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602057868,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602057902,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602057934,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602057968,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602058002,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602058034,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602058069,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602058101,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602058135,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602058168,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602058201,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602058234,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602058268,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602058301,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602058335,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602058368,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602058401,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602058435,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602058468,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602058501,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602058534,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602058568,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602058601,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602058634,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602058668,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602058701,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602058734,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602058768,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602058801,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602058834,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602058868,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602058901,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602058934,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602058968,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602059001,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602059034,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602059067,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602059101,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602059134,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602059168,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602059201,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602059234,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602059268,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602059301,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602059334,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602059368,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602059401,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602059434,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602059468,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602059501,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602059534,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602059567,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602059601,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602059634,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602059668,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602059701,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602059734,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774602059768,"name":"Error","message":"Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.","stack":"    at frame /home/runner/workspace/artifacts/yms/src/pages/login.tsx:225:11","loc":{"line":225,"column":11,"file":"/home/runner/workspace/artifacts/yms/src/pages/login.tsx"},"frame":"223|        if (!cache) return;\n224|  \n225|        ctx.drawImage(cache.img, 0, 0);   // blit pre-rendered static scene\n   |            ^\n226|        drawTractors(t);                   // only the moving parts are live\n227|      }"}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m9:01:49 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/login.tsx, /src/index.css[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m9:02:28 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m9:02:29 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css[22m [33m(x2)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m9:02:31 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css[22m [33m(x3)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m9:03:03 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css[22m [33m(x4)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m9:03:23 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css[22m [33m(x5)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m9:03:24 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css[22m [33m(x6)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m9:03:40 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css[22m [33m(x7)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m9:20:47 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css[22m [33m(x8)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m9:28:40 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/admin-ai-config.tsx, /src/index.css[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m9:35:02 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/gate-checkin.tsx, /src/index.css[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m9:43:46 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m9:47:21 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/components/app-sidebar.tsx, /src/pages/dashboard.tsx, /src/pages/admin-audit.tsx, /src/pages/gate-checkin.tsx, /src/pages/gate-checkout.tsx[22m
+[2m9:47:22 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [33mhmr invalidate [39m[2m/src/components/app-sidebar.tsx[22m Could not Fast Refresh ("allNavItems" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2m9:47:22 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m9:47:32 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m9:47:43 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css[22m [33m(x2)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m9:47:50 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css[22m [33m(x3)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m9:48:22 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css[22m [33m(x4)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m9:48:47 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css[22m [33m(x5)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m9:48:56 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css[22m [33m(x6)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m9:49:05 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css[22m [33m(x7)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m9:49:33 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css[22m [33m(x8)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m9:49:52 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css[22m [33m(x9)[39m
+[41m[30m ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL [39m[49m [31m@workspace/yms@0.0.0 dev: `vite --config vite.config.ts --host 0.0.0.0`[39m
+[31mCommand failed with signal "SIGTERM"[39m

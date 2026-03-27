@@ -1,0 +1,409 @@
+
+> @workspace/yms@0.0.0 dev /home/runner/workspace/artifacts/yms
+> vite --config vite.config.ts --host 0.0.0.0
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J
+  [32m[1mVITE[22m v7.3.1[39m  [2mready in [0m[1m267[22m[2m[0m ms[22m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m25753[22m/[39m
+  [32m➜[39m  [1mNetwork[22m: [36mhttp://172.31.70.2:[1m25753[22m/[39m
+[2m[32m  ➜[39m[22m[2m  press [22m[1mh + enter[22m[2m to show help[22m
+[replit-cartographer] Error processing /home/runner/workspace/artifacts/yms/src/pages/yard-map.tsx: SyntaxError: Identifier 'dwellHours' has already been declared. (1137:9)
+    at constructor (/home/runner/workspace/node_modules/[4m.pnpm[24m/@babel+parser@7.29.0/node_modules/[4m@babel/parser[24m/lib/index.js:365:19)
+    at TypeScriptParserMixin.raise (/home/runner/workspace/node_modules/[4m.pnpm[24m/@babel+parser@7.29.0/node_modules/[4m@babel/parser[24m/lib/index.js:6599:19)
+    at TypeScriptScopeHandler.checkRedeclarationInScope (/home/runner/workspace/node_modules/[4m.pnpm[24m/@babel+parser@7.29.0/node_modules/[4m@babel/parser[24m/lib/index.js:1619:19)
+    at TypeScriptScopeHandler.declareName (/home/runner/workspace/node_modules/[4m.pnpm[24m/@babel+parser@7.29.0/node_modules/[4m@babel/parser[24m/lib/index.js:1585:12)
+    at TypeScriptScopeHandler.declareName (/home/runner/workspace/node_modules/[4m.pnpm[24m/@babel+parser@7.29.0/node_modules/[4m@babel/parser[24m/lib/index.js:4880:11)
+    at TypeScriptParserMixin.registerFunctionStatementId (/home/runner/workspace/node_modules/[4m.pnpm[24m/@babel+parser@7.29.0/node_modules/[4m@babel/parser[24m/lib/index.js:13466:16)
+    at TypeScriptParserMixin.registerFunctionStatementId (/home/runner/workspace/node_modules/[4m.pnpm[24m/@babel+parser@7.29.0/node_modules/[4m@babel/parser[24m/lib/index.js:9178:13)
+    at TypeScriptParserMixin.parseFunction (/home/runner/workspace/node_modules/[4m.pnpm[24m/@babel+parser@7.29.0/node_modules/[4m@babel/parser[24m/lib/index.js:13450:12)
+    at TypeScriptParserMixin.parseFunctionStatement (/home/runner/workspace/node_modules/[4m.pnpm[24m/@babel+parser@7.29.0/node_modules/[4m@babel/parser[24m/lib/index.js:13125:17)
+    at TypeScriptParserMixin.parseStatementContent (/home/runner/workspace/node_modules/[4m.pnpm[24m/@babel+parser@7.29.0/node_modules/[4m@babel/parser[24m/lib/index.js:12791:21)
+    at TypeScriptParserMixin.parseStatementContent (/home/runner/workspace/node_modules/[4m.pnpm[24m/@babel+parser@7.29.0/node_modules/[4m@babel/parser[24m/lib/index.js:9508:18)
+    at TypeScriptParserMixin.parseStatementLike (/home/runner/workspace/node_modules/[4m.pnpm[24m/@babel+parser@7.29.0/node_modules/[4m@babel/parser[24m/lib/index.js:12767:17)
+    at TypeScriptParserMixin.parseModuleItem (/home/runner/workspace/node_modules/[4m.pnpm[24m/@babel+parser@7.29.0/node_modules/[4m@babel/parser[24m/lib/index.js:12744:17)
+    at TypeScriptParserMixin.parseBlockOrModuleBlockBody (/home/runner/workspace/node_modules/[4m.pnpm[24m/@babel+parser@7.29.0/node_modules/[4m@babel/parser[24m/lib/index.js:13316:36)
+    at TypeScriptParserMixin.parseBlockBody (/home/runner/workspace/node_modules/[4m.pnpm[24m/@babel+parser@7.29.0/node_modules/[4m@babel/parser[24m/lib/index.js:13309:10)
+    at TypeScriptParserMixin.parseProgram (/home/runner/workspace/node_modules/[4m.pnpm[24m/@babel+parser@7.29.0/node_modules/[4m@babel/parser[24m/lib/index.js:12622:10)
+    at TypeScriptParserMixin.parseTopLevel (/home/runner/workspace/node_modules/[4m.pnpm[24m/@babel+parser@7.29.0/node_modules/[4m@babel/parser[24m/lib/index.js:12612:25)
+    at TypeScriptParserMixin.parse (/home/runner/workspace/node_modules/[4m.pnpm[24m/@babel+parser@7.29.0/node_modules/[4m@babel/parser[24m/lib/index.js:14488:25)
+    at TypeScriptParserMixin.parse (/home/runner/workspace/node_modules/[4m.pnpm[24m/@babel+parser@7.29.0/node_modules/[4m@babel/parser[24m/lib/index.js:10126:18)
+    at parse (/home/runner/workspace/node_modules/[4m.pnpm[24m/@babel+parser@7.29.0/node_modules/[4m@babel/parser[24m/lib/index.js:14522:38)
+    at TransformPluginContext.handler (file:///home/runner/workspace/node_modules/[4m.pnpm[24m/@replit+vite-plugin-cartographer@0.5.0/node_modules/[4m@replit/vite-plugin-cartographer[24m/dist/index.mjs:112:23)
+    at async EnvironmentPluginContainer.transform (file:///home/runner/workspace/node_modules/[4m.pnpm[24m/vite@7.3.1_@types+node@25.3.5_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0_yaml@2.8.2/node_modules/[4mvite[24m/dist/node/chunks/config.js:28797:14)
+    at async loadAndTransform (file:///home/runner/workspace/node_modules/[4m.pnpm[24m/vite@7.3.1_@types+node@25.3.5_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0_yaml@2.8.2/node_modules/[4mvite[24m/dist/node/chunks/config.js:22670:26) {
+  code: [32m'BABEL_PARSER_SYNTAX_ERROR'[39m,
+  reasonCode: [32m'VarRedeclaration'[39m,
+  loc: Position { line: [33m1137[39m, column: [33m9[39m, index: [33m61728[39m },
+  pos: [33m61728[39m,
+  syntaxPlugin: [90mundefined[39m
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m9:50:16 AM[22m [31m[1m[vite][22m[39m [31mInternal server error: /home/runner/workspace/artifacts/yms/src/pages/yard-map.tsx: Identifier 'dwellHours' has already been declared. (1137:9)
+
+[0m [90m 1135 |[31m [36mfunction[31m fmtS(s[33m:[31m string) { [36mreturn[31m s[33m.[31mreplace([35m/_/g[31m[33m,[31m [32m" "[31m)[33m.[31mreplace([35m/\b\w/g[31m[33m,[31m c [33m=>[31m c[33m.[31mtoUpperCase())[33m;[31m }
+ [90m 1136 |[31m
+[31m[1m>[22m[31m[90m 1137 |[31m [36mfunction[31m dwellHours(checkInTime[33m:[31m string [33m|[31m [36mnull[31m)[33m:[31m number {
+ [90m      |[31m          [31m[1m^[22m[31m
+ [90m 1138 |[31m   [36mif[31m ([33m![31mcheckInTime) [36mreturn[31m [35m0[31m[33m;[31m
+ [90m 1139 |[31m   [36mreturn[31m ([33mDate[31m[33m.[31mnow() [33m-[31m [36mnew[31m [33mDate[31m(checkInTime)[33m.[31mgetTime()) [33m/[31m [35m3600000[31m[33m;[31m
+ [90m 1140 |[31m }[0m[39m
+  Plugin: [35mvite:react-babel[39m
+  File: [36m/home/runner/workspace/artifacts/yms/src/pages/yard-map.tsx[39m:1137:9
+[33m  1135 |  function fmtS(s: string) { return s.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase()); }
+  1136 |  
+  1137 |  function dwellHours(checkInTime: string | null): number {
+       |           ^
+  1138 |    if (!checkInTime) return 0;
+  1139 |    return (Date.now() - new Date(checkInTime).getTime()) / 3600000;[39m
+      at constructor (/home/runner/workspace/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/lib/index.js:365:19)
+      at TypeScriptParserMixin.raise (/home/runner/workspace/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/lib/index.js:6599:19)
+      at TypeScriptScopeHandler.checkRedeclarationInScope (/home/runner/workspace/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/lib/index.js:1619:19)
+      at TypeScriptScopeHandler.declareName (/home/runner/workspace/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/lib/index.js:1585:12)
+      at TypeScriptScopeHandler.declareName (/home/runner/workspace/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/lib/index.js:4880:11)
+      at TypeScriptParserMixin.registerFunctionStatementId (/home/runner/workspace/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/lib/index.js:13466:16)
+      at TypeScriptParserMixin.registerFunctionStatementId (/home/runner/workspace/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/lib/index.js:9178:13)
+      at TypeScriptParserMixin.parseFunction (/home/runner/workspace/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/lib/index.js:13450:12)
+      at TypeScriptParserMixin.parseFunctionStatement (/home/runner/workspace/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/lib/index.js:13125:17)
+      at TypeScriptParserMixin.parseStatementContent (/home/runner/workspace/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/lib/index.js:12791:21)
+      at TypeScriptParserMixin.parseStatementContent (/home/runner/workspace/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/lib/index.js:9508:18)
+      at TypeScriptParserMixin.parseStatementLike (/home/runner/workspace/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/lib/index.js:12767:17)
+      at TypeScriptParserMixin.parseModuleItem (/home/runner/workspace/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/lib/index.js:12744:17)
+      at TypeScriptParserMixin.parseBlockOrModuleBlockBody (/home/runner/workspace/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/lib/index.js:13316:36)
+      at TypeScriptParserMixin.parseBlockBody (/home/runner/workspace/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/lib/index.js:13309:10)
+      at TypeScriptParserMixin.parseProgram (/home/runner/workspace/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/lib/index.js:12622:10)
+      at TypeScriptParserMixin.parseTopLevel (/home/runner/workspace/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/lib/index.js:12612:25)
+      at TypeScriptParserMixin.parse (/home/runner/workspace/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/lib/index.js:14488:25)
+      at TypeScriptParserMixin.parse (/home/runner/workspace/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/lib/index.js:10126:18)
+      at parse (/home/runner/workspace/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/lib/index.js:14522:38)
+      at parser (/home/runner/workspace/node_modules/.pnpm/@babel+core@7.29.0/node_modules/@babel/core/lib/parser/index.js:41:34)
+      at parser.next (<anonymous>)
+      at normalizeFile (/home/runner/workspace/node_modules/.pnpm/@babel+core@7.29.0/node_modules/@babel/core/lib/transformation/normalize-file.js:64:37)
+      at normalizeFile.next (<anonymous>)
+      at run (/home/runner/workspace/node_modules/.pnpm/@babel+core@7.29.0/node_modules/@babel/core/lib/transformation/index.js:22:50)
+      at run.next (<anonymous>)
+      at transform (/home/runner/workspace/node_modules/.pnpm/@babel+core@7.29.0/node_modules/@babel/core/lib/transform.js:22:33)
+      at transform.next (<anonymous>)
+      at step (/home/runner/workspace/node_modules/.pnpm/gensync@1.0.0-beta.2/node_modules/gensync/index.js:261:32)
+      at /home/runner/workspace/node_modules/.pnpm/gensync@1.0.0-beta.2/node_modules/gensync/index.js:273:13
+      at async.call.result.err.err (/home/runner/workspace/node_modules/.pnpm/gensync@1.0.0-beta.2/node_modules/gensync/index.js:223:11)
+      at /home/runner/workspace/node_modules/.pnpm/gensync@1.0.0-beta.2/node_modules/gensync/index.js:189:28
+      at /home/runner/workspace/node_modules/.pnpm/@babel+core@7.29.0/node_modules/@babel/core/lib/gensync-utils/async.js:67:7
+      at /home/runner/workspace/node_modules/.pnpm/gensync@1.0.0-beta.2/node_modules/gensync/index.js:113:33
+      at step (/home/runner/workspace/node_modules/.pnpm/gensync@1.0.0-beta.2/node_modules/gensync/index.js:287:14)
+      at /home/runner/workspace/node_modules/.pnpm/gensync@1.0.0-beta.2/node_modules/gensync/index.js:273:13
+      at async.call.result.err.err (/home/runner/workspace/node_modules/.pnpm/gensync@1.0.0-beta.2/node_modules/gensync/index.js:223:11)
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774605016632,"name":"Error","message":"Failed to fetch dynamically imported module: https://a4fc6f09-dbf5-4771-97a3-3b462f577a08-00-3hoo1qsb2knt3.sisko.replit.dev/src/pages/yard-map.tsx","stack":""}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m9:51:21 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m9:53:17 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/components/app-sidebar.tsx, /src/pages/gate-checkin.tsx, /src/pages/appointments.tsx, /src/pages/yard-inventory.tsx[22m
+[2m9:53:18 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [33mhmr invalidate [39m[2m/src/components/app-sidebar.tsx[22m Could not Fast Refresh ("allNavItems" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2m9:53:18 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m9:53:29 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m9:53:41 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css[22m [33m(x2)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m9:53:50 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css[22m [33m(x3)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m9:54:02 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css[22m [33m(x4)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m9:54:24 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css[22m [33m(x5)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m9:54:51 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css[22m [33m(x6)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m9:55:03 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css[22m [33m(x7)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m9:55:19 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css[22m [33m(x8)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m9:55:32 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css[22m [33m(x9)[39m
+[41m[30m ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL [39m[49m [31m@workspace/yms@0.0.0 dev: `vite --config vite.config.ts --host 0.0.0.0`[39m
+[31mCommand failed with signal "SIGTERM"[39m

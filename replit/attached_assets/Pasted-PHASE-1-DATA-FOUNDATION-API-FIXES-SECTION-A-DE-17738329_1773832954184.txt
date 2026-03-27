@@ -1,0 +1,133 @@
+PHASE 1 — DATA FOUNDATION & API FIXES
+════════════════════════════════════════
+
+━━━ SECTION A: DEMO DATA RESEEDING ━━━
+
+The current seed data is unusable for a demo: all 18 trailers have 50+ hour dwell times (looks like total system failure), all move tasks have priority "normal" (priority system appears non-functional), and 4 moves are in an undocumented "escalated" status with no jockey assigned (invisible in all views).
+
+A-1. RESEED TRAILER DWELL TIMES
+Update the checkInTime timestamps for all active visits in the database so they have a realistic distribution. Use relative offsets from NOW():
+- 4 trailers: checked in 1–4 hours ago (fresh arrivals, status in_yard)
+- 5 trailers: checked in 6–14 hours ago (normal operations, status in_yard or at_dock)
+- 3 trailers: checked in 16–22 hours ago (approaching threshold, status loading/unloading)
+- 4 trailers: checked in 26–54 hours ago (legitimately aged, 2 of these should have active holds)
+- 2 trailers: checked in 1–3 hours ago (status at_dock, recently assigned)
+Write a Drizzle migration or seed update script that sets these timestamps. Do NOT delete any visit records — only update checkInTime values.
+
+A-2. FIX MOVE TASK PRIORITIES
+The moves table currently stores priority as "normal" for all records. Update to a realistic mix:
+- 2 moves: priority = "critical"
+- 3 moves: priority = "high"  
+- 4 moves: priority = "medium"
+- 2 moves: priority = "low"
+Also verify the priority enum/type in the Drizzle schema includes: critical, high, medium, low, normal. If "normal" is not in the enum, add it as an alias for "medium". Update the seed data accordingly.
+
+A-3. RESOLVE ORPHANED "ESCALATED" MOVES
+4 move tasks (for trailers SWFT-53201, FXFE-28900, YRCW-33087, JBHU-832400) have status "escalated" with assignedTo = null. This status is not handled in any UI view so these trailers are invisible to supervisors.
+- If "escalated" is a valid status: add it as a visible queue tab in the Move Tasks module labelled "Escalated" with a red badge, and add these 4 moves to the Dashboard Action Required panel
+- If "escalated" is a data error: update these move statuses to "open" and assign them to available jockeys from the demo user set
+
+A-4. FIX TODAY'S APPOINTMENT TIMESTAMPS
+Update 2–3 appointments to have scheduledDate = today (current date) with timeWindowStart values 30–90 minutes from NOW(). This ensures the Gate Check-In "Expected Today" panel shows live upcoming arrivals rather than past appointments. Keep status as "confirmed" or "booked" for these records.
+
+A-5. ADD BRAND COLOUR TO CARRIERS TABLE
+Add a brandColour column (varchar 7, nullable) to the carriers table via Drizzle migration.
+Populate with these values for the existing demo carriers:
+- Werner Enterprises: #1B3A6B
+- Swift Transportation: #E8231A
+- Schneider National: #F15A22
+- J.B. Hunt Transport Services: #006341
+- XPO Logistics: #E31837
+- FedEx Freight: #4D148C
+- Old Dominion Freight: #003087
+- YRC Worldwide: #FFB81C
+- Heartland Express: #C8102E
+- Estes Express Lines: #003087
+All other carriers: null (will use auto-generated colour as fallback)
+
+━━━ SECTION B: CRITICAL API FIXES ━━━
+
+B-1. FIX /api/moves RETURNING ONLY 3 RECORDS
+The GET /api/moves endpoint currently returns only 3 records while GET /api/moves/summary shows inProgress:10, assigned:1 = 11 open tasks. Find the WHERE clause or filter in the moves route handler and fix it to return ALL non-completed, non-rejected moves. The endpoint should return moves with status in: open, assigned, accepted, in_progress, escalated.
+
+B-2. UNIFY MOVE COUNT QUERIES — CREATE getMoveStats() SHARED FUNCTION
+Currently 4 separate endpoints independently query move counts with different WHERE clauses, producing 4 different numbers:
+- /api/dashboard/stats shows openMoveTasks:3, overdueMoves:2
+- /api/moves/summary shows inProgress:10, overdue:11
+- /api/sidebar/stats shows yet another count
+- /api/assistant/congestion shows "12 move tasks overdue"
+
+Create a shared server-side function getMoveStats(db) that returns:
+{ open, assigned, inProgress, escalated, overdue, completedToday, totalActive }
+
+"overdue" = tasks where createdAt is more than 2 hours ago AND status is not completed/rejected.
+Replace the independent move-counting queries in ALL FOUR endpoints with calls to this shared function. After this fix, all four endpoints must return identical counts for the same underlying data.
+
+B-3. ADD MISSING EXCEPTION CRUD ENDPOINTS
+Currently every HTTP method on /api/exceptions/:id returns 404. Add these routes:
+
+GET /api/exceptions/:id
+→ Returns single exception by ID with full visit/trailer details joined
+→ 404 if not found
+
+PATCH /api/exceptions/:id
+→ Accepts body: { status, resolutionNotes, resolvedBy }
+→ Valid status values: active, resolved, escalated
+→ On status=resolved: set resolvedAt = NOW(), set resolvedBy = req.user.id
+→ Updates the parent visit's holdStatus to "none" if all exceptions for that visit are now resolved
+→ Returns updated exception record
+
+POST /api/exceptions (create new exception/hold)
+→ Accepts body: { visitId, type, severity, description, assignedTo }
+→ Valid types: documentation_hold, security_hold, damage_hold, customs_hold, carrier_dispute
+→ Valid severities: low, medium, high, critical
+→ On creation: update parent visit holdStatus to the new exception type
+→ Returns created record with 201 status
+
+B-4. ADD MISSING INDIVIDUAL GET ENDPOINTS
+Add GET /:id routes for these entities (they all return 404 currently):
+- GET /api/moves/:id → single move with visit/trailer/jockey details
+- GET /api/dock/doors/:id → single dock door with current trailer details
+- GET /api/inspections/:id → single inspection record
+
+For appointments, the route already works with the correct numeric DB ID (e.g. /api/appointments/708 → 200) but fails with sequential IDs. Verify the route uses the correct primary key field from the appointments table.
+
+B-5. FIX AI CHAT 500 ERROR
+POST /api/ai/chat (or wherever the AI chat endpoint is defined) returns HTTP 500. 
+- Check if ANTHROPIC_API_KEY (or OPENAI_API_KEY) is set in Replit Secrets
+- If the key is missing: return a graceful 503 response: { error: "AI features require configuration", message: "Please add ANTHROPIC_API_KEY to Replit Secrets to enable the AI Copilot" }
+- If the key is present but the call throws: wrap the LLM API call in try/catch, log the actual error to console, and return a 503 with a user-friendly message
+- Update the AI Copilot frontend component to handle the 503 gracefully — show "AI Copilot is currently unavailable" with a retry button instead of showing an error toast
+
+B-6. ADD NOTIFICATIONS MARK-READ ENDPOINT
+Add these two endpoints:
+POST /api/notifications/mark-read
+→ Body: { ids: number[] }
+→ Sets isRead = true, readAt = NOW() for each notification ID
+→ Returns { updated: N }
+
+POST /api/notifications/mark-all-read  
+→ No body required
+→ Marks all unread notifications as read for the current user
+→ Returns { updated: N }
+
+To support this:
+- Add isRead boolean (default false) and readAt timestamp (nullable) columns to the notifications table via Drizzle migration
+- Update GET /api/notifications to include isRead in the response
+- Update GET /api/notifications to accept ?unread=true query param that filters to only unread notifications
+- Update the bell badge count in the frontend to show only unread notification count (using the unread count from the notifications response or a separate /api/notifications/count endpoint)
+
+━━━ VERIFICATION CHECKLIST ━━━
+After completing Phase 1, verify:
+□ GET /api/moves returns 11 items (not 3)
+□ /api/dashboard/stats openMoveTasks matches /api/moves/summary total
+□ /api/dashboard/stats overdueMoves matches /api/moves/summary overdue  
+□ PATCH /api/exceptions/[valid-id] returns 200 (not 404)
+□ GET /api/moves/[valid-id] returns 200 (not 404)
+□ POST /api/notifications/mark-read returns 200 (not 404)
+□ POST /api/ai/chat returns 503 with friendly message (not 500 with stack trace)
+□ Yard inventory shows a distribution of dwell times, not all 50+ hours
+□ Move tasks have mixed priorities (critical/high/medium/low visible)
+□ No moves in database have status "escalated" with null assignedTo
+ 
+Phase 1 is complete. You are now improving the YMSNOW prototype UI. Apply ALL of the following changes. Do not modify any API routes or database schema in this phase — frontend only.
