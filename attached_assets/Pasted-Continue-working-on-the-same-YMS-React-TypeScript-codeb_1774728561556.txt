@@ -1,0 +1,153 @@
+Continue working on the same YMS React/TypeScript codebase.
+
+Goal:
+Add a tablet-friendly 10-inch view mode so a customer can click a button and switch the product into a tablet workflow. The major screens should adapt for tablet usage without breaking the current desktop experience.
+
+Business intent:
+- This is not a separate app.
+- It is a view mode/layout mode for operational use on a 10-inch tablet.
+- The tablet experience should feel practical for yard, gate, dock, move, and exception workflows.
+- The desktop experience must remain unchanged unless tablet mode is activated or the screen size requires responsive behavior.
+
+Important safety rules:
+1. Do not remove or rename existing routes.
+2. Do not delete current working pages or desktop layouts.
+3. Do not perform a full mobile rewrite.
+4. Reuse the current design system, theme, and shared components.
+5. Add tablet support incrementally through layout adaptation, responsive rules, and view-mode logic.
+6. Preserve product modes:
+   - Standard
+   - Assist
+   - Optimize
+7. The new tablet mode must coexist safely with the existing mode system.
+
+Requirements:
+
+1. Add a visible view toggle
+- Add a user-visible control in the app shell/header that allows switching between:
+  - Desktop View
+  - Tablet View
+- Persist the selected view in localStorage.
+- The selected view should be available globally through context or a shared hook.
+- Keep the control enterprise-style and compact.
+
+2. Define tablet view behavior
+- Tablet View is optimized for a 10-inch tablet experience.
+- When Tablet View is active, adapt the UI for touch-friendly, operational use.
+- Keep the same routes and workflows, but adjust layout and interaction patterns.
+- Do not create a second codebase or duplicate pages.
+
+3. Tablet layout rules
+Apply these rules when Tablet View is active:
+
+- reduce multi-column density where needed
+- stack secondary panels below or behind primary content when space is limited
+- make key actions easier to tap
+- simplify header/toolbars
+- reduce low-priority metadata shown at once
+- make filters collapsible or more compact
+- ensure tables/lists remain readable without horizontal chaos
+- make drawers/detail panels work well on tablet widths
+- use full-width or near-full-width overlays when appropriate
+- preserve fast scanning for operational tasks
+
+4. Prioritize these screens for tablet adaptation
+Adapt these first and most carefully:
+- Dashboard
+- Appointments
+- Gate
+- Yard / Yard Control / Yard Inventory
+- Moves
+- Docks
+- Exceptions
+- Carrier Portal
+- major detail drawers or side panels
+
+5. Tablet workflow improvements
+For Tablet View, improve workflows in a practical way:
+- make primary actions larger and easier to tap
+- reduce action clutter inside rows
+- move less important actions into menus where needed
+- make filters easier to open/close
+- improve step-based forms for tablet usage
+- ensure key operational actions remain obvious and accessible
+- preserve manual workflows in all modes
+
+6. Navigation behavior for tablet
+- In Tablet View, adapt left navigation to a more compact pattern.
+- It can be collapsible, icon-first, or drawer-based if needed.
+- Do not remove navigation items; only make them fit tablet use better.
+- Keep navigation fast and easy to access.
+
+7. Detail panel / drawer behavior
+- Existing right-side detail panels or drawers should adapt well in Tablet View.
+- If side-by-side detail panels are too tight, allow them to become:
+  - wider overlays
+  - bottom sheets
+  - full-height slide-over panels
+- Keep the detail experience readable and action-oriented.
+
+8. Table and list adaptation
+- Improve table/list behavior for tablet widths:
+  - reduce visible low-priority columns when needed
+  - preserve important columns like status, unit ID, location, age, next action
+  - improve tap targets for row actions
+  - avoid broken horizontal overflow where possible
+- If necessary, allow denser records to switch to a card/list presentation only in Tablet View for the most critical screens, but do this sparingly and only if it clearly improves usability.
+
+9. Form adaptation
+- Improve important forms for tablet:
+  - appointments
+  - gate workflows
+  - exception handling
+  - carrier portal
+- Use better field grouping, larger tap-friendly controls, clearer action placement, and simplified step flow where safe.
+- Do not change business logic.
+
+10. Mode compatibility
+- Ensure Tablet View works with:
+  - Standard mode
+  - Assist mode
+  - Optimize mode
+- Standard + Tablet should still feel like a conventional YMS.
+- Assist + Tablet should show AI help without clutter.
+- Optimize + Tablet should show higher-value insights without making the screen busy.
+
+11. Responsive implementation guidance
+- Prefer a combination of:
+  - global view-mode state
+  - responsive layout utilities
+  - shared CSS/layout helpers
+  - conditional rendering for secondary content
+- Reuse existing components.
+- Avoid deep rewrites.
+- If needed, create small reusable helpers for:
+  - tablet page layout
+  - responsive toolbar
+  - compact filter row
+  - adaptive detail drawer
+  - compact table/list wrapper
+
+12. Scope discipline
+- Focus on safe adaptation of the current system.
+- Do not over-engineer.
+- Do not make every screen radically different.
+- Prioritize operational usability over visual novelty.
+
+Deliverables:
+1. Add Desktop View / Tablet View toggle with global persisted state.
+2. Adapt the most important screens for 10-inch tablet workflow.
+3. Summarize:
+   - files changed
+   - components added or updated
+   - layout rules introduced for tablet mode
+   - which screens were adapted first
+   - any risky areas left untouched
+4. Provide a short manual QA checklist for:
+   - view switching
+   - dashboard on tablet
+   - yard/moves on tablet
+   - gate workflow on tablet
+   - detail drawers/panels on tablet
+   - forms on tablet
+   - Standard/Assist/Optimize compatibility in tablet mode

@@ -179,6 +179,42 @@ Additional items demoted to `secondary: true` (dimmed, 12px text):
 - Audit Log — compliance review surface
 - Lifecycle Video — also now `subtle: true` (very faint, admin only)
 
+## Tablet View System
+
+### Toggle
+
+A `Desktop | Tablet` segmented control in the top header (between ModeSelector and Reset). State is stored in `localStorage` (`ymsnow_tablet_mode`). Available globally via `useTabletView()` hook.
+
+### Provider & Hook (`lib/tablet-view.tsx`)
+
+```tsx
+const { tabletMode, setTabletMode } = useTabletView();
+```
+
+- `tabletMode: boolean` — true when Tablet View is active
+- `setTabletMode(v)` — switch modes programmatically  
+- `TabletViewProvider` wraps the app root in `App.tsx`
+
+### Sidebar Auto-Collapse
+
+`TabletSidebarSync` component (inside `SidebarProvider` in `App.tsx`) calls `useSidebar().setOpen(!tabletMode)` whenever tablet mode changes — sidebar auto-collapses on tablet, reopens on desktop.
+
+### What Adapts in Tablet Mode
+
+| Page / Component | What changes |
+|---|---|
+| `App.tsx` header | SidebarTrigger stays; sidebar auto-collapses via `TabletSidebarSync` |
+| `dashboard.tsx` (`AdminDashboard`, `SupervisorDashboard`) | Side panel collapses from `lg:grid-cols-12` → `grid-cols-1`; ActionRequired/ROI panel stacks below main content |
+| `appointments.tsx` (`AptRow`) | Row grid collapses from 5-col → 3-col (ref+date, carrier+time, status); rows taller (py-3.5) |
+| `yard-inventory.tsx` | `lastUpdate` and `nextStep` columns hidden in tablet (colVis override); most important columns stay |
+| `gate-checkin.tsx` | Appointment summary 3-col → 2-col; driver verification form 2-col → 1-col (full-width fields) |
+| `move-tasks.tsx` (`JockeyTaskCard`) | Action buttons `h-8 text-xs` → `h-10 text-sm` for larger tap targets |
+| `exceptions.tsx` | Hook available; card-based layout already works well on tablet |
+
+### Mode Compatibility
+
+Tablet mode is fully orthogonal to the product mode system (Standard / Assist / Optimize). The `tabletMode` boolean is a separate layout concern. All AI panels, banners, and Optimize widgets remain functional in tablet mode, adapting via the same responsive grid changes.
+
 ## UI Design System
 
 ### Enterprise Shared Components (`components/enterprise/`)

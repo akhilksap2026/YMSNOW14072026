@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
+import { useTabletView } from "@/lib/tablet-view";
 import { SearchAutocomplete } from "@/components/enterprise/search-autocomplete";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
@@ -115,6 +116,7 @@ function Tip({ text, children }: { text: string; children: React.ReactElement })
 
 export default function GateCheckInPage() {
   const { toast } = useToast();
+  const { tabletMode } = useTabletView();
   const [location, setLocation] = useLocation();
   const [fastLane, setFastLane] = useState(false);
 
@@ -765,7 +767,7 @@ export default function GateCheckInPage() {
                         </div>
                       </div>
                     )}
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-5">
+                    <div className={`grid gap-4 ${tabletMode ? "grid-cols-2" : "grid-cols-2 sm:grid-cols-3"}`}>
                       {[
                         { label: "Carrier", value: carriers.find((c) => c.id === selectedAppointment.carrierId)?.name || "Unknown" },
                         { label: "Trailer", value: selectedAppointment.trailerNumber || "TBD" },
@@ -836,7 +838,7 @@ export default function GateCheckInPage() {
                       </div>
                     )}
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className={`grid gap-4 ${tabletMode ? "grid-cols-1" : "grid-cols-2"}`}>
                       {/* Driver Name */}
                       <div className="space-y-1.5">
                         <Tip text="Enter the driver's full name exactly as shown on their ID. A mismatch will create an exception for supervisor review.">

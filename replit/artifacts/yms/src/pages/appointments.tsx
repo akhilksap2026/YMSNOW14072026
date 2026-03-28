@@ -1,6 +1,7 @@
 import { useState, useMemo, useCallback } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useProductMode, showAIRecommendations } from "@/lib/product-mode";
+import { useTabletView } from "@/lib/tablet-view";
 import { AppointmentsAssistPanel } from "@/components/assist/appointments-assist-panel";
 import { apiRequest } from "@/lib/queryClient";
 import { invalidateAll } from "@/lib/invalidation";
@@ -467,6 +468,7 @@ interface AptRowProps {
 }
 
 function AptRow({ apt, carrierName, onSelect, onQuickAction, isPending }: AptRowProps) {
+  const { tabletMode } = useTabletView();
   const arrStatus = getArrivalStatus(apt);
   const borderColor = rowBorderColor(apt.status, arrStatus);
   const initials = carrierInitials(carrierName);
@@ -485,45 +487,62 @@ function AptRow({ apt, carrierName, onSelect, onQuickAction, isPending }: AptRow
       onClick={onSelect}
       data-testid={`apt-row-${apt.id}`}
     >
-      <div className={`flex items-center gap-3 flex-1 min-w-0 px-4 py-3`}>
+      <div className={`flex items-center gap-3 flex-1 min-w-0 px-4 ${tabletMode ? "py-3.5" : "py-3"}`}>
         <div className="h-7 min-w-[32px] px-1.5 rounded bg-muted border border-border/60 flex items-center justify-center text-[11px] font-bold text-foreground/80 shrink-0 tabular-nums tracking-wide">
           {initials}
         </div>
 
-        <div className="min-w-0 flex-1 grid grid-cols-[minmax(0,1.4fr)_minmax(0,1.2fr)_minmax(0,0.9fr)_minmax(0,0.8fr)_minmax(0,1fr)] gap-3 items-center">
+        <div className={`min-w-0 flex-1 grid gap-3 items-center ${
+          tabletMode
+            ? "grid-cols-[minmax(0,1.4fr)_minmax(0,1.4fr)_minmax(0,1fr)]"
+            : "grid-cols-[minmax(0,1.4fr)_minmax(0,1.2fr)_minmax(0,0.9fr)_minmax(0,0.8fr)_minmax(0,1fr)]"
+        }`}>
           <div className="min-w-0">
             <div className="font-semibold text-primary text-sm truncate">{apt.referenceNumber}</div>
-            <div className="text-xs text-muted-foreground mt-0.5">
+            <div className="text-xs text-muted-foreground mt-0.5 truncate">
               {apt.scheduledDate
                 ? new Date(apt.scheduledDate).toLocaleDateString("en-US", { month: "short", day: "numeric" })
                 : "No date"}
+              {tabletMode && apt.trailerNumber && (
+                <span className="ml-1.5 font-mono">{apt.trailerNumber}</span>
+              )}
             </div>
           </div>
 
-          <div className="min-w-0">
+          <div className={tabletMode ? "min-w-0" : "min-w-0"}>
             <div className="font-medium text-sm truncate">{carrierName}</div>
-            {apt.trailerNumber ? (
+            {!tabletMode && (apt.trailerNumber ? (
               <code className="text-[11px] text-muted-foreground font-mono">{apt.trailerNumber}</code>
             ) : (
               <span className="text-[11px] text-muted-foreground">No trailer</span>
+            ))}
+            {tabletMode && (
+              <div className="flex items-center gap-1 text-[11px] font-medium text-muted-foreground mt-0.5">
+                <Clock className="h-3 w-3 shrink-0" />
+                {formatTimePill(apt.timeWindowStart, apt.timeWindowEnd)}
+              </div>
             )}
           </div>
 
-          <div className="shrink-0">
-            <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded border text-[11px] font-semibold ${movementBg(apt.movementType)}`}>
-              {movementTypeLabel(apt.movementType)}
+          {!tabletMode && (
+            <div className="shrink-0">
+              <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded border text-[11px] font-semibold ${movementBg(apt.movementType)}`}>
+                {movementTypeLabel(apt.movementType)}
+              </div>
             </div>
-          </div>
+          )}
 
-          <div className="shrink-0">
-            <div className="flex items-center gap-1 text-[11px] font-medium text-muted-foreground">
-              <Clock className="h-3 w-3 shrink-0" />
-              {formatTimePill(apt.timeWindowStart, apt.timeWindowEnd)}
+          {!tabletMode && (
+            <div className="shrink-0">
+              <div className="flex items-center gap-1 text-[11px] font-medium text-muted-foreground">
+                <Clock className="h-3 w-3 shrink-0" />
+                {formatTimePill(apt.timeWindowStart, apt.timeWindowEnd)}
+              </div>
+              {apt.driverName && (
+                <div className="text-[10px] text-muted-foreground truncate mt-0.5">{apt.driverName}</div>
+              )}
             </div>
-            {apt.driverName && (
-              <div className="text-[10px] text-muted-foreground truncate mt-0.5">{apt.driverName}</div>
-            )}
-          </div>
+          )}
 
           <div className="min-w-0 flex items-center gap-2">
             <div className="flex flex-col gap-1">

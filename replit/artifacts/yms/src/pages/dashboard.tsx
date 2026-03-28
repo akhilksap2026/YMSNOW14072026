@@ -47,6 +47,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { useProductMode, isOptimizeMode, isAssistMode } from "@/lib/product-mode";
+import { useTabletView } from "@/lib/tablet-view";
 import {
   OptimizeDashboardPanel,
   AssistSummaryBanner,
@@ -1250,6 +1251,7 @@ function ActivityGrid({
 
 function SupervisorDashboard({ s, ms, zc, ds = [], moves = [], exceptions = [] }: { s: DashboardStats; ms?: MoveSummary; zc?: ZoneCapacity[]; ds?: DockDoor[]; moves?: MoveTask[]; exceptions?: OpenException[] }) {
   const { mode } = useProductMode();
+  const { tabletMode } = useTabletView();
   const brief = isOptimizeMode(mode) ? buildOperationalBrief(s, moves, ds) : null;
   const assistItems = isAssistMode(mode) ? buildAssistSummary(s, moves) : [];
 
@@ -1273,13 +1275,13 @@ function SupervisorDashboard({ s, ms, zc, ds = [], moves = [], exceptions = [] }
         <OptimizeDashboardPanel brief={brief} />
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
-        <div className="lg:col-span-8 space-y-4">
+      <div className={`grid gap-4 items-start ${tabletMode ? "grid-cols-1" : "grid-cols-1 lg:grid-cols-12"}`}>
+        <div className={tabletMode ? "space-y-4" : "lg:col-span-8 space-y-4"}>
           <RoleQuickActions role="yard_manager" />
           <RevenueKpiSection />
         </div>
 
-        <div className="lg:col-span-4 self-start space-y-4">
+        <div className={tabletMode ? "space-y-4" : "lg:col-span-4 self-start space-y-4"}>
           <ActionRequiredPanel s={s} exceptions={exceptions} moves={moves} />
           <ROIPanel mode={mode} stats={s} />
         </div>
@@ -1326,6 +1328,7 @@ function CarrierDashboard({ s }: { s: DashboardStats }) {
 
 function AdminDashboard({ s, ms, zc, ds = [], moves = [], exceptions = [] }: { s: DashboardStats; ms?: MoveSummary; zc?: ZoneCapacity[]; ds?: DockDoor[]; moves?: MoveTask[]; exceptions?: OpenException[] }) {
   const { mode } = useProductMode();
+  const { tabletMode } = useTabletView();
   const brief = isOptimizeMode(mode) ? buildOperationalBrief(s, moves, ds) : null;
   const assistItems = isAssistMode(mode) ? buildAssistSummary(s, moves) : [];
 
@@ -1349,12 +1352,12 @@ function AdminDashboard({ s, ms, zc, ds = [], moves = [], exceptions = [] }: { s
         <OptimizeDashboardPanel brief={brief} />
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
-        <div className="lg:col-span-8 space-y-4">
+      <div className={`grid gap-4 items-start ${tabletMode ? "grid-cols-1" : "grid-cols-1 lg:grid-cols-12"}`}>
+        <div className={tabletMode ? "space-y-4" : "lg:col-span-8 space-y-4"}>
           <RevenueKpiSection />
         </div>
 
-        <div className="lg:col-span-4 self-start space-y-4">
+        <div className={tabletMode ? "space-y-4" : "lg:col-span-4 self-start space-y-4"}>
           <ActionRequiredPanel s={s} exceptions={exceptions} moves={moves} />
           <ROIPanel mode={mode} stats={s} />
         </div>

@@ -1,0 +1,229 @@
+Continue working on the same YMS React/TypeScript codebase.
+
+Goal:
+Enhance the current Yard Map screen and evolve it toward a Yard Control experience without breaking existing routes or workflows.
+
+Business goals:
+- make the Yard Map more operational, actionable, and commercially impressive
+- improve scanability, slot visibility, dwell/risk awareness, and move/exception awareness
+- preserve current yard functionality while improving layout, UI discipline, and interactions
+- align the screen with the cleaner, structured Jira/Linear-inspired web-app feel already discussed, while keeping it clearly suited for Yard Management operations
+
+Important design intent:
+- Do not make this look like project-management software.
+- Borrow only the useful visual discipline:
+  - quieter interface
+  - compact controls
+  - structured layout
+  - cleaner visual hierarchy
+  - restrained color usage
+  - right-side properties/detail panel pattern
+  - low-noise tables/lists/panels
+- Keep the Yard screen clearly optimized for:
+  - fast operational scanning
+  - clear slot status
+  - obvious next actions
+  - map-to-action workflow
+  - queue visibility
+  - exception and dwell awareness
+
+Important safety rules:
+1. Do not remove or rename existing routes.
+2. Do not delete current working Yard pages or workflows.
+3. Do not rewrite the entire Yard module from scratch.
+4. Reuse the current theme, shared components, and current yard logic where possible.
+5. Focus on UI refinement, layout improvement, operational usability, and interaction clarity.
+6. Preserve compatibility with:
+   - Standard mode
+   - Assist mode
+   - Optimize mode
+   - Desktop View
+   - Tablet View
+7. Prefer incremental enhancement over structural rewrites.
+8. If any consolidation is risky, refine the UI and interaction model without changing the underlying route structure.
+
+Primary objective:
+Make the Yard Map feel like a real operational control surface, not just a visual map.
+
+Requirements:
+
+1. Evolve the page toward a Yard Control layout
+- Refactor the Yard Map page into a 3-part layout where feasible:
+  - left panel = operational queue and quick filters
+  - center = interactive yard map
+  - right panel = selected unit/slot detail and next actions
+- Keep the center map as the dominant visual surface.
+- Ensure the side panels support the map instead of competing with it.
+- If the current page already has part of this structure, refine it rather than replacing it.
+
+2. Improve overall visual hierarchy
+- Make the map easier to scan at a glance.
+- Clearly distinguish:
+  - zones
+  - lanes
+  - slots
+  - occupied vs empty states
+  - selected items
+  - urgent/problem/risk states
+- Use cleaner spacing, lighter separators, and more disciplined grouping.
+- Reduce visual heaviness and noise.
+
+3. Make slot states visually clearer
+- Improve the visual design of each slot/yard position.
+- Standardize visual treatment for:
+  - empty
+  - occupied
+  - reserved
+  - blocked
+  - hold/exception
+  - ready for dock
+  - aging/high dwell
+- Do not rely only on color.
+- Use a restrained combination of:
+  - fill/background treatment
+  - border emphasis
+  - icon/symbol
+  - compact label where useful
+- Keep slot UI readable without overcrowding the map.
+
+4. Improve unit/trailer representation
+- When a unit/trailer appears on the map, make sure the user can quickly understand:
+  - unit/trailer ID
+  - key status
+  - urgency/risk if relevant
+- Do not overload map tiles with too much metadata.
+- Keep richer detail inside the right-side panel or tooltip, not on every slot tile.
+
+5. Improve selected unit/slot detail
+- Improve the selected detail panel using a cleaner right-side properties panel pattern.
+- Include:
+  - unit ID
+  - status
+  - dwell time / time in yard
+  - location
+  - linked move or dock need
+  - linked appointment if available
+  - exception/hold visibility
+  - primary actions
+- Structure the panel into clean sections.
+- Make actions obvious and well-prioritized.
+
+6. Add quick operational queues
+- Add or refine compact queue sections such as:
+  - awaiting slot
+  - aging units
+  - ready for dock
+  - blocked/held
+  - overdue moves
+- Keep the queue readable and operationally useful.
+- Clicking a queue item should:
+  - highlight/focus it on the map
+  - open or update the detail panel
+
+7. Add compact filters
+- Add or refine compact filters such as:
+  - zone
+  - status
+  - dwell age
+  - exception only
+  - empty slots only
+  - occupied only if useful
+- Keep filters compact, low-noise, and aligned with the cleaner UI direction.
+- Use collapsible or compact filter behavior if needed.
+
+8. Improve map usability and interaction
+- Clicking a queue item should highlight it on the map.
+- Clicking a map item should open/update the detail panel.
+- Ensure selected state is visually strong and clear.
+- Keep hover/tap/selection behavior consistent and low-noise.
+- The detail panel should support primary actions directly.
+
+9. Add dwell/risk awareness using restrained visual indicators
+- Improve visual cues for dwell and risk without overwhelming the screen.
+- Use restrained patterns such as:
+  - subtle urgency badges
+  - compact warning icons
+  - border emphasis
+  - optional overlays if already supported safely
+- Make it easier to identify which units need attention now.
+
+10. Do not overload the map with too much text
+- Keep the map itself visually efficient.
+- Use progressive disclosure:
+  - map = key signal
+  - right panel/tooltip = richer detail
+- Avoid stuffing too much metadata into every slot.
+
+11. Keep design aligned with the current YMS theme and the cleaner Jira/Linear-inspired UI direction
+- Make the Yard screen quieter, more structured, and more disciplined.
+- Reduce heavy card styling where not needed.
+- Use cleaner headers, compact controls, restrained chips, lighter separators, and a stronger properties-panel pattern.
+- Keep the result aligned with the current product theme and not a visual clone of another product.
+
+12. Refine toolbar, legend, and supporting UI
+- Improve the top toolbar/filter row so it feels cleaner and more consistent.
+- Add or refine a compact legend for slot states/risk symbols if needed.
+- Keep legend and toolbar helpful but low-noise.
+
+13. Improve consistency between map, queue, and detail panel
+- Ensure the map, queue/list area, and detail panel feel like one coordinated workspace.
+- Align status chips, spacing, row density, section structure, and action placement across these areas.
+
+14. Improve empty and low-data states
+- Add or refine compact empty states for:
+  - map sections
+  - queue groups
+  - filtered results
+- Empty states should explain:
+  - what the section is for
+  - why it may be empty
+  - what the user can do next
+- Keep empty states operational and concise.
+
+15. Make the layout adapt safely to Tablet View
+- Adapt the Yard screen for 10-inch tablet workflow.
+- In Tablet View:
+  - side panels can collapse
+  - queue can become collapsible
+  - detail panel can become slide-over or wider overlay
+  - tap targets should be larger
+  - the map remains the main surface
+- Do not simply shrink the desktop layout.
+- Make tablet interaction practical and touch-friendly.
+
+16. Preserve Standard / Assist / Optimize compatibility
+- Standard = conventional operational map with clean UI and no extra AI clutter
+- Assist = map can show subtle AI recommendations inline without clutter
+- Optimize = map can show richer prioritization/risk cues while staying visually controlled
+
+17. Reuse current components and avoid broad rewrites
+- Reuse current Yard components first.
+- If needed, create or refine small reusable helpers for:
+  - slot state styling
+  - queue list items
+  - map legend
+  - detail panel sections
+  - compact toolbar/filter row
+  - responsive tablet layout
+- Keep business logic intact unless a very small safe improvement is clearly needed.
+
+Deliverables:
+1. Improved Yard Map / Yard Control layout.
+2. Clearer slot and unit states.
+3. Operational queue integration.
+4. Improved detail/action panel.
+5. Safe tablet adaptation.
+6. Summary of:
+   - files changed
+   - Yard-specific UI components updated or added
+   - key visual and interaction improvements made
+   - what was intentionally not changed to avoid breaking the system
+7. Short manual QA checklist covering:
+   - slot states
+   - selection behavior
+   - queue-to-map interaction
+   - detail panel
+   - filters/toolbar
+   - empty states
+   - tablet behavior
+   - Standard/Assist/Optimize behavior

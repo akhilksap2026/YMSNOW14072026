@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { useProductMode, showAIRecommendations } from "@/lib/product-mode";
+import { useTabletView } from "@/lib/tablet-view";
 import { ExceptionAIInsight } from "@/components/assist/exception-ai-insight";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
@@ -91,6 +92,7 @@ function isToday(date: string): boolean {
 export default function ExceptionsPage() {
   const { toast } = useToast();
   const { mode } = useProductMode();
+  const { tabletMode } = useTabletView();
   const aiEnabled = showAIRecommendations(mode);
   const [, setLocation] = useLocation();
   const urlSearch = useSearch();

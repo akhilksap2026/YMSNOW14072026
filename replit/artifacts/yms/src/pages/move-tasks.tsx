@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useProductMode, showAIRecommendations } from "@/lib/product-mode";
+import { useTabletView } from "@/lib/tablet-view";
 import { MovesAssistPanel } from "@/components/assist/moves-assist-panel";
 import { apiRequest } from "@/lib/queryClient";
 import { invalidateAll } from "@/lib/invalidation";
@@ -342,6 +343,7 @@ function JockeyTaskCard({
   onSelfAssign?: () => void;
   isPending: boolean;
 }) {
+  const { tabletMode } = useTabletView();
   const overdue = isOverdue(task.createdAt);
   const ageMins = calcAgeMinutes(task.createdAt);
   const direction = movementDirectionLabel(task.moveType);
@@ -412,7 +414,7 @@ function JockeyTaskCard({
           <>
             <Button
               size="sm"
-              className="flex-1 h-8 text-xs bg-primary hover:bg-primary/90"
+              className={`flex-1 bg-primary hover:bg-primary/90 ${tabletMode ? "h-10 text-sm" : "h-8 text-xs"}`}
               onClick={() => onAction(task.id, "accepted")}
               disabled={isPending}
               data-testid={`card-accept-${task.id}`}
@@ -421,19 +423,19 @@ function JockeyTaskCard({
             </Button>
             <Button
               size="sm" variant="outline"
-              className="h-8 text-xs text-amber-600 border-amber-200 hover:bg-amber-50 dark:border-amber-900/30"
+              className={`text-amber-600 border-amber-200 hover:bg-amber-50 dark:border-amber-900/30 ${tabletMode ? "h-10 text-sm" : "h-8 text-xs"}`}
               onClick={() => onReject(task)}
               disabled={isPending}
               data-testid={`card-reject-${task.id}`}
             >
-              <RotateCcw className="h-3.5 w-3.5 mr-1" /> Return to Queue
+              <RotateCcw className="h-3.5 w-3.5 mr-1" /> Return
             </Button>
           </>
         )}
         {task.status === "accepted" && (
           <Button
             size="sm"
-            className="flex-1 h-8 text-xs"
+            className={`flex-1 ${tabletMode ? "h-10 text-sm" : "h-8 text-xs"}`}
             onClick={() => onAction(task.id, "in_progress")}
             disabled={isPending}
             data-testid={`card-start-${task.id}`}
@@ -444,7 +446,7 @@ function JockeyTaskCard({
         {task.status === "in_progress" && (
           <Button
             size="sm"
-            className="flex-1 h-8 text-xs bg-emerald-600 hover:bg-emerald-700 text-white"
+            className={`flex-1 bg-emerald-600 hover:bg-emerald-700 text-white ${tabletMode ? "h-10 text-sm" : "h-8 text-xs"}`}
             onClick={() => onAction(task.id, "completed")}
             disabled={isPending}
             data-testid={`card-complete-${task.id}`}
@@ -456,7 +458,7 @@ function JockeyTaskCard({
           onSelfAssign ? (
             <Button
               size="sm"
-              className="flex-1 h-8 text-xs bg-primary hover:bg-primary/90"
+              className={`flex-1 bg-primary hover:bg-primary/90 ${tabletMode ? "h-10 text-sm" : "h-8 text-xs"}`}
               onClick={onSelfAssign}
               disabled={isPending}
               data-testid={`card-claim-${task.id}`}

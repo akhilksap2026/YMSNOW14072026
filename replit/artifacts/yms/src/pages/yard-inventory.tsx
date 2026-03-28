@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
+import { useTabletView } from "@/lib/tablet-view";
 import { SearchAutocomplete } from "@/components/enterprise/search-autocomplete";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
@@ -1020,15 +1021,20 @@ export default function YardInventoryPage({ userRole }: { userRole?: string } = 
   const [showGroupedView, setShowGroupedView] = useState(false);
   const [showAllCols, setShowAllCols] = useState(false);
   const isRestrictedRole = userRole === "gate_guard" || userRole === "yard_jockey";
+  const { tabletMode } = useTabletView();
   const colVis = useMemo(() => {
     if (!isRestrictedRole || showAllCols) {
-      return { visit: true, trailer: true, carrier: true, location: true, status: true, dwell: true, lastUpdate: true, nextStep: true };
+      return {
+        visit: true, trailer: true, carrier: true, location: true, status: true, dwell: true,
+        lastUpdate: !tabletMode,
+        nextStep: !tabletMode,
+      };
     }
     if (userRole === "gate_guard") {
       return { visit: true, trailer: false, carrier: true, location: true, status: true, dwell: false, lastUpdate: false, nextStep: false };
     }
     return { visit: false, trailer: true, carrier: false, location: true, status: true, dwell: false, lastUpdate: false, nextStep: true };
-  }, [userRole, isRestrictedRole, showAllCols]);
+  }, [userRole, isRestrictedRole, showAllCols, tabletMode]);
   const [holdResolutionDialog, setHoldResolutionDialog] = useState<{ visit: VisitWithDetails } | null>(null);
   const [holdResolutionReason, setHoldResolutionReason] = useState("");
 

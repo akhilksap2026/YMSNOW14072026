@@ -4,12 +4,14 @@ import { QueryClientProvider, useMutation, useQuery } from "@tanstack/react-quer
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider, useTheme } from "@/lib/theme-provider";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import { AppSidebar, allNavItems } from "@/components/app-sidebar";
 import { useAuth } from "@/hooks/use-auth";
 import { useState, useEffect, lazy, Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { Moon, Sun, RotateCcw, ChevronRight, Bell, Shield, LogOut } from "lucide-react";
+import { TabletViewProvider, useTabletView } from "@/lib/tablet-view";
+import { TabletToggle } from "@/components/tablet-toggle";
 import { AIAssistant } from "@/components/ai-assistant";
 import { EmailInboxPanel, EmailInboxTrigger } from "@/components/email-inbox-panel";
 import { useToast } from "@/hooks/use-toast";
@@ -21,6 +23,15 @@ import NotFound from "@/pages/not-found";
 import LoginPage from "@/pages/login";
 import { ProductModeProvider, useProductMode, showAIRecommendations } from "@/lib/product-mode";
 import { ModeSelector } from "@/components/mode-selector";
+
+function TabletSidebarSync() {
+  const { tabletMode } = useTabletView();
+  const { setOpen } = useSidebar();
+  useEffect(() => {
+    setOpen(!tabletMode);
+  }, [tabletMode, setOpen]);
+  return null;
+}
 
 const SHIFT_START_KEY = "ymsnow_shift_start";
 const LOGIN_KEY = "ymsnow_logged_in";
@@ -414,6 +425,7 @@ function AuthenticatedApp({ onLogout }: { onLogout: () => void }) {
 
   return (
     <SidebarProvider style={sidebarStyle as React.CSSProperties}>
+      <TabletSidebarSync />
       <div className="flex h-screen w-full">
         <AppSidebar
           userRole={userRole}
@@ -432,6 +444,8 @@ function AuthenticatedApp({ onLogout }: { onLogout: () => void }) {
               <ShiftClock />
               <Separator orientation="vertical" className="h-4 hidden sm:block" />
               <ModeSelector />
+              <Separator orientation="vertical" className="h-4 hidden sm:block" />
+              <TabletToggle />
               <Separator orientation="vertical" className="h-4 hidden sm:block" />
               <Button
                 size="sm"
@@ -532,6 +546,7 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ProductModeProvider>
+      <TabletViewProvider>
       <ThemeProvider>
         <TooltipProvider>
           <Switch>
@@ -552,6 +567,7 @@ export default function App() {
           <Toaster />
         </TooltipProvider>
       </ThemeProvider>
+      </TabletViewProvider>
       </ProductModeProvider>
     </QueryClientProvider>
   );
