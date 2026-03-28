@@ -12,7 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
-import { PageHeader, FilterToolbar, StatusChip, KPICard, DetailDrawer, DrawerSection, DrawerField } from "@/components/enterprise";
+import { PageHeader, FilterToolbar, StatusChip, KPICard, DetailDrawer, DrawerSection, DrawerField, EmptyState } from "@/components/enterprise";
 import { movePriorityColor, moveStatusColor, visitStatusColor } from "@/lib/status-colors";
 import { formatTitle as formatStatus } from "@/lib/format";
 import {
@@ -983,14 +983,20 @@ export default function MoveTasksPage({ userRole, currentPersonaId }: { userRole
               {Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-40 rounded-lg" />)}
             </div>
           ) : queuedTasks.length === 0 ? (
-            <Card>
-              <CardContent className="py-12 text-center">
-                <ArrowRightLeft className="h-10 w-10 mx-auto text-muted-foreground mb-3" />
-                <p className="text-muted-foreground text-sm" data-testid="text-no-tasks">
-                  {activeQueue === "assigned" ? "No tasks assigned to you yet." : "No move tasks in this queue."}
-                </p>
-              </CardContent>
-            </Card>
+            <EmptyState
+              icon={<ArrowRightLeft className="h-5 w-5" />}
+              heading={activeQueue === "assigned" ? "No tasks assigned to you" : "Queue is empty"}
+              description={
+                activeQueue === "assigned"
+                  ? "You have no assigned move tasks. Check the unassigned queue or wait for a supervisor to assign work."
+                  : activeQueue === "unassigned"
+                    ? "No open move tasks waiting for assignment. New tasks will appear here when created."
+                    : activeQueue === "in_progress"
+                      ? "No moves are currently in progress."
+                      : "No completed moves found for the current filter."
+              }
+              data-testid="text-no-tasks"
+            />
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3" data-testid="jockey-card-grid">
               {queuedTasks.map((task) => (
@@ -1034,12 +1040,20 @@ export default function MoveTasksPage({ userRole, currentPersonaId }: { userRole
           ))}
         </div>
       ) : queuedTasks.length === 0 ? (
-        <Card>
-          <CardContent className="py-12 text-center">
-            <ArrowRightLeft className="h-10 w-10 mx-auto text-muted-foreground mb-3" />
-            <p className="text-muted-foreground text-sm" data-testid="text-no-tasks">No move tasks in this queue</p>
-          </CardContent>
-        </Card>
+        <EmptyState
+          icon={<ArrowRightLeft className="h-5 w-5" />}
+          heading="Queue is empty"
+          description={
+            activeQueue === "unassigned"
+              ? "No open move tasks waiting for assignment. Create a new task or check other queues."
+              : activeQueue === "assigned"
+                ? "No tasks currently assigned. Use the unassigned queue to dispatch work to jockeys."
+                : activeQueue === "in_progress"
+                  ? "No moves are currently in progress."
+                  : "No completed moves found for the current filter."
+          }
+          data-testid="text-no-tasks"
+        />
       ) : (
         <Card>
           <div className="overflow-x-auto">

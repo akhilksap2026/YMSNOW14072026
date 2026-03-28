@@ -17,6 +17,7 @@ import {
   DetailDrawer,
   DrawerSection,
   DrawerField,
+  EmptyState,
 } from "@/components/enterprise";
 import {
   Select,
@@ -1373,12 +1374,11 @@ export default function YardInventoryPage({ userRole }: { userRole?: string } = 
           ))}
         </div>
       ) : filtered.length === 0 ? (
-        <Card>
-          <CardContent className="py-12 text-center">
-            <Truck className="h-10 w-10 mx-auto text-muted-foreground mb-3" />
-            <p className="text-muted-foreground text-sm">No units found matching filter</p>
-          </CardContent>
-        </Card>
+        <EmptyState
+          icon={<Truck className="h-5 w-5" />}
+          heading="No units found"
+          description="No trailers or units match your current filters. Try adjusting the status, zone, or search term."
+        />
       ) : showGroupedView ? (
         <InventoryGroupedView
           visits={filtered}

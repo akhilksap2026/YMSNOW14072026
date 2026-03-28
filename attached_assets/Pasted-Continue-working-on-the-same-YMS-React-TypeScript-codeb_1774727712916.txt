@@ -1,0 +1,243 @@
+Continue working on the same YMS React/TypeScript codebase.
+
+Goal:
+Perform a safe UI refinement pass inspired by the clean, structured, low-noise feel of modern Jira/Linear-style web apps, while keeping the product clearly suited for Yard Management operations.
+
+Important design intent:
+- Do not turn this into a project-management clone.
+- Borrow only the visual discipline and layout clarity:
+  - quiet interface
+  - compact navigation
+  - clear toolbars
+  - restrained cards
+  - readable dense lists/tables
+  - right-side detail/properties panel pattern
+  - consistent typography and spacing
+- Keep the YMS purpose central:
+  - operational clarity
+  - fast scanning
+  - obvious next actions
+  - trust and readability
+  - strong exception and movement visibility
+
+Important safety rules:
+1. Do not remove or rename existing routes.
+2. Do not delete working pages or core workflows.
+3. Do not do a full redesign or rewrite.
+4. Reuse the current design system, theme, and shared components.
+5. Make targeted UI improvements that improve consistency, readability, and operational usability without destabilizing the system.
+6. Preserve product modes:
+   - Standard = conventional YMS
+   - Assist = AI-assisted YMS
+   - Optimize = orchestration-enhanced YMS
+
+Apply the following UI refinements:
+
+1. Overall visual direction
+- Move the UI toward a quieter, more structured enterprise look inspired by the attached reference screens.
+- Reduce visual heaviness, oversized cards, and noisy styling.
+- Prefer soft separators, clean spacing, muted surfaces, and compact controls.
+- Keep the current theme and brand base, but make the interface feel more disciplined and operationally mature.
+
+2. Spacing consistency
+- Standardize spacing between:
+  - page headers
+  - filter bars
+  - cards
+  - tables
+  - side panels
+  - forms
+  - action rows
+- Use a consistent spacing rhythm across pages.
+- Avoid both cramped density and excessive whitespace.
+- Aim for a compact but comfortable enterprise layout.
+
+3. Card density and surface treatment
+- Reduce unnecessary card overload, especially on dashboard and AI-enhanced screens.
+- Avoid stacking too many equally weighted cards.
+- Where possible, replace heavy card styling with cleaner grouped sections or lighter panels.
+- Make the screen feel flatter and more structured, similar to the reference screens, while still preserving key KPI and action visibility.
+- Keep one dominant information area per page.
+
+4. Typography hierarchy
+- Improve hierarchy for:
+  - page titles
+  - section titles
+  - row titles
+  - labels
+  - helper text
+  - metadata
+  - KPI values
+- Use clearer distinctions between page-level heading, section heading, and supporting text.
+- Make operationally important information easier to scan quickly.
+- Keep text styling restrained and professional.
+
+5. Button priority rules
+- Standardize button hierarchy:
+  - primary = most important operational action
+  - secondary = supporting action
+  - tertiary/text = low-emphasis action
+  - destructive = delete/cancel/critical removal
+- Avoid multiple competing primary buttons in the same area.
+- Ensure the most likely next step is obvious.
+- In Assist/Optimize modes, AI-related buttons must not visually overpower core manual controls.
+
+6. Table and list readability
+- Improve readability of tables/lists used in:
+  - appointments
+  - yard inventory
+  - moves
+  - docks
+  - exceptions
+  - notifications/inbox-like views if present
+- Use a more structured list/table feel inspired by the reference screens:
+  - cleaner row spacing
+  - clearer alignment
+  - quieter metadata
+  - obvious primary text
+  - better action placement
+- Reduce badge clutter inside rows.
+- Visually emphasize key columns such as:
+  - status
+  - trailer/container/unit id
+  - location
+  - age/dwell
+  - assigned dock/slot
+  - next action
+- If safe, make row actions more compact and predictable.
+
+7. Status color consistency
+- Standardize status chip and badge behavior across all modules.
+- Use a restrained, enterprise-friendly status system.
+- Similar operational states should always look the same across pages.
+- Normalize visual treatment for:
+  - arrived
+  - awaiting slot
+  - in yard
+  - assigned
+  - at dock
+  - loading/unloading
+  - ready out
+  - completed/exited
+  - hold/blocked/exception
+- Avoid too many bright colors.
+- Use accent color sparingly and intentionally.
+
+8. Page header and toolbar consistency
+- Make major pages feel more consistent by standardizing:
+  - page title row
+  - subtitle/helper text
+  - filter/toolbar row
+  - actions placement
+- Follow the spirit of the reference screens:
+  - clean title row
+  - compact controls
+  - low-noise filters/actions
+- Keep YMS-specific actions intact and easy to access.
+
+9. Right-side detail / properties panel pattern
+- Where suitable, improve or align detail drawers/panels so they feel more like a clean properties sidebar pattern from the reference screens.
+- Use this especially for:
+  - trailer/unit detail
+  - move detail
+  - appointment detail
+  - exception detail
+- Keep the layout structured:
+  - primary content in main area
+  - properties/metadata/actions in side panel
+- Do not force this pattern everywhere if the page would become less usable.
+
+10. Empty states
+- Improve empty states so they feel intentional and polished.
+- Each empty state should explain:
+  - what this page is for
+  - why it may be empty
+  - what the user can do next
+- Keep empty states compact and enterprise-oriented.
+- Apply especially to:
+  - appointments
+  - moves
+  - exceptions
+  - reports
+  - AI recommendation areas when no suggestions are available
+
+11. Form layout cleanup
+- Improve important forms such as:
+  - appointments
+  - gate actions
+  - exception resolution
+  - carrier portal
+- Use cleaner field grouping, more consistent labels, better helper text, and clearer button placement.
+- Reduce visual clutter and improve scanability.
+- Keep the forms operational and efficient rather than decorative.
+- If step-based flows exist, simplify only where clearly safe.
+
+12. Mobile and responsive refinements
+- Improve responsive behavior for critical operational surfaces:
+  - gate-related screens
+  - yard/moves
+  - carrier portal
+  - dashboard summaries
+  - right-side detail panels
+- Ensure layouts stack cleanly on smaller widths.
+- Preserve the dense enterprise feel without making smaller screens unusable.
+- Do not attempt a full mobile redesign; make safe responsive improvements only.
+
+13. Visual consistency across pages
+- Make all major pages feel like part of one coherent product.
+- Standardize:
+  - page header structure
+  - toolbar spacing
+  - list/table treatment
+  - detail panel treatment
+  - chip/badge style
+  - action placement
+  - section dividers
+- Reduce page-to-page inconsistency without broad rewrites.
+
+14. Mode-aware UI discipline
+- Standard mode should stay clean, conventional, and low-noise.
+- Assist mode should add AI support in a restrained inline way.
+- Optimize mode may add richer operational insights, but should still follow the same clean visual discipline.
+- Do not let AI cards, badges, or summaries clutter the layout.
+
+15. YMS-specific constraints
+- Prioritize changes that help yard operations:
+  - faster scanning
+  - clearer exceptions
+  - obvious movement actions
+  - cleaner dock/slot visibility
+  - better queue readability
+- Do not introduce design patterns that make operational workflows slower.
+- Do not overuse project-management UI metaphors where they do not fit a YMS.
+
+Implementation guidance:
+- Reuse and improve existing shared components first.
+- If needed, create small reusable helpers for:
+  - page header layout
+  - toolbar layout
+  - section wrappers
+  - status chip mapping
+  - empty states
+  - right-side properties panel
+  - button variants
+- Prefer incremental cleanup over structural rewrites.
+- Keep the result aligned with the current project’s theme and purpose, just cleaner and more disciplined.
+
+Deliverables:
+1. Apply a safe UI cleanup pass inspired by the attached reference screens.
+2. Summarize:
+   - files changed
+   - shared UI components updated or added
+   - which Jira/Linear-like patterns were applied
+   - which changes were intentionally avoided because they do not fit a YMS
+   - any risky areas left untouched
+3. Provide a short manual QA checklist for:
+   - spacing/layout consistency
+   - page headers/toolbars
+   - tables/lists
+   - forms
+   - status chips
+   - detail side panels
+   - responsive behavior
+   - mode-specific UI behavior

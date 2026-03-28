@@ -3,12 +3,14 @@ export function visitStatusColor(status: string): string {
     case "checked_in":
     case "arrived":
       return "bg-amber-100 text-amber-800 dark:bg-amber-900/60 dark:text-amber-200";
+    case "awaiting_slot":
+    case "queued":
+      return "bg-orange-100 text-orange-800 dark:bg-orange-900/60 dark:text-orange-200";
     case "in_yard":
       return "bg-blue-100 text-blue-800 dark:bg-blue-900/60 dark:text-blue-200";
     case "at_dock":
-      return "bg-blue-100 text-blue-800 dark:bg-blue-900/60 dark:text-blue-200";
+      return "bg-violet-100 text-violet-800 dark:bg-violet-900/60 dark:text-violet-200";
     case "loading":
-      return "bg-blue-100 text-blue-800 dark:bg-blue-900/60 dark:text-blue-200";
     case "unloading":
       return "bg-blue-100 text-blue-800 dark:bg-blue-900/60 dark:text-blue-200";
     case "ready_out":
@@ -110,11 +112,11 @@ export function severityColor(severity: string): string {
     case "critical":
       return "bg-red-100 text-red-800 dark:bg-red-900/60 dark:text-red-200";
     case "high":
-      return "bg-amber-100 text-amber-800 dark:bg-amber-900/60 dark:text-amber-200";
+      return "bg-orange-100 text-orange-800 dark:bg-orange-900/60 dark:text-orange-200";
     case "medium":
       return "bg-amber-100 text-amber-800 dark:bg-amber-900/60 dark:text-amber-200";
     case "low":
-      return "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-200";
+      return "bg-slate-100 text-slate-600 dark:bg-slate-800/60 dark:text-slate-400";
     default:
       return "bg-gray-100 text-gray-600 dark:bg-gray-800/60 dark:text-gray-400";
   }

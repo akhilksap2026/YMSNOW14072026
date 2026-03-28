@@ -1,5 +1,4 @@
 import { useState, useMemo } from "react";
-import { SearchAutocomplete } from "@/components/enterprise/search-autocomplete";
 import { useProductMode, showAIRecommendations } from "@/lib/product-mode";
 import { ExceptionAIInsight } from "@/components/assist/exception-ai-insight";
 import { useQuery, useMutation } from "@tanstack/react-query";
@@ -11,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { severityColor, exceptionStatusColor } from "@/lib/status-colors";
 import { HoldTypeBadge } from "@/components/hold-type-badge";
-import { PageHeader, StatusChip, DetailDrawer, DrawerSection, DrawerField } from "@/components/enterprise";
+import { PageHeader, StatusChip, DetailDrawer, DrawerSection, DrawerField, EmptyState, FilterToolbar } from "@/components/enterprise";
 import {
   Select,
   SelectContent,
@@ -223,57 +222,57 @@ export default function ExceptionsPage() {
       </div>
 
       {/* Filters */}
-      <div className="flex items-center gap-2 flex-wrap">
-        <SearchAutocomplete
-          value={search}
-          onChange={setSearch}
-          suggestions={suggestions}
-          placeholder="Search exceptions…"
-          className="max-w-[200px]"
-          data-testid="input-search-exceptions"
-        />
-        <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-[140px]" data-testid="select-exception-status">
-            <SelectValue placeholder="Status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="open">Open / Active</SelectItem>
-            <SelectItem value="resolved">Resolved</SelectItem>
-            <SelectItem value="all">All Statuses</SelectItem>
-          </SelectContent>
-        </Select>
-        <Select value={severityFilter} onValueChange={setSeverityFilter}>
-          <SelectTrigger className="w-[130px]" data-testid="select-severity-filter">
-            <SelectValue placeholder="Severity" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Severities</SelectItem>
-            <SelectItem value="critical">Critical</SelectItem>
-            <SelectItem value="high">High</SelectItem>
-            <SelectItem value="medium">Medium</SelectItem>
-            <SelectItem value="low">Low</SelectItem>
-          </SelectContent>
-        </Select>
-        <Select value={typeFilter} onValueChange={setTypeFilter}>
-          <SelectTrigger className="w-[150px]" data-testid="select-type-filter">
-            <SelectValue placeholder="Hold type" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Types</SelectItem>
-            {uniqueTypes.map((t) => <SelectItem key={t} value={t}>{formatLabel(t)}</SelectItem>)}
-          </SelectContent>
-        </Select>
-        {hasFilter && (
-          <button
-            className="text-xs text-muted-foreground hover:text-destructive underline"
-            onClick={() => { setSearch(""); setStatusFilter("open"); setSeverityFilter("all"); setTypeFilter("all"); }}
-            data-testid="button-clear-filters"
-          >
-            Clear filters
-          </button>
-        )}
-        <span className="ml-auto text-xs text-muted-foreground">{filtered.length} exception{filtered.length !== 1 ? "s" : ""}</span>
-      </div>
+      <FilterToolbar
+        searchValue={search}
+        onSearchChange={setSearch}
+        searchPlaceholder="Search exceptions…"
+        suggestions={suggestions}
+        filters={
+          <>
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-[140px]" data-testid="select-exception-status">
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="open">Open / Active</SelectItem>
+                <SelectItem value="resolved">Resolved</SelectItem>
+                <SelectItem value="all">All Statuses</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={severityFilter} onValueChange={setSeverityFilter}>
+              <SelectTrigger className="w-[130px]" data-testid="select-severity-filter">
+                <SelectValue placeholder="Severity" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Severities</SelectItem>
+                <SelectItem value="critical">Critical</SelectItem>
+                <SelectItem value="high">High</SelectItem>
+                <SelectItem value="medium">Medium</SelectItem>
+                <SelectItem value="low">Low</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={typeFilter} onValueChange={setTypeFilter}>
+              <SelectTrigger className="w-[150px]" data-testid="select-type-filter">
+                <SelectValue placeholder="Hold type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Types</SelectItem>
+                {uniqueTypes.map((t) => <SelectItem key={t} value={t}>{formatLabel(t)}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </>
+        }
+        actions={
+          <span className="text-xs text-muted-foreground tabular-nums">{filtered.length} exception{filtered.length !== 1 ? "s" : ""}</span>
+        }
+        filterChips={hasFilter ? [
+          ...(search ? [{ label: `Search: "${search}"`, value: "search", onRemove: () => setSearch("") }] : []),
+          ...(statusFilter !== "open" ? [{ label: statusFilter === "all" ? "All Statuses" : `Status: ${formatLabel(statusFilter)}`, value: "status", onRemove: () => setStatusFilter("open") }] : []),
+          ...(severityFilter !== "all" ? [{ label: `Severity: ${formatLabel(severityFilter)}`, value: "severity", onRemove: () => setSeverityFilter("all") }] : []),
+          ...(typeFilter !== "all" ? [{ label: `Type: ${formatLabel(typeFilter)}`, value: "type", onRemove: () => setTypeFilter("all") }] : []),
+        ] : []}
+        onClearAll={hasFilter ? () => { setSearch(""); setStatusFilter("open"); setSeverityFilter("all"); setTypeFilter("all"); } : undefined}
+      />
 
       {/* Exception cards */}
       <div className="flex-1 min-h-0 overflow-y-auto space-y-2" data-testid="exceptions-list">
@@ -282,17 +281,22 @@ export default function ExceptionsPage() {
             {[...Array(4)].map((_, i) => <Skeleton key={i} className="h-28 rounded-lg" />)}
           </div>
         ) : filtered.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 gap-2 rounded-lg border border-dashed">
-            <CheckCircle2 className="h-8 w-8 text-emerald-500/40" />
-            <p className="text-sm text-muted-foreground font-medium" data-testid="text-no-exceptions">
-              {statusFilter === "open" ? "No active holds — all clear" : "No exceptions found"}
-            </p>
-            {hasFilter && (
-              <button className="text-xs text-muted-foreground underline" onClick={() => { setSearch(""); setStatusFilter("open"); setSeverityFilter("all"); setTypeFilter("all"); }}>
-                Clear filters
-              </button>
-            )}
-          </div>
+          <EmptyState
+            icon={statusFilter === "open" ? <CheckCircle2 className="h-5 w-5 text-emerald-500" /> : <ShieldAlert className="h-5 w-5" />}
+            heading={statusFilter === "open" ? "No active holds — all clear" : "No exceptions found"}
+            description={
+              hasFilter
+                ? "No exceptions match your current filters. Try adjusting or clearing them."
+                : statusFilter === "open"
+                  ? "There are no open or investigating holds at this time."
+                  : "No resolved exceptions found for this period."
+            }
+            action={hasFilter ? {
+              label: "Clear filters",
+              onClick: () => { setSearch(""); setStatusFilter("open"); setSeverityFilter("all"); setTypeFilter("all"); },
+            } : undefined}
+            data-testid="text-no-exceptions"
+          />
         ) : (
           filtered.map((exc) => (
             <div

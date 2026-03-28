@@ -179,6 +179,44 @@ Additional items demoted to `secondary: true` (dimmed, 12px text):
 - Audit Log — compliance review surface
 - Lifecycle Video — also now `subtle: true` (very faint, admin only)
 
+## UI Design System
+
+### Enterprise Shared Components (`components/enterprise/`)
+
+| Component | File | Purpose |
+|---|---|---|
+| `PageHeader` | `page-header.tsx` | Page title + subtitle + icon + action area + optional KPI strip; `divider` prop adds border-b |
+| `FilterToolbar` | `filter-toolbar.tsx` | Search + filters + active filter chips + clear-all; used on all table/list pages |
+| `StatusChip` | `status-chip.tsx` | Consistent colored badge for any status, takes a `colorFn` from `lib/status-colors.ts` |
+| `KPICard` | `kpi-card.tsx` | Compact metric tile with label, value, trend, optional click/href |
+| `DetailDrawer` | `detail-drawer.tsx` | Sheet-based right-side properties panel; `DrawerSection` + `DrawerField` for structured fields |
+| `EmptyState` | `empty-state.tsx` | Consistent empty page/section state with icon, heading, description, optional CTA button; `compact` prop for embedded contexts |
+| `SectionHeader` | `section-header.tsx` | Section title with optional count badge and action slot |
+
+All exported from `components/enterprise/index.ts`.
+
+### Status Color System (`lib/status-colors.ts`)
+
+Functions covering all operational states:
+- `visitStatusColor` — covers `arrived`, `awaiting_slot`, `queued`, `in_yard`, `at_dock`, `loading`, `unloading`, `ready_out`, `checked_out`
+- `moveStatusColor`, `movePriorityColor`, `dockStatusColor`
+- `severityColor` — `critical`=red, `high`=orange, `medium`=amber, `low`=slate (distinct colors)
+- `exceptionStatusColor`, `appointmentStatusColor`, `roleColor`, `auditEntityColor`
+
+### Empty State Coverage
+
+Standardized `EmptyState` component applied across all major pages:
+- `exceptions.tsx` — no active holds / no filter matches
+- `appointments.tsx` — no appointments found
+- `move-tasks.tsx` — jockey card view + supervisor table view (queue-aware messages)
+- `yard-inventory.tsx` — no units match filter
+- `notifications.tsx` — all clear, no active alerts
+- `admin-users.tsx` — no users / no filter match
+- `admin-carriers.tsx` — no carriers found
+- `inspections.tsx` — no inspections match criteria
+- `yard-audit.tsx` — no assets in queue
+- `gate-guard.tsx` — appointment search returns nothing
+
 ## AI Features
 
 The AI assistant and email intelligence use OpenAI. Connect via Replit AI Integrations (OpenAI connector) which sets `AI_INTEGRATIONS_OPENAI_API_KEY` and `AI_INTEGRATIONS_OPENAI_BASE_URL` automatically. The system gracefully degrades if no key is configured.

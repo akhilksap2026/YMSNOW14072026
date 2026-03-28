@@ -4,7 +4,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { PageHeader, StatusChip } from "@/components/enterprise";
+import { PageHeader, StatusChip, EmptyState } from "@/components/enterprise";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -632,10 +632,13 @@ export default function AdminCarriersPage() {
                 {[...Array(6)].map((_, i) => <Skeleton key={i} className="h-12 rounded" />)}
               </div>
             ) : processed.length === 0 ? (
-              <div className="py-12 text-center">
-                <Building2 className="h-8 w-8 mx-auto text-muted-foreground/30 mb-2" />
-                <p className="text-sm text-muted-foreground" data-testid="text-no-carriers">No carriers found</p>
-              </div>
+              <EmptyState
+                icon={<Building2 className="h-5 w-5" />}
+                heading="No carriers found"
+                description="No carriers match the current search. Add a carrier or adjust the filter."
+                compact
+                data-testid="text-no-carriers"
+              />
             ) : (
               processed.map((c) => {
                 const perf = perfMap[c.id];

@@ -2,6 +2,7 @@ import { useState, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { invalidateAll } from "@/lib/invalidation";
+import { EmptyState } from "@/components/enterprise";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -261,7 +262,12 @@ export default function GateGuardPage() {
               {searchMutation.data && (
                 <div className="space-y-2">
                   {results.length === 0 ? (
-                    <div className="text-center py-8 text-muted-foreground text-sm">No matching appointments found</div>
+                    <EmptyState
+                      icon={<Search className="h-5 w-5" />}
+                      heading="No appointments found"
+                      description="No scheduled appointments match this search. The driver may be a walk-in or the reference may be incorrect."
+                      compact
+                    />
                   ) : (
                     results.map((apt) => (
                       <div

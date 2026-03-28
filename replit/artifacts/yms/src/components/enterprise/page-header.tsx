@@ -7,23 +7,24 @@ interface PageHeaderProps {
   actions?: ReactNode;
   kpiStrip?: ReactNode;
   kpiGrid?: boolean;
+  divider?: boolean;
   children?: ReactNode;
 }
 
-export function PageHeader({ title, subtitle, icon, actions, kpiStrip, kpiGrid, children }: PageHeaderProps) {
+export function PageHeader({ title, subtitle, icon, actions, kpiStrip, kpiGrid, divider, children }: PageHeaderProps) {
   return (
-    <div className="space-y-3">
+    <div className={`space-y-3 ${divider ? "border-b pb-4" : ""}`}>
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-4">
         <div className="flex items-center gap-3 min-w-0">
           {icon && (
-            <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+            <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-lg bg-primary/8 text-primary">
               {icon}
             </div>
           )}
           <div className="min-w-0">
             <h1 className="text-lg sm:text-xl font-semibold tracking-tight leading-tight" data-testid="text-page-title">{title}</h1>
             {subtitle && (
-              <p className="text-xs sm:text-sm text-muted-foreground mt-0.5 leading-snug hidden sm:block" data-testid="text-page-subtitle">{subtitle}</p>
+              <p className="text-xs text-muted-foreground mt-0.5 leading-snug hidden sm:block" data-testid="text-page-subtitle">{subtitle}</p>
             )}
           </div>
         </div>

@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { appointmentStatusColor } from "@/lib/status-colors";
 import {
-  PageHeader, FilterToolbar, StatusChip, DetailDrawer, DrawerSection, DrawerField,
+  PageHeader, FilterToolbar, StatusChip, DetailDrawer, DrawerSection, DrawerField, EmptyState,
 } from "@/components/enterprise";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
@@ -1259,11 +1259,11 @@ export default function AppointmentsPage({
               ))}
             </div>
           ) : filtered.length === 0 ? (
-            <div className="rounded-lg border bg-card py-16 flex flex-col items-center gap-2 text-muted-foreground">
-              <CalendarDays className="h-8 w-8 opacity-30" />
-              <p className="font-medium">No appointments found</p>
-              <p className="text-sm">Try adjusting your filters or search term</p>
-            </div>
+            <EmptyState
+              icon={<CalendarDays className="h-5 w-5" />}
+              heading="No appointments found"
+              description="No appointments match your current filters or search. Try adjusting the date range, status, or search term."
+            />
           ) : (
             grouped.map((group) => (
               <DateGroupSection

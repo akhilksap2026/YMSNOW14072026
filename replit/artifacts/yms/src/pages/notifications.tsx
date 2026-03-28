@@ -1,6 +1,6 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
-import { PageHeader } from "@/components/enterprise";
+import { PageHeader, EmptyState } from "@/components/enterprise";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -114,11 +114,11 @@ export default function NotificationsPage() {
           {[1, 2, 3, 4].map((i) => <Skeleton key={i} className="h-24 w-full rounded-xl" />)}
         </div>
       ) : notifications.length === 0 ? (
-        <Card className="flex flex-col items-center justify-center py-20 border-dashed text-muted-foreground gap-3">
-          <BellOff className="h-12 w-12 opacity-20" />
-          <p className="text-base font-semibold">All clear — no active alerts</p>
-          <p className="text-sm">Escalated tasks, open exceptions, and email conflicts will appear here</p>
-        </Card>
+        <EmptyState
+          icon={<BellOff className="h-5 w-5" />}
+          heading="All clear — no active alerts"
+          description="Escalated tasks, open exceptions, and email conflicts will appear here when they need attention."
+        />
       ) : (
         <div className="space-y-3">
           {notifications.map((n) => {

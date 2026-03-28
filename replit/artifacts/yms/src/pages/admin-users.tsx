@@ -3,7 +3,7 @@ import { SearchAutocomplete } from "@/components/enterprise/search-autocomplete"
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { Card, CardContent } from "@/components/ui/card";
-import { PageHeader, StatusChip } from "@/components/enterprise";
+import { PageHeader, StatusChip, EmptyState } from "@/components/enterprise";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { roleColor, activeStatusColor } from "@/lib/status-colors";
@@ -186,16 +186,16 @@ export default function AdminUsersPage() {
           ))}
         </div>
       ) : filteredUsers.length === 0 ? (
-        <Card>
-          <CardContent className="py-12 text-center">
-            <UserIcon className="h-10 w-10 mx-auto text-muted-foreground mb-3" />
-            <p className="text-muted-foreground text-sm" data-testid="text-no-users">
-              {users.length === 0
-                ? "No users yet. Users appear here after they sign in."
-                : "No users match the current filters."}
-            </p>
-          </CardContent>
-        </Card>
+        <EmptyState
+          icon={<UserIcon className="h-5 w-5" />}
+          heading={users.length === 0 ? "No users yet" : "No users found"}
+          description={
+            users.length === 0
+              ? "Users will appear here after they sign in for the first time. Invite team members to get started."
+              : "No users match your current filters. Try adjusting the role or search term."
+          }
+          data-testid="text-no-users"
+        />
       ) : (
         <div className="rounded-md border overflow-x-auto">
           <Table>

@@ -6,7 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import { useSearch } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { PageHeader, StatusChip, FilterToolbar } from "@/components/enterprise";
+import { PageHeader, StatusChip, FilterToolbar, EmptyState } from "@/components/enterprise";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -2046,12 +2046,11 @@ export default function InspectionsPage({ userRole, currentPersona }: { userRole
       {isLoading ? (
         <div className="space-y-3">{[...Array(5)].map((_, i) => <Skeleton key={i} className="h-16 w-full" />)}</div>
       ) : processedInspections.length === 0 ? (
-        <Card>
-          <CardContent className="py-12 text-center">
-            <ClipboardCheck className="h-12 w-12 mx-auto mb-3 text-muted-foreground/20" />
-            <p className="text-muted-foreground">No inspections found matching your criteria.</p>
-          </CardContent>
-        </Card>
+        <EmptyState
+          icon={<ClipboardCheck className="h-5 w-5" />}
+          heading="No inspections found"
+          description="No inspection records match your current filters. Adjust the date range, status, or type to find what you're looking for."
+        />
       ) : (
         <div className="rounded-lg border shadow-sm bg-card overflow-hidden">
           <div className="overflow-x-auto">

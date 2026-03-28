@@ -4,7 +4,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { invalidateAll } from "@/lib/invalidation";
 import { useToast } from "@/hooks/use-toast";
-import { PageHeader, StatusChip } from "@/components/enterprise";
+import { PageHeader, StatusChip, EmptyState } from "@/components/enterprise";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -850,12 +850,12 @@ export default function YardAuditPage() {
                 {[...Array(10)].map((_, i) => <Skeleton key={i} className="h-14 w-full" />)}
               </div>
             ) : filteredQueue.length === 0 ? (
-              <div className="py-8 text-center">
-                <ClipboardCheck className="h-7 w-7 mx-auto mb-1.5 text-muted-foreground/20" />
-                <p className="text-xs text-muted-foreground">
-                  {searchQuery ? "No assets match your search." : "No assets found for this filter."}
-                </p>
-              </div>
+              <EmptyState
+                icon={<ClipboardCheck className="h-5 w-5" />}
+                heading="No assets found"
+                description={searchQuery ? "No assets match your search term." : "No assets match the current filter."}
+                compact
+              />
             ) : (
               <div className="divide-y">
                 {filteredQueue.map((item) => {
