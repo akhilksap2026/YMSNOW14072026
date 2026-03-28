@@ -179,6 +179,40 @@ Additional items demoted to `secondary: true` (dimmed, 12px text):
 - Audit Log — compliance review surface
 - Lifecycle Video — also now `subtle: true` (very faint, admin only)
 
+## Yard Map / Yard Control (`pages/yard-map.tsx`)
+
+### Layout (3-panel)
+
+```
+[ Left Queue Panel (w-56) ] [ Center SVG Map (flex-1) ] [ Right Detail Panel (w-72) ]
+```
+
+- **Left panel**: collapsible via `PanelLeftClose/Open` toggle button in toolbar. Contains 4 operational queue sections driven by `slots` data. Shows slot utilization bar in footer.
+- **Center map**: unchanged SVG rendering, pan/zoom, drag-drop. Legend now floats top-left of map (was top-right). Mini-map bottom-right unchanged.
+- **Right detail panel**: appears when a slot is selected (replaces the old floating bottom-left card). Structured into Unit / Location / Dwell / Flags sections. Primary CTA "Create Move Request" at bottom. In tablet mode renders as full-width overlay.
+
+### Operational Queues (left panel)
+
+| Queue | Data source | Urgency color |
+|---|---|---|
+| On Hold | `holdStatus !== "none"` | Red (critical) |
+| Aging / Detention | `dwellHours > 24h` (excluding holds) | Amber (warning) |
+| Ready for Dock | `visitStatus === "ready_out"` | Green (ready) |
+| High Priority | `movePriority === "high" \| "urgent"` (fresh, not held) | Orange (elevated) |
+
+Each `QueueItem` shows: trailer ID (monospace), slot + zone subtext, dwell hours badge. Click → `focusSlot()` centers SVG viewport on that slot and opens the detail panel.
+
+### Filters (toolbar)
+
+Four compact `h-6` dashed-border selects: Zone, Status, Dwell, Carrier. Dwell filter options: Fresh (<12h), Aging (12–24h), Detention (>24h). All filters stack in `slotMatchesFilter()`. Unmatched slots dim to 15% opacity.
+
+### Tablet adaptations
+
+- Left panel collapses automatically when `tabletMode` is true (via `useEffect`)
+- Left panel can be manually toggled in tablet mode via the toggle button
+- Right detail panel renders as full-width absolute overlay in tablet mode
+- Action buttons in detail panel grow to `h-11 text-sm` in tablet mode
+
 ## Tablet View System
 
 ### Toggle

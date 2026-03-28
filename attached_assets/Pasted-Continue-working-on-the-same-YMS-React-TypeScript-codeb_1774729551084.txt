@@ -1,0 +1,173 @@
+Continue working on the same YMS React/TypeScript codebase.
+
+Goal:
+Refine the Yard Map so it feels like a realistic warehouse / distribution center yard, while staying clean, readable, and operationally useful.
+
+Business intent:
+- The Yard Map should feel like a believable DC yard environment that warehouse, transport, and 3PL users can immediately recognize.
+- It should help users mentally connect the software to real yard operations:
+  - gate arrival
+  - check-in
+  - yard parking
+  - staging
+  - dock approach
+  - loading/unloading
+  - ready-out
+  - exit
+- The result should remain fast, readable, and enterprise-appropriate.
+
+Important safety rules:
+1. Do not remove or rename existing routes.
+2. Do not rewrite the entire Yard module from scratch.
+3. Do not add heavy graphics, decorative illustrations, or performance-heavy map visuals.
+4. Reuse the current Yard logic and components where possible.
+5. Keep the map operational first, realistic second.
+6. Preserve compatibility with:
+   - Standard mode
+   - Assist mode
+   - Optimize mode
+   - Desktop View
+   - Tablet View
+
+Design direction:
+- Make the Yard Map feel more like a real warehouse/DC yard.
+- Use subtle layout and labeling improvements, not flashy visuals.
+- Borrow realism through spatial organization, lane structure, yard naming, dock relationships, and traffic flow cues.
+
+Requirements:
+
+1. Structure the map like a real warehouse/DC yard
+- Refine the yard layout so it resembles a typical distribution center environment.
+- Introduce or clarify realistic sections such as:
+  - gate entry / gate exit
+  - inbound arrival lane
+  - check-in staging
+  - trailer parking rows
+  - empty trailer area
+  - live-load / live-unload staging
+  - dock approach lanes
+  - dock door frontage
+  - inspection / hold area
+  - overflow yard
+  - outbound ready area
+- Use current yard data/layout where possible, but improve the visual framing so it feels physical and believable.
+
+2. Improve dock relationship realism
+- Make the relationship between the yard and the dock area easier to understand.
+- Visually show where dock-facing movement happens.
+- Clarify which slots or staging positions are close to docks versus deeper yard parking.
+- If the page includes dock areas, align them visually like a warehouse edge with dock frontage.
+
+3. Make parking rows feel realistic
+- Arrange slot groups more like actual trailer parking rows and yard lanes where feasible.
+- Use clearer row alignment and lane separation so the map feels grounded in real trailer parking behavior.
+- Avoid abstract scattered blocks that do not resemble a functioning yard.
+
+4. Clarify yard traffic flow
+- Add subtle directional cues that reflect how units move through a DC yard:
+  - gate in
+  - parking/staging
+  - move to dock
+  - ready out / outbound staging
+  - gate out
+- Use low-noise directional arrows, lane indicators, or path cues where appropriate.
+- Keep them functional and subtle.
+
+5. Improve section naming and labeling
+- Use realistic warehouse/DC-oriented labels, such as:
+  - Inbound Staging
+  - Outbound Ready
+  - Empty Trailer Row
+  - Inspection Hold
+  - Overflow
+  - Dock Approach
+  - Live Load Queue
+  - Live Unload Queue
+- Keep naming concise, operational, and easy to recognize.
+- Avoid abstract zone names if more realistic naming is appropriate.
+
+6. Make the map easier to mentally connect with
+- Help users quickly understand:
+  - where incoming trailers wait
+  - where empties are parked
+  - which units are close to dock assignment
+  - which areas are congested
+  - which zone supports outbound flow
+- Use spatial grouping and labeling to make the yard feel like a real operating site.
+
+7. Keep slot states operationally realistic
+- Improve slot visuals while preserving the existing status system.
+- Standardize visual treatment for:
+  - empty
+  - occupied
+  - reserved
+  - blocked
+  - hold/inspection
+  - ready for dock
+  - aging/high dwell
+- Do not overdecorate the slots.
+- Keep them functional and believable for a DC yard context.
+
+8. Add realistic physical-context cues
+- Introduce subtle visual cues that make the yard feel more real, such as:
+  - warehouse/dock edge alignment
+  - gate markers
+  - lane dividers
+  - staging row boundaries
+  - directional movement cues
+  - distinction between yard parking and dock-adjacent areas
+- Keep these cues light and enterprise-appropriate.
+
+9. Preserve operational clarity
+- Realism must not reduce speed of scanning.
+- Do not make the map look like a game, GIS platform, or illustrated site plan.
+- Keep the primary operational needs clear:
+  - status
+  - location
+  - urgency
+  - next action
+
+10. Improve selected unit context for a DC yard
+- When a trailer/unit is selected, the detail panel should help the user understand its place in the warehouse/DC flow:
+  - current yard location
+  - dwell/time in yard
+  - appointment/load context if available
+  - move-to-dock need
+  - exception/hold state
+  - next operational action
+
+11. Support Yard Control workflow
+- The map should still support the Yard Control concept:
+  - operational queue on the left
+  - yard map in the center
+  - selected detail/actions on the right
+- The realism refinements should strengthen this workflow, not distract from it.
+
+12. Support tablet usage
+- Ensure the realism improvements still work on a 10-inch tablet.
+- Labels, lanes, rows, and yard sections should still be understandable in Tablet View.
+- Avoid tiny labels or fine details that disappear on smaller screens.
+
+13. Keep it commercially impressive
+- The result should help clients immediately recognize the yard as a believable warehouse/DC environment.
+- It should improve demo impact by making the map easier to trust and easier to relate to.
+
+Implementation guidance:
+- Prefer realistic spatial grouping, naming, section framing, and light directional cues over complex graphics.
+- Use subtle background treatment, dividers, warehouse-edge alignment, and realistic row/lane logic.
+- Keep performance stable and interactions clean.
+- Reuse existing components and Yard logic wherever possible.
+
+Deliverables:
+1. Refine the Yard Map so it feels like a realistic warehouse/DC yard.
+2. Summarize:
+   - files changed
+   - warehouse/DC-specific realism improvements added
+   - what was intentionally avoided to preserve clarity and performance
+3. Provide a short manual QA checklist covering:
+   - yard realism
+   - zone and row clarity
+   - dock relationship clarity
+   - traffic flow understanding
+   - readability on desktop
+   - readability on tablet

@@ -18,7 +18,10 @@ import {
   ZoomIn, ZoomOut, Maximize2, Truck,
   Layers, ArrowRight, HelpCircle, X,
   BookOpen, MapPin, ArrowUpDown, ChevronDown,
+  AlertTriangle, Clock, PanelLeftClose, PanelLeftOpen,
+  ShieldAlert, TrendingUp, CheckCircle2, Filter,
 } from "lucide-react";
+import { useTabletView } from "@/lib/tablet-view";
 
 interface MapSlot {
   id: number; slotNumber: string; zoneName: string; zoneCode: string;
@@ -77,18 +80,15 @@ const GATE_H = 62;
 function zoneW(cols: number) { return cols * (SLOT_W + SLOT_GAP) - SLOT_GAP + ZONE_PAD * 2; }
 function zoneH(rows: number) { return ZONE_HEADER + ZONE_PAD + rows * (SLOT_H + SLOT_NUM_H) + (rows - 1) * SLOT_GAP + ZONE_PAD; }
 
-// ── Status color palette (system-wide standard) ─────────────────────────────
-// Green  = completed/done  |  Blue = active/informational
-// Amber  = pending/warning |  Red  = critical/error/hold
 function trailerFill(slot: MapSlot, isOver: boolean): string {
-  if (isOver)                                              return "#3b82f6"; // drag-over — blue
-  if (slot.isBlocked)                                      return "#94a3b8"; // blocked — slate
-  if (slot.holdStatus && slot.holdStatus !== "none")        return "#dc2626"; // hold — red (critical)
+  if (isOver)                                              return "#3b82f6";
+  if (slot.isBlocked)                                      return "#94a3b8";
+  if (slot.holdStatus && slot.holdStatus !== "none")        return "#dc2626";
   if (slot.visitNumber) {
-    if (slot.visitStatus === "ready_out")                   return "#d97706"; // ready out — amber (pending)
-    if (slot.isReefer)                                      return "#0891b2"; // reefer zone — cyan
-    if (slot.movementType === "outbound")                   return "#7c3aed"; // outbound — violet
-    return "#2563eb";                                                          // inbound / active — blue
+    if (slot.visitStatus === "ready_out")                   return "#d97706";
+    if (slot.isReefer)                                      return "#0891b2";
+    if (slot.movementType === "outbound")                   return "#7c3aed";
+    return "#2563eb";
   }
   return "";
 }
@@ -129,7 +129,6 @@ function zTheme(code: string) {
 
 type ZoomLevel = "far" | "mid" | "near";
 
-// ── Legend items data ───────────────────────────────────────────────────────
 const LEGEND_STATUS = [
   { color: "#f8fafc", stroke: "#cbd5e1", dash: true, label: "Empty slot" },
   { color: "#2563eb", label: "Inbound (active)" },
@@ -154,6 +153,7 @@ const LEGEND_INDICATORS = [
 
 export default function YardMapPage() {
   const { toast } = useToast();
+  const { tabletMode } = useTabletView();
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -182,12 +182,21 @@ export default function YardMapPage() {
   const [selectedJockey, setSelectedJockey] = useState("");
   const [movePriority, setMovePriority] = useState("normal");
   const [moveNotes, setMoveNotes] = useState("");
+
   const [filterCarrier, setFilterCarrier] = useState("all");
   const [filterStatus, setFilterStatus] = useState("all");
+  const [filterZone, setFilterZone] = useState("all");
+  const [filterDwell, setFilterDwell] = useState("all");
 
-  // ── New UI state ───────────────────────────────────────────────────────────
-  const [showLegend, setShowLegend] = useState(true);
+  const [showLegend, setShowLegend] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState<MapSlot | null>(null);
+  const [leftPanelOpen, setLeftPanelOpen] = useState(true);
+
+  // Collapse left panel automatically in tablet mode
+  useEffect(() => {
+    if (tabletMode) setLeftPanelOpen(false);
+    else setLeftPanelOpen(true);
+  }, [tabletMode]);
 
   const { data: mapData, isLoading } = useQuery<{
     slots: MapSlot[];
@@ -262,6 +271,33 @@ export default function YardMapPage() {
 
   const gatePos = useMemo(() => ({ x: GATE_X, y: GATE_Y, w: GATE_W, h: GATE_H }), []);
 
+  // ── Operational queues ─────────────────────────────────────────────────────
+  const queueOnHold = useMemo(() =>
+    slots.filter(s => s.visitNumber && s.holdStatus && s.holdStatus !== "none"),
+  [slots]);
+
+  const queueAging = useMemo(() =>
+    slots.filter(s => s.visitNumber && dwellHours(s.checkInTime ?? null) > 24 && !(s.holdStatus && s.holdStatus !== "none")),
+  [slots]);
+
+  const queueReadyOut = useMemo(() =>
+    slots.filter(s => s.visitStatus === "ready_out"),
+  [slots]);
+
+  const queueHighPri = useMemo(() =>
+    slots.filter(s => s.visitNumber && (s.movePriority === "high" || s.movePriority === "urgent") && !(s.holdStatus && s.holdStatus !== "none") && dwellHours(s.checkInTime ?? null) <= 24),
+  [slots]);
+
+  const uniqueCarriers = useMemo(() => {
+    const names = new Set<string>();
+    slots.forEach(s => { if (s.visitNumber && s.carrierName) names.add(s.carrierName); });
+    return Array.from(names).sort();
+  }, [slots]);
+
+  const uniqueZones = useMemo(() =>
+    zones.map(z => ({ code: z.code, name: z.name })),
+  [zones]);
+
   function svgCoords(clientX: number, clientY: number) {
     const r = svgRef.current?.getBoundingClientRect();
     if (!r) return { x: 0, y: 0 };
@@ -289,6 +325,15 @@ export default function YardMapPage() {
   }, []);
 
   const handleFitAll = useCallback(() => setViewBox({ x: -10, y: 0, w: 1430, h: 830 }), []);
+
+  // Focus map on a specific slot and select it
+  function focusSlot(slot: MapSlot) {
+    const pos = slotPositions[slot.id];
+    if (pos) {
+      setViewBox({ x: pos.cx - 320, y: pos.cy - 220, w: 640, h: 440 });
+    }
+    setSelectedSlot(prev => prev?.id === slot.id ? null : slot);
+  }
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     if (e.button !== 0 || isDragging || dragPending) return;
@@ -349,7 +394,6 @@ export default function YardMapPage() {
       setMoveTrailer(dragPayload.trailerNumber);
       setShowMoveDialog(true);
     } else if (dragPending && pendingPayload.current) {
-      // Short click (not a drag) — toggle slot selection
       const pp = pendingPayload.current;
       if (pp.fromType === "slot") {
         const clickedSlot = slots.find(s => s.id === pp.fromId) || null;
@@ -433,29 +477,30 @@ export default function YardMapPage() {
     return () => window.removeEventListener("keydown", onKey);
   }, [isDragging, dragPending]);
 
-  const uniqueCarriers = useMemo(() => {
-    const names = new Set<string>();
-    (mapData?.slots || []).forEach(s => { if (s.visitNumber && s.carrierName) names.add(s.carrierName); });
-    return Array.from(names).sort();
-  }, [mapData]);
-
   if (isLoading) return <div className="p-4"><Skeleton className="h-[600px] rounded-md" /></div>;
 
   const occupied = slots.filter(s => s.visitNumber).length;
   const blocked = slots.filter(s => s.isBlocked).length;
   const available = slots.length - occupied - blocked;
   const doorsOccupied = doors.filter(d => d.visitNumber).length;
+  const onHoldCount = queueOnHold.length;
 
-  const hasFilters = filterCarrier !== "all" || filterStatus !== "all";
+  const hasFilters = filterCarrier !== "all" || filterStatus !== "all" || filterZone !== "all" || filterDwell !== "all";
 
   const slotMatchesFilter = (s: MapSlot): boolean => {
-    if (!hasFilters) return true;
     if (filterCarrier !== "all" && s.carrierName !== filterCarrier) return false;
+    if (filterZone !== "all" && s.zoneCode !== filterZone) return false;
     if (filterStatus !== "all") {
       if (filterStatus === "empty" && s.visitNumber) return false;
       if (filterStatus === "occupied" && !s.visitNumber) return false;
       if (filterStatus === "hold" && s.holdStatus !== "on_hold") return false;
       if (filterStatus === "ready_out" && s.visitStatus !== "ready_out") return false;
+    }
+    if (filterDwell !== "all" && s.visitNumber) {
+      const dh = dwellHours(s.checkInTime ?? null);
+      if (filterDwell === "fresh" && dh > 12) return false;
+      if (filterDwell === "aging" && (dh <= 12 || dh > 24)) return false;
+      if (filterDwell === "detention" && dh <= 24) return false;
     }
     return true;
   };
@@ -467,60 +512,58 @@ export default function YardMapPage() {
   const VERT_LANE_X = 508;
   const VERT_LANE_W = 14;
 
-  // ── Compute slot pixel positions for selected slot highlight ───────────────
-  let selectedSlotRect: { sx: number; sy: number } | null = null;
-  if (selectedSlot) {
-    const code = selectedSlot.zoneCode;
-    const layout = zoneLayouts.layouts[code];
-    const zs = zoneLayouts.grouped[code] || [];
-    const idx = zs.findIndex(s => s.id === selectedSlot.id);
-    if (layout && idx >= 0) {
-      const col = idx % layout.cols;
-      const row = Math.floor(idx / layout.cols);
-      const sx = layout.x + ZONE_PAD + col * (SLOT_W + SLOT_GAP);
-      const sy = layout.y + ZONE_HEADER + ZONE_PAD + row * (SLOT_H + SLOT_NUM_H + SLOT_GAP);
-      selectedSlotRect = { sx, sy };
-    }
-  }
-
   return (
     <div className="flex flex-col h-[calc(100vh-64px)]" data-testid="yard-map-page">
 
-      {/* ── Unified header bar ──────────────────────────────────────────────── */}
-      <div className="flex items-center gap-3 px-4 py-2 border-b bg-white dark:bg-gray-900 shrink-0">
+      {/* ── Compact header toolbar ─────────────────────────────────────────── */}
+      <div className="flex items-center gap-2.5 px-3 py-1.5 border-b bg-background shrink-0">
 
-        {/* Title + quick stats */}
-        <div className="flex items-center gap-2.5 shrink-0">
-          <div className="h-8 w-8 rounded-lg bg-blue-600 flex items-center justify-center">
-            <Layers className="h-4 w-4 text-white" />
+        {/* Left panel toggle */}
+        <Button
+          variant="ghost" size="icon"
+          className="h-7 w-7 shrink-0"
+          onClick={() => setLeftPanelOpen(v => !v)}
+          title={leftPanelOpen ? "Hide queue panel" : "Show queue panel"}
+          data-testid="button-toggle-left-panel"
+        >
+          {leftPanelOpen
+            ? <PanelLeftClose className="h-3.5 w-3.5 text-muted-foreground" />
+            : <PanelLeftOpen className="h-3.5 w-3.5 text-muted-foreground" />
+          }
+        </Button>
+
+        {/* Title + stats */}
+        <div className="flex items-center gap-2 shrink-0">
+          <div className="h-6 w-6 rounded bg-blue-600 flex items-center justify-center">
+            <Layers className="h-3.5 w-3.5 text-white" />
           </div>
-          <div>
-            <span className="text-sm font-bold text-gray-900 dark:text-gray-100 block" data-testid="text-map-title">Yard Map</span>
-            <div className="flex items-center gap-1.5 mt-0.5">
-              <StatPill label="Empty"    value={available}     color="#cbd5e1" textColor="#475569" />
-              <StatPill label="Occupied" value={occupied}      color="#2563eb" />
-              <StatPill label="At Dock"  value={doorsOccupied} color="#7c3aed" />
-            </div>
+          <span className="text-sm font-bold text-foreground hidden sm:block" data-testid="text-map-title">Yard Control</span>
+          <div className="flex items-center gap-1.5">
+            <StatPill label="Empty"    value={available}     color="#94a3b8" textColor="#475569" />
+            <StatPill label="Occupied" value={occupied}      color="#2563eb" />
+            <StatPill label="Dock"     value={doorsOccupied} color="#7c3aed" />
+            {onHoldCount > 0 && <StatPill label="Hold" value={onHoldCount} color="#dc2626" />}
           </div>
         </div>
 
-        {/* Divider */}
-        <div className="h-8 w-px bg-gray-200 dark:bg-gray-700 shrink-0" />
+        <div className="h-5 w-px bg-border shrink-0" />
 
-        {/* Filters */}
-        <div className="flex items-center gap-2 flex-1 min-w-0">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 shrink-0">Filter</span>
-          <Select value={filterCarrier} onValueChange={setFilterCarrier}>
-            <SelectTrigger className="h-7 text-xs w-[150px] border-dashed" data-testid="select-filter-carrier">
-              <SelectValue placeholder="All carriers" />
+        {/* Filters row */}
+        <div className="flex items-center gap-1.5 flex-1 min-w-0 overflow-x-auto">
+          <Filter className="h-3 w-3 text-muted-foreground shrink-0" />
+
+          <Select value={filterZone} onValueChange={setFilterZone}>
+            <SelectTrigger className="h-6 text-xs w-[110px] border-dashed" data-testid="select-filter-zone">
+              <SelectValue placeholder="All zones" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All carriers</SelectItem>
-              {uniqueCarriers.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+              <SelectItem value="all">All zones</SelectItem>
+              {uniqueZones.map(z => <SelectItem key={z.code} value={z.code}>{z.name}</SelectItem>)}
             </SelectContent>
           </Select>
+
           <Select value={filterStatus} onValueChange={setFilterStatus}>
-            <SelectTrigger className="h-7 text-xs w-[130px] border-dashed" data-testid="select-filter-status">
+            <SelectTrigger className="h-6 text-xs w-[120px] border-dashed" data-testid="select-filter-status">
               <SelectValue placeholder="All statuses" />
             </SelectTrigger>
             <SelectContent>
@@ -531,519 +574,669 @@ export default function YardMapPage() {
               <SelectItem value="ready_out">Ready Out</SelectItem>
             </SelectContent>
           </Select>
+
+          <Select value={filterDwell} onValueChange={setFilterDwell}>
+            <SelectTrigger className="h-6 text-xs w-[120px] border-dashed" data-testid="select-filter-dwell">
+              <SelectValue placeholder="Any dwell" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Any dwell</SelectItem>
+              <SelectItem value="fresh">Fresh (&lt;12h)</SelectItem>
+              <SelectItem value="aging">Aging (12–24h)</SelectItem>
+              <SelectItem value="detention">Detention (&gt;24h)</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Select value={filterCarrier} onValueChange={setFilterCarrier}>
+            <SelectTrigger className="h-6 text-xs w-[130px] border-dashed" data-testid="select-filter-carrier">
+              <SelectValue placeholder="All carriers" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All carriers</SelectItem>
+              {uniqueCarriers.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+            </SelectContent>
+          </Select>
+
           {hasFilters && (
-            <Button variant="ghost" size="sm" className="h-7 px-2 text-xs text-muted-foreground gap-1" onClick={() => { setFilterCarrier("all"); setFilterStatus("all"); }} data-testid="button-clear-filters">
-              <X className="h-3 w-3" /> Clear
-            </Button>
-          )}
-          {hasFilters && (
-            <span className="text-xs text-muted-foreground ml-1 shrink-0">
-              {slots.filter(slotMatchesFilter).length} / {slots.length} slots
-            </span>
+            <>
+              <Button variant="ghost" size="sm" className="h-6 px-2 text-xs text-muted-foreground gap-1 shrink-0"
+                onClick={() => { setFilterCarrier("all"); setFilterStatus("all"); setFilterZone("all"); setFilterDwell("all"); }}
+                data-testid="button-clear-filters">
+                <X className="h-3 w-3" /> Clear
+              </Button>
+              <span className="text-xs text-muted-foreground shrink-0">
+                {slots.filter(slotMatchesFilter).length}/{slots.length}
+              </span>
+            </>
           )}
         </div>
 
-        {/* Divider */}
-        <div className="h-8 w-px bg-gray-200 dark:bg-gray-700 shrink-0" />
-
-        {/* Primary actions — appear when a slot with a visit is selected */}
-        {selectedSlot?.visitNumber && (
-          <>
-            <div className="flex items-center gap-2 shrink-0">
-              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-blue-50 border border-blue-200 text-xs font-semibold text-blue-800 dark:bg-blue-950/30 dark:border-blue-700 dark:text-blue-300">
-                <MapPin className="h-3.5 w-3.5" />
-                {selectedSlot.slotNumber} · {selectedSlot.trailerNumber}
-              </div>
-              <Button
-                size="sm"
-                className="h-7 px-3 text-xs gap-1.5 font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
-                onClick={openMoveFromSelection}
-                data-testid="button-move-selected"
-              >
-                <ArrowUpDown className="h-3.5 w-3.5" />
-                Create Move
-              </Button>
-              <Button
-                size="sm"
-                variant="ghost"
-                className="h-7 px-2 text-xs text-muted-foreground"
-                onClick={() => setSelectedSlot(null)}
-                data-testid="button-deselect-slot"
-              >
-                <X className="h-3 w-3" />
-              </Button>
-            </div>
-            <div className="h-8 w-px bg-gray-200 dark:bg-gray-700 shrink-0" />
-          </>
-        )}
+        <div className="h-5 w-px bg-border shrink-0" />
 
         {/* Map controls */}
         <div className="flex items-center gap-0.5 shrink-0">
           <Button
-            variant={showLegend ? "secondary" : "ghost"}
-            size="sm"
-            className="h-7 px-2.5 text-xs gap-1.5 font-semibold"
+            variant={showLegend ? "secondary" : "ghost"} size="sm"
+            className="h-6 px-2 text-xs gap-1 font-medium"
             onClick={() => setShowLegend(v => !v)}
             data-testid="button-toggle-legend"
           >
-            <BookOpen className="h-3.5 w-3.5" />
-            Legend
+            <BookOpen className="h-3 w-3" />
+            <span className="hidden sm:inline">Legend</span>
           </Button>
-          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleZoom(0.8)} title="Zoom in" data-testid="button-zoom-in"><ZoomIn className="h-4 w-4" /></Button>
-          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleZoom(1.25)} title="Zoom out" data-testid="button-zoom-out"><ZoomOut className="h-4 w-4" /></Button>
-          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={handleFitAll} title="Fit all" data-testid="button-fit-all"><Maximize2 className="h-4 w-4" /></Button>
-          <Button variant="ghost" size="icon" className="h-7 w-7" title="Click and drag to pan · Scroll to zoom · Click a slot to select · Drag a trailer to create a move" data-testid="button-map-help">
-            <HelpCircle className="h-4 w-4 text-muted-foreground" />
+          <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleZoom(0.8)} title="Zoom in" data-testid="button-zoom-in"><ZoomIn className="h-3.5 w-3.5" /></Button>
+          <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleZoom(1.25)} title="Zoom out" data-testid="button-zoom-out"><ZoomOut className="h-3.5 w-3.5" /></Button>
+          <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleFitAll} title="Fit all" data-testid="button-fit-all"><Maximize2 className="h-3.5 w-3.5" /></Button>
+          <Button variant="ghost" size="icon" className="h-6 w-6" title="Click slot to select · Drag to move · Scroll to zoom · Hold to pan" data-testid="button-map-help">
+            <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
           </Button>
         </div>
       </div>
 
-      {/* ── Map canvas ──────────────────────────────────────────────────────── */}
-      <div
-        ref={containerRef}
-        className="flex-1 overflow-hidden relative"
-        style={{ background: "#d8d2c4", cursor: isDragging ? "grabbing" : isPanning ? "grabbing" : "grab" }}
-      >
-        {/* ── Legend panel (floating, top-right) ────────────────────────────── */}
-        {showLegend && (
-          <div className="absolute top-3 right-3 z-40 bg-white/97 dark:bg-gray-900/97 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl p-3 w-52 text-xs backdrop-blur-sm" data-testid="panel-legend">
-            <div className="flex items-center justify-between mb-2.5">
-              <span className="font-bold text-[11px] uppercase tracking-wider text-gray-500">Legend</span>
+      {/* ── 3-panel body ──────────────────────────────────────────────────── */}
+      <div className="flex flex-1 overflow-hidden">
+
+        {/* ── Left operational queue panel ──────────────────────────────── */}
+        {leftPanelOpen && (
+          <div className="w-56 shrink-0 border-r bg-background flex flex-col overflow-hidden" data-testid="panel-left-queue">
+
+            {/* Panel header */}
+            <div className="px-3 py-2 border-b bg-muted/30 shrink-0">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Operational Queue</p>
+            </div>
+
+            <div className="flex-1 overflow-y-auto">
+
+              {/* On Hold — critical */}
+              <QueueSection
+                title="On Hold"
+                count={queueOnHold.length}
+                urgency="critical"
+                icon={<ShieldAlert className="h-3 w-3" />}
+                emptyText="No units on hold"
+                data-testid="queue-on-hold"
+              >
+                {queueOnHold.map(s => (
+                  <QueueItem key={s.id} slot={s} isSelected={selectedSlot?.id === s.id} onClick={() => focusSlot(s)} />
+                ))}
+              </QueueSection>
+
+              {/* Aging / Detention */}
+              <QueueSection
+                title="Aging / Detention"
+                count={queueAging.length}
+                urgency="warning"
+                icon={<Clock className="h-3 w-3" />}
+                emptyText="No units past 24h dwell"
+              >
+                {queueAging.map(s => (
+                  <QueueItem key={s.id} slot={s} isSelected={selectedSlot?.id === s.id} onClick={() => focusSlot(s)} />
+                ))}
+              </QueueSection>
+
+              {/* Ready for dock */}
+              <QueueSection
+                title="Ready for Dock"
+                count={queueReadyOut.length}
+                urgency="ready"
+                icon={<CheckCircle2 className="h-3 w-3" />}
+                emptyText="No units ready to move"
+              >
+                {queueReadyOut.map(s => (
+                  <QueueItem key={s.id} slot={s} isSelected={selectedSlot?.id === s.id} onClick={() => focusSlot(s)} />
+                ))}
+              </QueueSection>
+
+              {/* High priority */}
+              <QueueSection
+                title="High Priority"
+                count={queueHighPri.length}
+                urgency="elevated"
+                icon={<TrendingUp className="h-3 w-3" />}
+                emptyText="No high-priority moves pending"
+              >
+                {queueHighPri.map(s => (
+                  <QueueItem key={s.id} slot={s} isSelected={selectedSlot?.id === s.id} onClick={() => focusSlot(s)} />
+                ))}
+              </QueueSection>
+
+            </div>
+
+            {/* Panel footer — yard summary */}
+            <div className="border-t px-3 py-2 bg-muted/20 shrink-0 space-y-1">
+              <div className="flex justify-between text-[10px]">
+                <span className="text-muted-foreground">Slot utilization</span>
+                <span className="font-bold text-foreground">{slots.length > 0 ? Math.round((occupied / slots.length) * 100) : 0}%</span>
+              </div>
+              <div className="w-full h-1 bg-muted rounded-full overflow-hidden">
+                <div className="h-full bg-blue-500 rounded-full transition-all" style={{ width: `${slots.length > 0 ? (occupied / slots.length) * 100 : 0}%` }} />
+              </div>
+              <div className="flex justify-between text-[10px] text-muted-foreground mt-0.5">
+                <span>{occupied} occupied</span>
+                <span>{available} free</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── Center map canvas ──────────────────────────────────────────── */}
+        <div
+          ref={containerRef}
+          className="flex-1 overflow-hidden relative"
+          style={{ background: "#d8d2c4", cursor: isDragging ? "grabbing" : isPanning ? "grabbing" : "grab" }}
+        >
+          {/* Legend panel (floating, top-left of map) */}
+          {showLegend && (
+            <div className="absolute top-3 left-3 z-40 bg-white/97 dark:bg-gray-900/97 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl p-3 w-48 text-xs backdrop-blur-sm" data-testid="panel-legend">
+              <div className="flex items-center justify-between mb-2">
+                <span className="font-bold text-[10px] uppercase tracking-wider text-gray-500">Legend</span>
+                <button
+                  className="h-5 w-5 rounded flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+                  onClick={() => setShowLegend(false)}
+                  data-testid="button-close-legend"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              </div>
+              <div className="space-y-2.5">
+                <div>
+                  <p className="text-[9px] font-bold uppercase tracking-wide text-gray-400 mb-1">Slot Status</p>
+                  <div className="space-y-1">
+                    {LEGEND_STATUS.map(item => (
+                      <div key={item.label} className="flex items-center gap-1.5">
+                        <span className="w-4 h-3 rounded-sm shrink-0" style={{ background: item.color, border: `1.5px ${item.dash ? "dashed" : "solid"} ${item.stroke || item.color}` }} />
+                        <span className="text-gray-600 dark:text-gray-300 text-[10px]">{item.label}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="border-t border-gray-100 dark:border-gray-800" />
+                <div>
+                  <p className="text-[9px] font-bold uppercase tracking-wide text-gray-400 mb-1">Zone Types</p>
+                  <div className="space-y-1">
+                    {LEGEND_ZONE.map(item => (
+                      <div key={item.label} className="flex items-center gap-1.5">
+                        <span className="w-4 h-3 rounded-sm shrink-0" style={{ background: item.color }} />
+                        <span className="text-gray-600 dark:text-gray-300 text-[10px]">{item.label}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="border-t border-gray-100 dark:border-gray-800 pt-1.5 text-[9px] text-gray-400 space-y-0.5">
+                  <p>Click slot to select · Drag to move</p>
+                  <p>Scroll to zoom · Hold to pan</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* SVG map */}
+          <svg
+            ref={svgRef}
+            viewBox={`${viewBox.x} ${viewBox.y} ${viewBox.w} ${viewBox.h}`}
+            className="w-full h-full select-none"
+            onWheel={handleWheel}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={() => { handleMouseUp(); setHoverSlotData(null); setHoverDoorData(null); }}
+          >
+            <defs>
+              <filter id="cs" x="-5%" y="-5%" width="115%" height="130%"><feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="#00000018" /></filter>
+              <filter id="lift" x="-8%" y="-8%" width="125%" height="140%"><feDropShadow dx="0" dy="4" stdDeviation="6" floodColor="#00000040" /></filter>
+              <filter id="sel" x="-12%" y="-12%" width="130%" height="150%"><feDropShadow dx="0" dy="0" stdDeviation="5" floodColor="#f59e0b" floodOpacity="0.8" /></filter>
+              <marker id="arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                <polygon points="0 0,10 3.5,0 7" fill="#3b82f6" />
+              </marker>
+              <pattern id="sh" width="36" height="1" patternUnits="userSpaceOnUse">
+                <rect width="20" height="1" fill="#f5c542" opacity="0.75" />
+              </pattern>
+              <pattern id="sv" width="1" height="36" patternUnits="userSpaceOnUse">
+                <rect y="0" width="1" height="20" fill="#f5c542" opacity="0.75" />
+              </pattern>
+              <pattern id="haz-bg" width="20" height="20" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+                <rect width="10" height="20" fill="#fef2f2" />
+                <rect x="10" width="10" height="20" fill="#fff1f2" />
+              </pattern>
+            </defs>
+
+            {/* Yard ground */}
+            <rect x={-200} y={-200} width={1900} height={1300} fill="#cdc7b8" />
+            <rect x={BLDG_X} y={WALL_Y} width={BLDG_W} height={700} fill="#dbd5c5" />
+
+            {/* Hazmat isolation visual boundary */}
+            <rect x={1268} y={WALL_Y} width={140} height={570} fill="#fef2f2" opacity={0.3} rx={4} />
+            <rect x={1268} y={WALL_Y} width={3} height={570} fill="#dc2626" opacity={0.25} />
+
+            {/* Dock access lane */}
+            <rect x={BLDG_X} y={LANE_Y} width={BLDG_W} height={LANE_H} fill="#c4bcac" />
+            <line x1={BLDG_X} y1={LANE_Y + LANE_H / 2} x2={BLDG_X + BLDG_W} y2={LANE_Y + LANE_H / 2} stroke="url(#sh)" strokeWidth={2.5} />
+            <line x1={BLDG_X} y1={LANE_Y} x2={BLDG_X + BLDG_W} y2={LANE_Y} stroke="#f5c542" strokeWidth={1} opacity={0.45} />
+            <line x1={BLDG_X} y1={LANE_Y + LANE_H} x2={BLDG_X + BLDG_W} y2={LANE_Y + LANE_H} stroke="#f5c542" strokeWidth={1} opacity={0.45} />
+            {[180, 500, 820, 1140].map(x => (
+              <polygon key={x} points={`${x},${LANE_Y + LANE_H / 2 - 6} ${x + 14},${LANE_Y + LANE_H / 2} ${x},${LANE_Y + LANE_H / 2 + 6}`} fill="#f5c542" opacity={0.5} />
+            ))}
+
+            {/* Center vertical lane */}
+            <rect x={VERT_LANE_X} y={LANE_Y + LANE_H} width={VERT_LANE_W} height={500} fill="#c4bcac" />
+            <line x1={VERT_LANE_X + VERT_LANE_W / 2} y1={LANE_Y + LANE_H} x2={VERT_LANE_X + VERT_LANE_W / 2} y2={GATE_Y} stroke="url(#sv)" strokeWidth={2} />
+            {[280, 380, 530, 630].map(y => (
+              <polygon key={y} points={`${VERT_LANE_X + 4},${y} ${VERT_LANE_X + VERT_LANE_W / 2},${y + 12} ${VERT_LANE_X + VERT_LANE_W - 4},${y}`} fill="#f5c542" opacity={0.45} />
+            ))}
+
+            {/* Mid horizontal lane */}
+            <rect x={BLDG_X} y={MID_LANE_Y} width={BLDG_W} height={MID_LANE_H} fill="#c4bcac" />
+            <line x1={BLDG_X} y1={MID_LANE_Y + MID_LANE_H / 2} x2={BLDG_X + BLDG_W} y2={MID_LANE_Y + MID_LANE_H / 2} stroke="url(#sh)" strokeWidth={2} />
+
+            {/* Bottom access road */}
+            <rect x={BLDG_X} y={BTM_ROAD_Y} width={BLDG_W} height={BTM_ROAD_H} fill="#c4bcac" />
+            <line x1={BLDG_X} y1={BTM_ROAD_Y + BTM_ROAD_H / 2} x2={BLDG_X + BLDG_W} y2={BTM_ROAD_Y + BTM_ROAD_H / 2} stroke="url(#sh)" strokeWidth={2} />
+            {/* Gate approach */}
+            <rect x={GATE_X + 20} y={BTM_ROAD_Y} width={GATE_W - 40} height={BTM_ROAD_H} fill="#b8b0a0" />
+
+            {/* Corner greenery */}
+            {([[BLDG_X - 20, 500], [BLDG_X - 20, 650], [BLDG_X + BLDG_W + 8, 400], [BLDG_X + BLDG_W + 8, 560]] as [number, number][]).map(([tx, ty], i) => (
+              <g key={i}>
+                <circle cx={tx} cy={ty} r={16} fill="#4a8040" opacity={0.55} />
+                <circle cx={tx} cy={ty} r={10} fill="#3a7030" opacity={0.75} />
+              </g>
+            ))}
+
+            {/* Warehouse building */}
+            <rect x={BLDG_X + 4} y={BLDG_Y + 8} width={BLDG_W} height={BLDG_H + DOOR_H} fill="#00000014" rx={2} />
+            <rect x={BLDG_X} y={BLDG_Y} width={BLDG_W} height={BLDG_H} fill="#b5c0cc" rx={2} />
+            {Array.from({ length: 6 }).map((_, i) => (
+              <line key={i} x1={BLDG_X} y1={BLDG_Y + (i + 1) * 11} x2={BLDG_X + BLDG_W} y2={BLDG_Y + (i + 1) * 11} stroke="#a5b0bc" strokeWidth={0.8} opacity={0.5} />
+            ))}
+            <rect x={BLDG_X} y={BLDG_Y} width={BLDG_W} height={20} fill="#7888a0" rx={2} />
+            <rect x={BLDG_X} y={BLDG_Y + 4} width={BLDG_W} height={3} fill="#6880a0" />
+            <text x={BLDG_X + BLDG_W / 2} y={BLDG_Y + 14} textAnchor="middle" fontSize={10} fontWeight="700" fill="#dce8f4" fontFamily="system-ui" letterSpacing="4">DISTRIBUTION CENTER</text>
+            {[200, 500, 800, 1100].map(x => (
+              <rect key={x} x={x} y={BLDG_Y + 26} width={120} height={24} rx={2} fill="#9ab0c0" stroke="#8aa0b0" strokeWidth={0.8} />
+            ))}
+            <rect x={BLDG_X} y={WALL_Y - 8} width={BLDG_W} height={9} fill="#6878a0" />
+
+            {/* Dock bays */}
+            {doors.map((d, i) => {
+              const cx = BLDG_X + (i + 0.5) * DOOR_STEP;
+              const bx = cx - DOOR_W / 2;
+              const isOver = dropTarget?.type === "dock" && dropTarget.id === d.id;
+              const isHov = hoveredDoor === d.id;
+              const occ = !!d.visitNumber;
+              return (
+                <g key={d.id} data-testid={`map-door-${d.id}`}
+                  onMouseEnter={e => { setHoveredDoor(d.id); setHoverDoorData({ door: d, x: e.clientX, y: e.clientY }); setHoverSlotData(null); }}
+                  onMouseLeave={() => { setHoveredDoor(null); setHoverDoorData(null); }}
+                  onMouseDown={e => { if (d.visitNumber) startDragDoor(d, e); }}
+                  style={{ cursor: d.visitNumber ? "grab" : "default" }}>
+                  <rect x={bx - 2} y={WALL_Y - 2} width={DOOR_W + 4} height={DOOR_H + 4} fill="#7888a0" rx={1} />
+                  <rect x={bx} y={WALL_Y} width={DOOR_W} height={DOOR_H} fill={isOver ? "#2563eb" : "#1a2535"} rx={1} />
+                  <rect x={bx + 3} y={WALL_Y + DOOR_H - 8} width={DOOR_W - 6} height={5} rx={1} fill="#2d3a50" />
+                  <rect x={bx + 2} y={WALL_Y + DOOR_H - 12} width={6} height={8} rx={1.5} fill="#556" />
+                  <rect x={bx + DOOR_W - 8} y={WALL_Y + DOOR_H - 12} width={6} height={8} rx={1.5} fill="#556" />
+                  {occ && (
+                    <>
+                      <rect x={bx + 4} y={WALL_Y + 3} width={DOOR_W - 8} height={DOOR_H - 16} rx={2}
+                        fill={isHov || isOver ? "#bfd4f0" : "#d4dce8"} stroke={isHov ? "#3b82f6" : "#a0b0c0"} strokeWidth={1.2} />
+                      <text x={cx} y={WALL_Y + 28} textAnchor="middle" fontSize={10} fontWeight="800" fill="#1e293b" fontFamily="monospace">{scac(d.trailerNumber)}</text>
+                      <text x={cx} y={WALL_Y + 40} textAnchor="middle" fontSize={7.5} fill="#475569" fontFamily="monospace">{(d.trailerNumber || "").slice(-5)}</text>
+                    </>
+                  )}
+                  {!occ && <text x={cx} y={WALL_Y + DOOR_H / 2 + 3} textAnchor="middle" fontSize={8} fill="#475569">OPEN</text>}
+                  <rect x={bx} y={WALL_Y + DOOR_H + 6} width={DOOR_W} height={13} fill="#c0b8a8" rx={1} />
+                  <text x={cx} y={WALL_Y + DOOR_H + 16} textAnchor="middle" fontSize={8.5} fontWeight="700" fill="#374151" fontFamily="system-ui">{d.doorNumber}</text>
+                </g>
+              );
+            })}
+
+            {/* Zone panels */}
+            {Object.entries(zoneLayouts.layouts).map(([code, layout]) => {
+              const zs = zoneLayouts.grouped[code] || [];
+              const theme = zTheme(code);
+              const occ = zs.filter(s => s.visitNumber).length;
+              const isHaz = code === "HAZ";
+              const borderDash = isHaz ? "5 3" : undefined;
+
+              return (
+                <g key={code}>
+                  <rect x={layout.x + 3} y={layout.y + 5} width={layout.w} height={layout.h} rx={isHaz ? 3 : 6} fill="#00000018" />
+                  <rect x={layout.x} y={layout.y} width={layout.w} height={layout.h} rx={isHaz ? 3 : 6}
+                    fill={isHaz ? "url(#haz-bg)" : theme.fill}
+                    stroke={theme.border} strokeWidth={isHaz ? 2 : 1.5}
+                    strokeDasharray={borderDash}
+                    filter={isHaz ? undefined : "url(#cs)"} />
+                  <rect x={layout.x} y={layout.y} width={layout.w} height={ZONE_HEADER} rx={isHaz ? 3 : 6} fill={theme.hdr} />
+                  {!isHaz && <rect x={layout.x} y={layout.y + ZONE_HEADER - 5} width={layout.w} height={5} fill={theme.hdr} />}
+                  <line x1={layout.x + 5} y1={layout.y + ZONE_HEADER - 0.5} x2={layout.x + layout.w - 5} y2={layout.y + ZONE_HEADER - 0.5} stroke={theme.border} strokeWidth={0.8} />
+
+                  {isHaz ? (
+                    <>
+                      <text x={layout.x + layout.w / 2} y={layout.y + 13} textAnchor="middle" fontSize={12} fontWeight="900" fill={theme.title} fontFamily="system-ui">&#9888;</text>
+                      <text x={layout.x + layout.w / 2} y={layout.y + 25} textAnchor="middle" fontSize={8} fontWeight="800" fill={theme.title} fontFamily="system-ui">HAZ</text>
+                    </>
+                  ) : (
+                    <>
+                      <text x={layout.x + 9} y={layout.y + 16} fontSize={13} fontWeight="500" fill={theme.title} fontFamily="system-ui" textAnchor="start">
+                        {layout.zone?.name || code}
+                      </text>
+                      <text x={layout.x + 9} y={layout.y + 27} fontSize={8.5} fontWeight="400" fill={theme.title} fontFamily="system-ui" textAnchor="start" opacity={0.65}>
+                        {zs.length} slots · {occ} occupied
+                      </text>
+                    </>
+                  )}
+
+                  {zs.map((s, idx) => {
+                    const col = idx % layout.cols;
+                    const row = Math.floor(idx / layout.cols);
+                    const sx = layout.x + ZONE_PAD + col * (SLOT_W + SLOT_GAP);
+                    const sy = layout.y + ZONE_HEADER + ZONE_PAD + row * (SLOT_H + SLOT_NUM_H + SLOT_GAP);
+                    const cx = sx + SLOT_W / 2;
+                    const isOver = dropTarget?.type === "slot" && dropTarget.id === s.id;
+                    const isHov = hoveredSlot === s.id;
+                    const isSelected = selectedSlot?.id === s.id;
+                    const fill = trailerFill(s, isOver);
+                    const stroke = trailerStroke(s, isHov, isOver);
+                    const detained = isDetention(s);
+
+                    const matchesFilter = slotMatchesFilter(s);
+                    return (
+                      <g key={s.id} data-testid={`map-slot-${s.id}`}
+                        onMouseEnter={e => { setHoveredSlot(s.id); setHoverSlotData({ slot: s, x: e.clientX, y: e.clientY }); setHoverDoorData(null); }}
+                        onMouseLeave={() => { setHoveredSlot(null); setHoverSlotData(null); }}
+                        onMouseDown={e => { if (s.visitNumber) startDragSlot(s, e); }}
+                        style={{ cursor: s.visitNumber ? "grab" : "default", opacity: hasFilters && !matchesFilter ? 0.15 : 1, transition: "opacity 0.2s" }}>
+
+                        {/* Selection highlight ring */}
+                        {isSelected && (
+                          <rect x={sx - 5} y={sy - 5} width={SLOT_W + 10} height={SLOT_H + 10} rx={6}
+                            fill="none" stroke="#f59e0b" strokeWidth={3} filter="url(#sel)">
+                            <animate attributeName="stroke-opacity" values="1;0.4;1" dur="1.4s" repeatCount="indefinite" />
+                          </rect>
+                        )}
+
+                        {s.visitNumber ? (
+                          <>
+                            <rect x={sx} y={sy} width={SLOT_W} height={SLOT_H} rx={3}
+                              fill={fill} stroke={isSelected ? "#f59e0b" : stroke}
+                              strokeWidth={isSelected ? 2.5 : isHov || isOver ? 2.5 : 1.5}
+                              filter={isHov || isSelected ? "url(#lift)" : "url(#cs)"}
+                              strokeDasharray={detained && !isSelected ? "4 2" : undefined} />
+
+                            {/* Direction arrow */}
+                            {zoomLevel !== "far" && s.movementType && (
+                              <text x={cx} y={sy + 10} textAnchor="middle" fontSize={8} fill="rgba(255,255,255,0.85)" fontFamily="system-ui">
+                                {s.movementType === "outbound" ? "▲" : "▼"}
+                              </text>
+                            )}
+
+                            {/* SCAC / carrier code */}
+                            <text x={cx} y={sy + (zoomLevel !== "far" ? 23 : 16)} textAnchor="middle" fontSize={zoomLevel === "near" ? 11 : 9}
+                              fontWeight="800" fill="white" fontFamily="monospace">
+                              {scac(s.trailerNumber)}
+                            </text>
+
+                            {/* Trailer suffix */}
+                            {zoomLevel === "near" && (
+                              <text x={cx} y={sy + 34} textAnchor="middle" fontSize={7.5} fill="rgba(255,255,255,0.8)" fontFamily="monospace">
+                                {(s.trailerNumber || "").slice(-5)}
+                              </text>
+                            )}
+
+                            {/* Priority dot */}
+                            {(s.movePriority === "high" || s.movePriority === "urgent") && (
+                              <circle cx={sx + SLOT_W - 6} cy={sy + 6} r={4}
+                                fill={s.movePriority === "urgent" ? "#dc2626" : "#f97316"} stroke="white" strokeWidth={1} />
+                            )}
+
+                            {/* Dwell warning */}
+                            {detained && zoomLevel !== "far" && (
+                              <text x={sx + 5} y={sy + 10} fontSize={8} fill="rgba(255,255,255,0.9)" fontFamily="system-ui">⚠</text>
+                            )}
+                          </>
+                        ) : s.isBlocked ? (
+                          <>
+                            <rect x={sx} y={sy} width={SLOT_W} height={SLOT_H} rx={3} fill="#e2e8f0" stroke="#94a3b8" strokeWidth={1.5} />
+                            <line x1={sx + 6} y1={sy + 6} x2={sx + SLOT_W - 6} y2={sy + SLOT_H - 6} stroke="#94a3b8" strokeWidth={1.5} />
+                            <line x1={sx + SLOT_W - 6} y1={sy + 6} x2={sx + 6} y2={sy + SLOT_H - 6} stroke="#94a3b8" strokeWidth={1.5} />
+                          </>
+                        ) : (
+                          <>
+                            <rect x={sx} y={sy} width={SLOT_W} height={SLOT_H} rx={3}
+                              fill={isOver ? "#dbeafe" : "#f8fafc"}
+                              stroke={isOver ? "#3b82f6" : "#cbd5e1"}
+                              strokeWidth={isOver ? 2.5 : 1}
+                              strokeDasharray={isOver ? undefined : "5 3"} />
+                            {isOver && (
+                              <text x={cx} y={sy + SLOT_H / 2 + 4} textAnchor="middle" fontSize={9} fill="#2563eb" fontWeight="700">DROP</text>
+                            )}
+                          </>
+                        )}
+
+                        {/* Slot number label below tile */}
+                        <text x={cx} y={sy + SLOT_H + SLOT_NUM_H - 2} textAnchor="middle" fontSize={8}
+                          fill={isSelected ? "#92400e" : s.visitNumber ? "#374151" : "#94a3b8"} fontFamily="system-ui" fontWeight={isSelected ? "700" : "400"}>
+                          {s.slotNumber}
+                        </text>
+                      </g>
+                    );
+                  })}
+                </g>
+              );
+            })}
+
+            {/* Gate */}
+            <rect x={GATE_X} y={GATE_Y} width={GATE_W} height={GATE_H} rx={6}
+              fill={dropTarget?.type === "gate" ? "#1d4ed8" : "#92400e"}
+              stroke={dropTarget?.type === "gate" ? "#3b82f6" : "#78350f"} strokeWidth={2}
+              filter="url(#cs)" />
+            <text x={GATE_X + GATE_W / 2} y={GATE_Y + 20} textAnchor="middle" fontSize={9} fontWeight="700"
+              fill={dropTarget?.type === "gate" ? "#1d4ed8" : "#92400e"} fontFamily="system-ui">
+              GATE 3 &#8211; OUTBOUND
+            </text>
+            <text x={GATE_X + GATE_W / 2} y={GATE_Y + 35} textAnchor="middle" fontSize={7} fill="#a16207" fontFamily="system-ui">
+              Drag trailer here to exit
+            </text>
+
+            {/* Drag line */}
+            {dragLine && (
+              <g>
+                <line x1={dragLine.x1} y1={dragLine.y1} x2={dragLine.x2} y2={dragLine.y2}
+                  stroke="#3b82f6" strokeWidth={2.5} strokeDasharray="7 4" opacity={0.9} markerEnd="url(#arrow)" />
+                <circle cx={dragLine.x1} cy={dragLine.y1} r={7} fill="#3b82f6" opacity={0.35} />
+                <circle cx={dragLine.x2} cy={dragLine.y2} r={9} fill={dropTarget ? "#22c55e" : "#ef4444"} opacity={0.7} />
+              </g>
+            )}
+          </svg>
+
+          {hoverSlotData && !isDragging && !dragPending && (
+            <SlotTooltip data={hoverSlotData} containerRef={containerRef} />
+          )}
+          {hoverDoorData && !isDragging && !dragPending && (
+            <DoorTooltip data={hoverDoorData} containerRef={containerRef} />
+          )}
+
+          {isDragging && (
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-blue-600 text-white px-4 py-2 rounded-full shadow-2xl text-sm font-semibold flex items-center gap-2 z-50 pointer-events-none border border-blue-400">
+              <Truck className="h-4 w-4" /> Moving {dragPayload?.trailerNumber}
+              <ArrowRight className="h-4 w-4" />
+              {dropTarget ? <span className="text-green-300">{dropTarget.name}</span>
+                : <span className="text-yellow-300">Drop on empty slot, dock, or gate</span>}
+            </div>
+          )}
+
+          {/* Mini-map (bottom-right) */}
+          <MiniMap
+            viewBox={viewBox}
+            slots={slots}
+            doors={doors}
+            selectedSlotId={selectedSlot?.id ?? null}
+            slotPositions={slotPositions}
+            doorPositions={doorPositions}
+            zoneLayouts={zoneLayouts}
+          />
+        </div>
+
+        {/* ── Right detail panel ─────────────────────────────────────────── */}
+        {selectedSlot && !isDragging && (
+          <div
+            className={`shrink-0 border-l bg-background flex flex-col overflow-hidden ${tabletMode ? "w-full absolute inset-y-0 right-0 z-50 shadow-2xl" : "w-72"}`}
+            data-testid="panel-slot-detail"
+          >
+            {/* Detail panel header */}
+            <div className="flex items-center justify-between px-4 py-3 border-b bg-muted/30 shrink-0">
+              <div className="flex items-center gap-2 min-w-0">
+                <MapPin className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                <span className="text-sm font-bold text-foreground truncate">{selectedSlot.slotNumber}</span>
+                <span className="text-xs text-muted-foreground truncate hidden sm:block">· {selectedSlot.zoneName}</span>
+              </div>
               <button
-                className="h-5 w-5 rounded flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
-                onClick={() => setShowLegend(false)}
-                data-testid="button-close-legend"
+                className="h-6 w-6 rounded flex items-center justify-center text-muted-foreground hover:bg-muted transition-colors shrink-0"
+                onClick={() => setSelectedSlot(null)}
+                data-testid="button-close-detail"
               >
                 <X className="h-3.5 w-3.5" />
               </button>
             </div>
 
-            <div className="space-y-3">
-              {/* Slot Status */}
-              <div>
-                <p className="text-[10px] font-bold uppercase tracking-wide text-gray-400 mb-1.5">Slot Status</p>
-                <div className="space-y-1.5">
-                  {LEGEND_STATUS.map(item => (
-                    <div key={item.label} className="flex items-center gap-2">
-                      <span
-                        className="w-5 h-3.5 rounded-sm shrink-0"
-                        style={{
-                          background: item.color,
-                          border: `1.5px ${item.dash ? "dashed" : "solid"} ${item.stroke || item.color}`,
-                        }}
-                      />
-                      <span className="text-gray-600 dark:text-gray-300">{item.label}</span>
+            <div className="flex-1 overflow-y-auto">
+              {selectedSlot.visitNumber ? (
+                <div className="p-4 space-y-4">
+
+                  {/* Status banner */}
+                  <div className={`rounded-lg px-3 py-2 text-xs font-semibold flex items-center gap-2 ${
+                    selectedSlot.holdStatus && selectedSlot.holdStatus !== "none"
+                      ? "bg-red-50 border border-red-200 text-red-700 dark:bg-red-950/30 dark:border-red-800 dark:text-red-400"
+                      : selectedSlot.visitStatus === "ready_out"
+                      ? "bg-amber-50 border border-amber-200 text-amber-700 dark:bg-amber-950/30 dark:border-amber-800 dark:text-amber-400"
+                      : "bg-blue-50 border border-blue-200 text-blue-700 dark:bg-blue-950/30 dark:border-blue-800 dark:text-blue-400"
+                  }`}>
+                    {selectedSlot.holdStatus && selectedSlot.holdStatus !== "none"
+                      ? <><AlertTriangle className="h-3.5 w-3.5 shrink-0" />{fmtStatus(selectedSlot.holdStatus)}</>
+                      : selectedSlot.visitStatus === "ready_out"
+                      ? <><CheckCircle2 className="h-3.5 w-3.5 shrink-0" />Ready for Dock</>
+                      : <>{fmtStatus(selectedSlot.visitStatus || "")}</>
+                    }
+                  </div>
+
+                  {/* Unit info */}
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-2">Unit</p>
+                    <div className="space-y-1.5">
+                      <DetailRow label="Trailer" value={selectedSlot.trailerNumber || "—"} mono />
+                      <DetailRow label="Carrier" value={selectedSlot.carrierName || "—"} />
+                      <DetailRow label="Visit" value={selectedSlot.visitNumber || "—"} mono />
+                      {selectedSlot.movementType && (
+                        <DetailRow
+                          label="Direction"
+                          value={(selectedSlot.movementType === "outbound" ? "▲ " : "▼ ") + fmtStatus(selectedSlot.movementType)}
+                          className={selectedSlot.movementType === "outbound" ? "text-violet-600" : "text-blue-600"}
+                        />
+                      )}
                     </div>
-                  ))}
-                </div>
-              </div>
+                  </div>
 
-              <div className="border-t border-gray-100 dark:border-gray-800" />
+                  <div className="border-t" />
 
-              {/* Zone Types */}
-              <div>
-                <p className="text-[10px] font-bold uppercase tracking-wide text-gray-400 mb-1.5">Zone Types</p>
-                <div className="space-y-1.5">
-                  {LEGEND_ZONE.map(item => (
-                    <div key={item.label} className="flex items-center gap-2">
-                      <span className="w-5 h-3.5 rounded-sm shrink-0" style={{ background: item.color }} />
-                      <span className="text-gray-600 dark:text-gray-300">{item.label}</span>
+                  {/* Location */}
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-2">Location</p>
+                    <div className="space-y-1.5">
+                      <DetailRow label="Slot" value={selectedSlot.slotNumber} />
+                      <DetailRow label="Zone" value={selectedSlot.zoneName} />
+                      {selectedSlot.isReefer && <DetailRow label="Type" value="Reefer" className="text-cyan-600" />}
+                      {selectedSlot.isHazmat && <DetailRow label="Type" value="Hazmat" className="text-red-600" />}
                     </div>
-                  ))}
+                  </div>
+
+                  {/* Dwell */}
+                  {selectedSlot.checkInTime && (() => {
+                    const dh = dwellHours(selectedSlot.checkInTime ?? null);
+                    const detained = dh > 24;
+                    return (
+                      <>
+                        <div className="border-t" />
+                        <div>
+                          <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-2">Dwell</p>
+                          <div className="space-y-1.5">
+                            <DetailRow
+                              label="Time in yard"
+                              value={dh < 1 ? "<1h" : `${Math.round(dh)}h`}
+                              className={detained ? "text-red-600 font-bold" : dh > 12 ? "text-amber-600 font-semibold" : ""}
+                            />
+                            {detained && (
+                              <div className="flex items-center gap-1.5 text-[10px] text-red-600 font-semibold">
+                                <AlertTriangle className="h-3 w-3 shrink-0" /> Detention threshold exceeded
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </>
+                    );
+                  })()}
+
+                  {/* Priority / Hold */}
+                  {((selectedSlot.movePriority && selectedSlot.movePriority !== "normal") || (selectedSlot.holdStatus && selectedSlot.holdStatus !== "none")) && (
+                    <>
+                      <div className="border-t" />
+                      <div>
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-2">Flags</p>
+                        <div className="space-y-1.5">
+                          {selectedSlot.holdStatus && selectedSlot.holdStatus !== "none" && (
+                            <DetailRow label="Hold" value={fmtStatus(selectedSlot.holdStatus)} className="text-red-600 font-bold" />
+                          )}
+                          {selectedSlot.movePriority && selectedSlot.movePriority !== "normal" && (
+                            <DetailRow
+                              label="Move priority"
+                              value={fmtStatus(selectedSlot.movePriority)}
+                              className={selectedSlot.movePriority === "urgent" || selectedSlot.movePriority === "high" ? "text-red-600 font-bold" : "text-orange-600 font-bold"}
+                            />
+                          )}
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
-              </div>
-
-              <div className="border-t border-gray-100 dark:border-gray-800" />
-
-              {/* Indicators */}
-              <div>
-                <p className="text-[10px] font-bold uppercase tracking-wide text-gray-400 mb-1.5">Indicators</p>
-                <div className="space-y-1.5">
-                  {LEGEND_INDICATORS.map((item, i) => (
-                    <div key={i}>{item.node}</div>
-                  ))}
+              ) : (
+                <div className="p-4">
+                  <div className="rounded-lg border border-emerald-200 bg-emerald-50 dark:bg-emerald-950/20 dark:border-emerald-900/40 p-3 text-center">
+                    <p className="text-xs font-semibold text-emerald-700 dark:text-emerald-400">Available</p>
+                    <p className="text-[10px] text-emerald-600/80 dark:text-emerald-500/70 mt-0.5">This slot is empty and ready to receive a trailer</p>
+                  </div>
+                  <div className="mt-3 space-y-1.5">
+                    <DetailRow label="Slot" value={selectedSlot.slotNumber} />
+                    <DetailRow label="Zone" value={selectedSlot.zoneName} />
+                    {selectedSlot.isReefer && <DetailRow label="Type" value="Reefer" className="text-cyan-600" />}
+                    {selectedSlot.isHazmat && <DetailRow label="Type" value="Hazmat" className="text-red-600" />}
+                    {selectedSlot.isBlocked && <DetailRow label="Status" value="Blocked" className="text-slate-500" />}
+                  </div>
                 </div>
-              </div>
-
-              <div className="border-t border-gray-100 dark:border-gray-800 pt-2 text-[10px] text-gray-400 space-y-0.5">
-                <p>Click slot to select · Drag to move</p>
-                <p>Scroll to zoom · Hold to pan</p>
-              </div>
+              )}
             </div>
-          </div>
-        )}
 
-        {/* ── Selected slot detail card (bottom-left) ─────────────────────── */}
-        {selectedSlot && !isDragging && (
-          <div className="absolute bottom-4 left-4 z-40 bg-white dark:bg-gray-900 border-2 border-blue-300 dark:border-blue-600 rounded-xl shadow-2xl p-3 w-56 text-xs" data-testid="panel-slot-detail">
-            <div className="flex items-center justify-between mb-2">
-              <span className="font-bold text-sm text-gray-900 dark:text-gray-100">{selectedSlot.slotNumber}</span>
-              <button
-                className="h-5 w-5 rounded flex items-center justify-center text-gray-400 hover:bg-gray-100"
-                onClick={() => setSelectedSlot(null)}
-              >
-                <X className="h-3 w-3" />
-              </button>
-            </div>
-            <p className="text-[10px] text-gray-400 mb-2">{selectedSlot.zoneName}</p>
-            {selectedSlot.visitNumber ? (
-              <div className="space-y-1.5 border-t border-gray-100 dark:border-gray-800 pt-2">
-                <Row label="Trailer" value={selectedSlot.trailerNumber || "—"} mono />
-                <Row label="Carrier" value={selectedSlot.carrierName || "—"} />
-                <Row label="Status" value={fmtStatus(selectedSlot.visitStatus || "")} />
-                {selectedSlot.holdStatus && selectedSlot.holdStatus !== "none" && (
-                  <Row label="Hold" value={fmtStatus(selectedSlot.holdStatus)} className="text-red-600 font-bold" />
-                )}
-                {selectedSlot.movePriority && selectedSlot.movePriority !== "normal" && (
-                  <Row label="Priority" value={fmtStatus(selectedSlot.movePriority)} className={selectedSlot.movePriority === "urgent" || selectedSlot.movePriority === "high" ? "text-red-600 font-bold" : "text-orange-600 font-bold"} />
-                )}
+            {/* Actions footer */}
+            {selectedSlot.visitNumber && (
+              <div className="border-t px-4 py-3 shrink-0 space-y-2">
                 <Button
-                  className="w-full h-7 mt-1 text-xs font-bold gap-1.5 bg-blue-600 hover:bg-blue-700 text-white"
+                  className={`w-full gap-2 font-semibold bg-blue-600 hover:bg-blue-700 text-white ${tabletMode ? "h-11 text-sm" : "h-8 text-xs"}`}
                   onClick={openMoveFromSelection}
                   data-testid="button-slot-detail-move"
                 >
                   <ArrowUpDown className="h-3.5 w-3.5" /> Create Move Request
                 </Button>
+                <Button
+                  variant="ghost"
+                  className={`w-full text-muted-foreground ${tabletMode ? "h-9 text-sm" : "h-7 text-xs"}`}
+                  onClick={() => setSelectedSlot(null)}
+                >
+                  <X className="h-3 w-3 mr-1" /> Deselect
+                </Button>
               </div>
-            ) : (
-              <p className="text-emerald-600 font-semibold mt-1">Available</p>
             )}
           </div>
         )}
-
-        <svg
-          ref={svgRef}
-          viewBox={`${viewBox.x} ${viewBox.y} ${viewBox.w} ${viewBox.h}`}
-          className="w-full h-full select-none"
-          onWheel={handleWheel}
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={() => { handleMouseUp(); setHoverSlotData(null); setHoverDoorData(null); }}
-        >
-          <defs>
-            <filter id="cs" x="-5%" y="-5%" width="115%" height="130%"><feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="#00000018" /></filter>
-            <filter id="lift" x="-8%" y="-8%" width="125%" height="140%"><feDropShadow dx="0" dy="4" stdDeviation="6" floodColor="#00000040" /></filter>
-            <filter id="sel" x="-12%" y="-12%" width="130%" height="150%"><feDropShadow dx="0" dy="0" stdDeviation="5" floodColor="#f59e0b" floodOpacity="0.8" /></filter>
-            <marker id="arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-              <polygon points="0 0,10 3.5,0 7" fill="#3b82f6" />
-            </marker>
-            <pattern id="sh" width="36" height="1" patternUnits="userSpaceOnUse">
-              <rect width="20" height="1" fill="#f5c542" opacity="0.75" />
-            </pattern>
-            <pattern id="sv" width="1" height="36" patternUnits="userSpaceOnUse">
-              <rect y="0" width="1" height="20" fill="#f5c542" opacity="0.75" />
-            </pattern>
-            <pattern id="haz-bg" width="20" height="20" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-              <rect width="10" height="20" fill="#fef2f2" />
-              <rect x="10" width="10" height="20" fill="#fff1f2" />
-            </pattern>
-          </defs>
-
-          {/* Yard ground */}
-          <rect x={-200} y={-200} width={1900} height={1300} fill="#cdc7b8" />
-          <rect x={BLDG_X} y={WALL_Y} width={BLDG_W} height={700} fill="#dbd5c5" />
-
-          {/* Hazmat isolation visual boundary */}
-          <rect x={1268} y={WALL_Y} width={140} height={570} fill="#fef2f2" opacity={0.3} rx={4} />
-          <rect x={1268} y={WALL_Y} width={3} height={570} fill="#dc2626" opacity={0.25} />
-
-          {/* Dock access lane */}
-          <rect x={BLDG_X} y={LANE_Y} width={BLDG_W} height={LANE_H} fill="#c4bcac" />
-          <line x1={BLDG_X} y1={LANE_Y + LANE_H / 2} x2={BLDG_X + BLDG_W} y2={LANE_Y + LANE_H / 2} stroke="url(#sh)" strokeWidth={2.5} />
-          <line x1={BLDG_X} y1={LANE_Y} x2={BLDG_X + BLDG_W} y2={LANE_Y} stroke="#f5c542" strokeWidth={1} opacity={0.45} />
-          <line x1={BLDG_X} y1={LANE_Y + LANE_H} x2={BLDG_X + BLDG_W} y2={LANE_Y + LANE_H} stroke="#f5c542" strokeWidth={1} opacity={0.45} />
-          {[180, 500, 820, 1140].map(x => (
-            <polygon key={x} points={`${x},${LANE_Y + LANE_H / 2 - 6} ${x + 14},${LANE_Y + LANE_H / 2} ${x},${LANE_Y + LANE_H / 2 + 6}`} fill="#f5c542" opacity={0.5} />
-          ))}
-
-          {/* Center vertical lane */}
-          <rect x={VERT_LANE_X} y={LANE_Y + LANE_H} width={VERT_LANE_W} height={500} fill="#c4bcac" />
-          <line x1={VERT_LANE_X + VERT_LANE_W / 2} y1={LANE_Y + LANE_H} x2={VERT_LANE_X + VERT_LANE_W / 2} y2={GATE_Y} stroke="url(#sv)" strokeWidth={2} />
-          {[280, 380, 530, 630].map(y => (
-            <polygon key={y} points={`${VERT_LANE_X + 4},${y} ${VERT_LANE_X + VERT_LANE_W / 2},${y + 12} ${VERT_LANE_X + VERT_LANE_W - 4},${y}`} fill="#f5c542" opacity={0.45} />
-          ))}
-
-          {/* Mid horizontal lane */}
-          <rect x={BLDG_X} y={MID_LANE_Y} width={BLDG_W} height={MID_LANE_H} fill="#c4bcac" />
-          <line x1={BLDG_X} y1={MID_LANE_Y + MID_LANE_H / 2} x2={BLDG_X + BLDG_W} y2={MID_LANE_Y + MID_LANE_H / 2} stroke="url(#sh)" strokeWidth={2} />
-
-          {/* Bottom access road */}
-          <rect x={BLDG_X} y={BTM_ROAD_Y} width={BLDG_W} height={BTM_ROAD_H} fill="#c4bcac" />
-          <line x1={BLDG_X} y1={BTM_ROAD_Y + BTM_ROAD_H / 2} x2={BLDG_X + BLDG_W} y2={BTM_ROAD_Y + BTM_ROAD_H / 2} stroke="url(#sh)" strokeWidth={2} />
-          {/* Gate approach */}
-          <rect x={GATE_X + 20} y={BTM_ROAD_Y} width={GATE_W - 40} height={BTM_ROAD_H} fill="#b8b0a0" />
-
-          {/* Corner greenery */}
-          {([[BLDG_X - 20, 500], [BLDG_X - 20, 650], [BLDG_X + BLDG_W + 8, 400], [BLDG_X + BLDG_W + 8, 560]] as [number, number][]).map(([tx, ty], i) => (
-            <g key={i}>
-              <circle cx={tx} cy={ty} r={16} fill="#4a8040" opacity={0.55} />
-              <circle cx={tx} cy={ty} r={10} fill="#3a7030" opacity={0.75} />
-            </g>
-          ))}
-
-          {/* Warehouse building */}
-          <rect x={BLDG_X + 4} y={BLDG_Y + 8} width={BLDG_W} height={BLDG_H + DOOR_H} fill="#00000014" rx={2} />
-          <rect x={BLDG_X} y={BLDG_Y} width={BLDG_W} height={BLDG_H} fill="#b5c0cc" rx={2} />
-          {Array.from({ length: 6 }).map((_, i) => (
-            <line key={i} x1={BLDG_X} y1={BLDG_Y + (i + 1) * 11} x2={BLDG_X + BLDG_W} y2={BLDG_Y + (i + 1) * 11} stroke="#a5b0bc" strokeWidth={0.8} opacity={0.5} />
-          ))}
-          <rect x={BLDG_X} y={BLDG_Y} width={BLDG_W} height={20} fill="#7888a0" rx={2} />
-          <rect x={BLDG_X} y={BLDG_Y + 4} width={BLDG_W} height={3} fill="#6880a0" />
-          <text x={BLDG_X + BLDG_W / 2} y={BLDG_Y + 14} textAnchor="middle" fontSize={10} fontWeight="700" fill="#dce8f4" fontFamily="system-ui" letterSpacing="4">DISTRIBUTION CENTER</text>
-          {[200, 500, 800, 1100].map(x => (
-            <rect key={x} x={x} y={BLDG_Y + 26} width={120} height={24} rx={2} fill="#9ab0c0" stroke="#8aa0b0" strokeWidth={0.8} />
-          ))}
-          <rect x={BLDG_X} y={WALL_Y - 8} width={BLDG_W} height={9} fill="#6878a0" />
-
-          {/* Dock bays */}
-          {doors.map((d, i) => {
-            const cx = BLDG_X + (i + 0.5) * DOOR_STEP;
-            const bx = cx - DOOR_W / 2;
-            const isOver = dropTarget?.type === "dock" && dropTarget.id === d.id;
-            const isHov = hoveredDoor === d.id;
-            const occ = !!d.visitNumber;
-            return (
-              <g key={d.id} data-testid={`map-door-${d.id}`}
-                onMouseEnter={e => { setHoveredDoor(d.id); setHoverDoorData({ door: d, x: e.clientX, y: e.clientY }); setHoverSlotData(null); }}
-                onMouseLeave={() => { setHoveredDoor(null); setHoverDoorData(null); }}
-                onMouseDown={e => { if (d.visitNumber) startDragDoor(d, e); }}
-                style={{ cursor: d.visitNumber ? "grab" : "default" }}>
-                <rect x={bx - 2} y={WALL_Y - 2} width={DOOR_W + 4} height={DOOR_H + 4} fill="#7888a0" rx={1} />
-                <rect x={bx} y={WALL_Y} width={DOOR_W} height={DOOR_H} fill={isOver ? "#2563eb" : "#1a2535"} rx={1} />
-                <rect x={bx + 3} y={WALL_Y + DOOR_H - 8} width={DOOR_W - 6} height={5} rx={1} fill="#2d3a50" />
-                <rect x={bx + 2} y={WALL_Y + DOOR_H - 12} width={6} height={8} rx={1.5} fill="#556" />
-                <rect x={bx + DOOR_W - 8} y={WALL_Y + DOOR_H - 12} width={6} height={8} rx={1.5} fill="#556" />
-                {occ && (
-                  <>
-                    <rect x={bx + 4} y={WALL_Y + 3} width={DOOR_W - 8} height={DOOR_H - 16} rx={2}
-                      fill={isHov || isOver ? "#bfd4f0" : "#d4dce8"} stroke={isHov ? "#3b82f6" : "#a0b0c0"} strokeWidth={1.2} />
-                    <text x={cx} y={WALL_Y + 28} textAnchor="middle" fontSize={10} fontWeight="800" fill="#1e293b" fontFamily="monospace">{scac(d.trailerNumber)}</text>
-                    <text x={cx} y={WALL_Y + 40} textAnchor="middle" fontSize={7.5} fill="#475569" fontFamily="monospace">{(d.trailerNumber || "").slice(-5)}</text>
-                  </>
-                )}
-                {!occ && <text x={cx} y={WALL_Y + DOOR_H / 2 + 3} textAnchor="middle" fontSize={8} fill="#475569">OPEN</text>}
-                <rect x={bx} y={WALL_Y + DOOR_H + 6} width={DOOR_W} height={13} fill="#c0b8a8" rx={1} />
-                <text x={cx} y={WALL_Y + DOOR_H + 16} textAnchor="middle" fontSize={8.5} fontWeight="700" fill="#374151" fontFamily="system-ui">{d.doorNumber}</text>
-              </g>
-            );
-          })}
-
-          {/* Zone panels */}
-          {Object.entries(zoneLayouts.layouts).map(([code, layout]) => {
-            const zs = zoneLayouts.grouped[code] || [];
-            const theme = zTheme(code);
-            const occ = zs.filter(s => s.visitNumber).length;
-            const isHaz = code === "HAZ";
-            const borderDash = isHaz ? "5 3" : undefined;
-
-            return (
-              <g key={code}>
-                <rect x={layout.x + 3} y={layout.y + 5} width={layout.w} height={layout.h} rx={isHaz ? 3 : 6} fill="#00000018" />
-                <rect x={layout.x} y={layout.y} width={layout.w} height={layout.h} rx={isHaz ? 3 : 6}
-                  fill={isHaz ? "url(#haz-bg)" : theme.fill}
-                  stroke={theme.border} strokeWidth={isHaz ? 2 : 1.5}
-                  strokeDasharray={borderDash}
-                  filter={isHaz ? undefined : "url(#cs)"} />
-                <rect x={layout.x} y={layout.y} width={layout.w} height={ZONE_HEADER} rx={isHaz ? 3 : 6} fill={theme.hdr} />
-                {!isHaz && <rect x={layout.x} y={layout.y + ZONE_HEADER - 5} width={layout.w} height={5} fill={theme.hdr} />}
-                <line x1={layout.x + 5} y1={layout.y + ZONE_HEADER - 0.5} x2={layout.x + layout.w - 5} y2={layout.y + ZONE_HEADER - 0.5} stroke={theme.border} strokeWidth={0.8} />
-
-                {isHaz ? (
-                  <>
-                    <text x={layout.x + layout.w / 2} y={layout.y + 13} textAnchor="middle" fontSize={12} fontWeight="900" fill={theme.title} fontFamily="system-ui">&#9888;</text>
-                    <text x={layout.x + layout.w / 2} y={layout.y + 25} textAnchor="middle" fontSize={8} fontWeight="800" fill={theme.title} fontFamily="system-ui">HAZ</text>
-                  </>
-                ) : (
-                  <>
-                    <text x={layout.x + 9} y={layout.y + 16} fontSize={13} fontWeight="500" fill={theme.title} fontFamily="system-ui" textAnchor="start">
-                      {layout.zone?.name || code}
-                    </text>
-                    <text x={layout.x + 9} y={layout.y + 27} fontSize={8.5} fontWeight="400" fill={theme.title} fontFamily="system-ui" textAnchor="start" opacity={0.65}>
-                      {zs.length} slots · {occ} occupied
-                    </text>
-                  </>
-                )}
-
-                {zs.map((s, idx) => {
-                  const col = idx % layout.cols;
-                  const row = Math.floor(idx / layout.cols);
-                  const sx = layout.x + ZONE_PAD + col * (SLOT_W + SLOT_GAP);
-                  const sy = layout.y + ZONE_HEADER + ZONE_PAD + row * (SLOT_H + SLOT_NUM_H + SLOT_GAP);
-                  const cx = sx + SLOT_W / 2;
-                  const isOver = dropTarget?.type === "slot" && dropTarget.id === s.id;
-                  const isHov = hoveredSlot === s.id;
-                  const isSelected = selectedSlot?.id === s.id;
-                  const fill = trailerFill(s, isOver);
-                  const stroke = trailerStroke(s, isHov, isOver);
-                  const detained = isDetention(s);
-
-                  const matchesFilter = slotMatchesFilter(s);
-                  return (
-                    <g key={s.id} data-testid={`map-slot-${s.id}`}
-                      onMouseEnter={e => { setHoveredSlot(s.id); setHoverSlotData({ slot: s, x: e.clientX, y: e.clientY }); setHoverDoorData(null); }}
-                      onMouseLeave={() => { setHoveredSlot(null); setHoverSlotData(null); }}
-                      onMouseDown={e => { if (s.visitNumber) startDragSlot(s, e); }}
-                      style={{ cursor: s.visitNumber ? "grab" : "default", opacity: hasFilters && !matchesFilter ? 0.15 : 1, transition: "opacity 0.2s" }}>
-
-                      {/* Selection highlight ring */}
-                      {isSelected && (
-                        <rect x={sx - 5} y={sy - 5} width={SLOT_W + 10} height={SLOT_H + 10} rx={6}
-                          fill="none" stroke="#f59e0b" strokeWidth={3} filter="url(#sel)">
-                          <animate attributeName="stroke-opacity" values="1;0.4;1" dur="1.4s" repeatCount="indefinite" />
-                        </rect>
-                      )}
-
-                      {s.visitNumber ? (
-                        <>
-                          <rect x={sx} y={sy} width={SLOT_W} height={SLOT_H} rx={3}
-                            fill={fill} stroke={isSelected ? "#f59e0b" : stroke}
-                            strokeWidth={isSelected ? 2.5 : isHov || isOver ? 2.5 : 1.5}
-                            filter={isHov ? "url(#lift)" : undefined} />
-                          <rect x={sx} y={sy} width={SLOT_W} height={6} rx={3} fill="rgba(255,255,255,0.16)" />
-                          {detained && <rect x={sx - 2} y={sy - 2} width={SLOT_W + 4} height={SLOT_H + 4} rx={4} fill="none" stroke="#ef4444" strokeWidth={2} strokeDasharray="4 2" />}
-
-                          {zoomLevel === "far" ? (
-                            <text x={cx} y={sy + SLOT_H / 2 + 4} textAnchor="middle" fontSize={13} fontWeight="900" fill="#fff" fontFamily="monospace">{scac(s.trailerNumber)}</text>
-                          ) : zoomLevel === "mid" ? (
-                            <>
-                              <text x={cx} y={sy + 17} textAnchor="middle" fontSize={11} fontWeight="800" fill="#fff" fontFamily="monospace">{scac(s.trailerNumber)}</text>
-                              <text x={cx} y={sy + 28} textAnchor="middle" fontSize={7.5} fill="rgba(255,255,255,0.75)" fontFamily="monospace">{(s.trailerNumber || "").slice(-5)}</text>
-                            </>
-                          ) : (
-                            <>
-                              <text x={cx} y={sy + 13} textAnchor="middle" fontSize={10} fontWeight="800" fill="#fff" fontFamily="monospace">{scac(s.trailerNumber)}</text>
-                              <text x={cx} y={sy + 23} textAnchor="middle" fontSize={7} fill="rgba(255,255,255,0.8)" fontFamily="monospace">{(s.trailerNumber || "").slice(-5)}</text>
-                              <text x={cx} y={sy + 33} textAnchor="middle" fontSize={6.5} fill="rgba(255,255,255,0.6)" fontFamily="system-ui">
-                                {s.carrierName ? s.carrierName.split(" ")[0] : ""}
-                              </text>
-                            </>
-                          )}
-
-                          {zoomLevel !== "far" && (
-                            <>
-                              {s.movePriority === "high" && (
-                                <><circle cx={sx + SLOT_W - 7} cy={sy + 7} r={4.5} fill="#ef4444" />
-                                  <circle cx={sx + SLOT_W - 7} cy={sy + 7} r={2.5} fill="#fca5a5" opacity={0.8} /></>
-                              )}
-                              {s.movePriority === "medium" && (
-                                <circle cx={sx + SLOT_W - 7} cy={sy + 7} r={4} fill="#f97316" />
-                              )}
-                              {s.movePriority === "urgent" && (
-                                <><circle cx={sx + SLOT_W - 7} cy={sy + 7} r={4.5} fill="#dc2626" />
-                                  <text x={sx + SLOT_W - 7} y={sy + 10} textAnchor="middle" fontSize={5.5} fill="#fff" fontWeight="900">!</text></>
-                              )}
-                              {s.movementType === "inbound" && (
-                                <polygon points={`${sx + 6},${sy + SLOT_H - 10} ${sx + 10},${sy + SLOT_H - 5} ${sx + 14},${sy + SLOT_H - 10}`} fill="rgba(255,255,255,0.6)" />
-                              )}
-                              {(s.movementType === "outbound" || s.movementType === "live_unload") && (
-                                <polygon points={`${sx + 6},${sy + SLOT_H - 5} ${sx + 10},${sy + SLOT_H - 10} ${sx + 14},${sy + SLOT_H - 5}`} fill="rgba(255,255,255,0.6)" />
-                              )}
-                              {(s.visitStatus === "loading" || s.visitStatus === "unloading") && (
-                                <g>
-                                  <rect x={sx + SLOT_W - 15} y={sy + SLOT_H - 12} width={10} height={8} rx={1} fill="rgba(255,255,255,0.2)" stroke="rgba(255,255,255,0.5)" strokeWidth={0.8} />
-                                  {s.visitStatus === "loading"
-                                    ? <polygon points={`${sx + SLOT_W - 10},${sy + SLOT_H - 16} ${sx + SLOT_W - 7},${sy + SLOT_H - 12} ${sx + SLOT_W - 13},${sy + SLOT_H - 12}`} fill="rgba(255,255,255,0.6)" />
-                                    : <polygon points={`${sx + SLOT_W - 10},${sy + SLOT_H - 12} ${sx + SLOT_W - 7},${sy + SLOT_H - 16} ${sx + SLOT_W - 13},${sy + SLOT_H - 16}`} fill="rgba(255,255,255,0.6)" />
-                                  }
-                                </g>
-                              )}
-                              {detained && (
-                                <g>
-                                  <circle cx={sx + 7} cy={sy + 7} r={4.5} fill="#ef4444" />
-                                  <text x={sx + 7} y={sy + 10} textAnchor="middle" fontSize={6} fill="#fff" fontWeight="900">!</text>
-                                </g>
-                              )}
-                            </>
-                          )}
-
-                          <text x={cx} y={sy + SLOT_H + 11} textAnchor="middle" fontSize={8} fill="#6b7280" fontFamily="system-ui" fontWeight="600">{s.slotNumber}</text>
-                        </>
-                      ) : s.isBlocked ? (
-                        <>
-                          <rect x={sx} y={sy} width={SLOT_W} height={SLOT_H} rx={3} fill="#f1f5f9" stroke="#94a3b8" strokeWidth={1.2} />
-                          <line x1={sx + 8} y1={sy + 8} x2={sx + SLOT_W - 8} y2={sy + SLOT_H - 8} stroke="#94a3b8" strokeWidth={1.2} />
-                          <line x1={sx + SLOT_W - 8} y1={sy + 8} x2={sx + 8} y2={sy + SLOT_H - 8} stroke="#94a3b8" strokeWidth={1.2} />
-                          <text x={cx} y={sy + SLOT_H + 11} textAnchor="middle" fontSize={8} fill="#9ca3af" fontFamily="system-ui">{s.slotNumber}</text>
-                        </>
-                      ) : (
-                        <>
-                          <rect x={sx} y={sy} width={SLOT_W} height={SLOT_H} rx={3}
-                            fill="#f8fafc" stroke={isOver ? "#2563eb" : "#cbd5e1"}
-                            strokeWidth={isOver ? 2.5 : 1.2} strokeDasharray={isOver ? undefined : "5 3"} />
-                          <text x={cx} y={sy + SLOT_H / 2 + 4} textAnchor="middle" fontSize={8} fill="#94a3b8" fontFamily="system-ui" fontWeight="700">{s.slotNumber}</text>
-                        </>
-                      )}
-                    </g>
-                  );
-                })}
-              </g>
-            );
-          })}
-
-          {/* Gate */}
-          <rect x={GATE_X + 4} y={GATE_Y + 6} width={GATE_W} height={GATE_H} rx={6} fill="#00000020" />
-          <rect x={GATE_X} y={GATE_Y} width={GATE_W} height={GATE_H} rx={6}
-            fill={dropTarget?.type === "gate" ? "#eff6ff" : "#fffbeb"}
-            stroke={dropTarget?.type === "gate" ? "#3b82f6" : "#d97706"}
-            strokeWidth={dropTarget?.type === "gate" ? 3 : 1.5}
-            filter="url(#cs)" />
-          <rect x={GATE_X + 8} y={GATE_Y + 6} width={42} height={48} rx={3}
-            fill={dropTarget?.type === "gate" ? "#bfdbfe" : "#fde68a"} stroke="#f59e0b" strokeWidth={0.8} />
-          <text x={GATE_X + 29} y={GATE_Y + 25} textAnchor="middle" fontSize={7} fontWeight="700" fill="#92400e">GUARD</text>
-          <text x={GATE_X + 29} y={GATE_Y + 34} textAnchor="middle" fontSize={6} fill="#92400e">BOOTH</text>
-          <rect x={GATE_X + 52} y={GATE_Y + 10} width={6} height={42} rx={2.5} fill="#475569" />
-          <rect x={GATE_X + 148} y={GATE_Y + 10} width={6} height={42} rx={2.5} fill="#475569" />
-          <rect x={GATE_X + 58} y={GATE_Y + 26} width={86} height={4} rx={1.5} fill="#f59e0b" />
-          <rect x={GATE_X + 154} y={GATE_Y + 26} width={76} height={4} rx={1.5} fill="#ef4444" />
-          <text x={GATE_X + GATE_W / 2} y={GATE_Y + 20} textAnchor="middle"
-            fontSize={11} fontWeight="800"
-            fill={dropTarget?.type === "gate" ? "#1d4ed8" : "#92400e"} fontFamily="system-ui">
-            GATE 3 &#8211; OUTBOUND
-          </text>
-          <text x={GATE_X + GATE_W / 2} y={GATE_Y + 35} textAnchor="middle" fontSize={7} fill="#a16207" fontFamily="system-ui">
-            Drag trailer here to exit
-          </text>
-
-          {/* Drag line */}
-          {dragLine && (
-            <g>
-              <line x1={dragLine.x1} y1={dragLine.y1} x2={dragLine.x2} y2={dragLine.y2}
-                stroke="#3b82f6" strokeWidth={2.5} strokeDasharray="7 4" opacity={0.9} markerEnd="url(#arrow)" />
-              <circle cx={dragLine.x1} cy={dragLine.y1} r={7} fill="#3b82f6" opacity={0.35} />
-              <circle cx={dragLine.x2} cy={dragLine.y2} r={9} fill={dropTarget ? "#22c55e" : "#ef4444"} opacity={0.7} />
-            </g>
-          )}
-        </svg>
-
-        {hoverSlotData && !isDragging && !dragPending && (
-          <SlotTooltip data={hoverSlotData} containerRef={containerRef} />
-        )}
-        {hoverDoorData && !isDragging && !dragPending && (
-          <DoorTooltip data={hoverDoorData} containerRef={containerRef} />
-        )}
-
-        {isDragging && (
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-blue-600 text-white px-4 py-2 rounded-full shadow-2xl text-sm font-semibold flex items-center gap-2 z-50 pointer-events-none border border-blue-400">
-            <Truck className="h-4 w-4" /> Moving {dragPayload?.trailerNumber}
-            <ArrowRight className="h-4 w-4" />
-            {dropTarget ? <span className="text-green-300">{dropTarget.name}</span>
-              : <span className="text-yellow-300">Drop on empty slot, dock, or gate</span>}
-          </div>
-        )}
-
-        {/* Mini-map (bottom-right) */}
-        <MiniMap
-          viewBox={viewBox}
-          slots={slots}
-          doors={doors}
-          selectedSlotId={selectedSlot?.id ?? null}
-          slotPositions={slotPositions}
-          doorPositions={doorPositions}
-          zoneLayouts={zoneLayouts}
-        />
       </div>
 
+      {/* ── Move Request Dialog ────────────────────────────────────────────── */}
       <Dialog open={showMoveDialog} onOpenChange={o => { if (!o) closeMoveDialog(); }}>
         <DialogContent className="sm:max-w-md" data-testid="dialog-create-move">
           <DialogHeader>
@@ -1123,12 +1316,96 @@ function StatPill({ label, value, color, textColor }: { label: string; value: nu
   );
 }
 
-function Row({ label, value, mono, className }: { label: string; value: string; mono?: boolean; className?: string }) {
+function DetailRow({ label, value, mono, className }: { label: string; value: string; mono?: boolean; className?: string }) {
   return (
-    <div className="flex justify-between text-xs">
-      <span className="text-gray-400">{label}</span>
-      <span className={`font-semibold ${mono ? "font-mono" : ""} ${className || "text-gray-800 dark:text-gray-200"}`}>{value}</span>
+    <div className="flex justify-between text-xs gap-2">
+      <span className="text-muted-foreground shrink-0">{label}</span>
+      <span className={`font-semibold text-right ${mono ? "font-mono" : ""} ${className || "text-foreground"}`}>{value}</span>
     </div>
+  );
+}
+
+type QueueUrgency = "critical" | "warning" | "ready" | "elevated";
+
+function QueueSection({
+  title, count, urgency, icon, emptyText, children,
+}: {
+  title: string; count: number; urgency: QueueUrgency; icon: React.ReactNode;
+  emptyText: string; children: React.ReactNode;
+}) {
+  const [open, setOpen] = useState(true);
+
+  const countStyle: Record<QueueUrgency, string> = {
+    critical: "bg-red-100 text-red-700 dark:bg-red-950/40 dark:text-red-400",
+    warning:  "bg-amber-100 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400",
+    ready:    "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400",
+    elevated: "bg-orange-100 text-orange-700 dark:bg-orange-950/40 dark:text-orange-400",
+  };
+  const iconStyle: Record<QueueUrgency, string> = {
+    critical: "text-red-500",
+    warning:  "text-amber-500",
+    ready:    "text-emerald-500",
+    elevated: "text-orange-500",
+  };
+
+  return (
+    <div className="border-b last:border-b-0">
+      <button
+        onClick={() => setOpen(v => !v)}
+        className="w-full flex items-center gap-1.5 px-3 py-2 text-left hover:bg-muted/40 transition-colors"
+      >
+        <ChevronDown className={`h-3 w-3 text-muted-foreground transition-transform duration-150 ${!open ? "-rotate-90" : ""}`} />
+        <span className={`${iconStyle[urgency]} shrink-0`}>{icon}</span>
+        <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground flex-1 leading-none">{title}</span>
+        {count > 0 && (
+          <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full leading-none ${countStyle[urgency]}`}>{count}</span>
+        )}
+      </button>
+
+      {open && (
+        <div className="px-1.5 pb-1.5">
+          {count === 0 ? (
+            <p className="text-[10px] text-muted-foreground px-2 py-1.5 italic">{emptyText}</p>
+          ) : (
+            <div className="space-y-0.5">{children}</div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function QueueItem({ slot, isSelected, onClick }: { slot: MapSlot; isSelected: boolean; onClick: () => void }) {
+  const dh = dwellHours(slot.checkInTime ?? null);
+  const isOnHold = slot.holdStatus && slot.holdStatus !== "none";
+  const isDetained = dh > 24;
+  const isAging = dh > 12 && dh <= 24;
+
+  return (
+    <button
+      onClick={onClick}
+      className={`w-full flex items-start gap-2 px-2 py-2 rounded-md text-left transition-colors ${
+        isSelected
+          ? "bg-blue-50 border border-blue-200 dark:bg-blue-950/30 dark:border-blue-800"
+          : "hover:bg-muted/50"
+      }`}
+    >
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-1">
+          <span className="text-[11px] font-mono font-bold text-foreground truncate">{slot.trailerNumber}</span>
+          {isOnHold && <AlertTriangle className="h-2.5 w-2.5 text-red-500 shrink-0" />}
+          {isDetained && !isOnHold && <Clock className="h-2.5 w-2.5 text-amber-500 shrink-0" />}
+        </div>
+        <div className="text-[9px] text-muted-foreground truncate mt-0.5">{slot.slotNumber} · {slot.zoneName}</div>
+      </div>
+      {dh > 0 && (
+        <span className={`text-[9px] font-bold shrink-0 mt-0.5 tabular-nums ${
+          isDetained ? "text-red-500" : isAging ? "text-amber-500" : "text-muted-foreground"
+        }`}>
+          {Math.round(dh)}h
+        </span>
+      )}
+    </button>
   );
 }
 
