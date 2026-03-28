@@ -5,7 +5,6 @@ import {
   LayoutDashboard,
   CalendarDays,
   LogIn,
-  LogOut,
   Truck,
   DoorOpen,
   ArrowRightLeft,
@@ -25,6 +24,8 @@ import {
   BarChart3,
   TrendingUp,
   PlayCircle,
+  Mail,
+  Users,
 } from "lucide-react";
 
 import {
@@ -56,6 +57,7 @@ import {
   DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
 import type { Persona } from "@/App";
+import { useProductMode, isStandardMode } from "@/lib/product-mode";
 
 interface NavItem {
   title: string;
@@ -63,6 +65,7 @@ interface NavItem {
   icon: any;
   roles?: string[];
   badgeKey?: string;
+  aiOnly?: boolean;
 }
 
 const dashboardItem: NavItem = {
@@ -79,26 +82,31 @@ const operationsItems: NavItem[] = [
   { title: "Yard Map", url: "/yard/map", icon: MapPin, roles: ["admin", "yard_manager", "supervisor", "yard_jockey"] },
   { title: "Dock Management", url: "/dock", icon: DoorOpen, roles: ["admin", "yard_manager", "supervisor", "dock_user"] },
   { title: "Yard Moves", url: "/moves", icon: ArrowRightLeft, roles: ["admin", "yard_manager", "supervisor", "yard_jockey", "dock_user"], badgeKey: "movePending" },
+];
+
+const complianceItems: NavItem[] = [
+  { title: "Holds & Exceptions", url: "/exceptions", icon: AlertTriangle, roles: ["admin", "yard_manager", "supervisor"], badgeKey: "exceptionsOpen" },
+  { title: "Inspections", url: "/inspections", icon: ShieldCheck, roles: ["admin", "yard_manager", "supervisor", "gate_guard", "dock_user"] },
+  { title: "Yard Audit", url: "/yard/audit", icon: ClipboardCheck, roles: ["admin", "yard_manager", "supervisor"] },
+];
+
+const analyticsItems: NavItem[] = [
+  { title: "Reports & Analytics", url: "/reports", icon: BarChart3, roles: ["admin", "yard_manager", "supervisor"] },
+  { title: "Revenue", url: "/revenue", icon: TrendingUp, roles: ["admin", "yard_manager", "supervisor"] },
   { title: "Notifications", url: "/notifications", icon: Bell, badgeKey: "notificationsCount" },
 ];
 
-const checksItems: NavItem[] = [
-  { title: "Holds & Exceptions", url: "/exceptions", icon: AlertTriangle, roles: ["admin", "yard_manager", "supervisor"], badgeKey: "exceptionsOpen" },
-  { title: "Yard Audit", url: "/yard/audit", icon: ClipboardCheck, roles: ["admin", "yard_manager", "supervisor"] },
-  { title: "Inspections", url: "/inspections", icon: ShieldCheck, roles: ["admin", "yard_manager", "supervisor", "gate_guard", "dock_user"] },
-  { title: "Reports & Analytics", url: "/reports", icon: BarChart3, roles: ["admin", "yard_manager", "supervisor"] },
-  { title: "Revenue", url: "/revenue", icon: TrendingUp, roles: ["admin", "yard_manager", "supervisor"] },
-];
-
-const configurationsItems: NavItem[] = [
-  { title: "AI Copilot", url: "/admin/ai-config", icon: Bot, roles: ["admin"] },
-  { title: "Yard Setup", url: "/admin/yard-setup", icon: Settings2, roles: ["admin"] },
-  { title: "Audit Log", url: "/admin/audit", icon: ClipboardList, roles: ["admin", "yard_manager"] },
+const adminItems: NavItem[] = [
   { title: "Carrier Management", url: "/admin/carriers", icon: Building2, roles: ["admin", "yard_manager"] },
-  { title: "Lifecycle Video", url: "/video", icon: PlayCircle },
+  { title: "Yard Setup", url: "/admin/yard-setup", icon: Settings2, roles: ["admin"] },
+  { title: "Users", url: "/admin/users", icon: Users, roles: ["admin"] },
+  { title: "Audit Log", url: "/admin/audit", icon: ClipboardList, roles: ["admin", "yard_manager"] },
+  { title: "Email Intelligence", url: "/email-intelligence", icon: Mail, roles: ["admin", "yard_manager"], aiOnly: true },
+  { title: "AI Copilot", url: "/admin/ai-config", icon: Bot, roles: ["admin"], aiOnly: true },
+  { title: "Lifecycle Video", url: "/video", icon: PlayCircle, aiOnly: true },
 ];
 
-export const allNavItems = [dashboardItem, ...operationsItems, ...checksItems, ...configurationsItems];
+export const allNavItems = [dashboardItem, ...operationsItems, ...complianceItems, ...analyticsItems, ...adminItems];
 
 function NavItem({ item, badgeCounts }: { item: NavItem; badgeCounts?: Record<string, number> }) {
   const [location] = useLocation();
@@ -150,6 +158,7 @@ function CollapsibleNavGroup({
   badgeCounts,
   defaultOpen = true,
   collapsible = true,
+  hideAI = false,
 }: {
   label: string;
   items: NavItem[];
@@ -157,9 +166,16 @@ function CollapsibleNavGroup({
   badgeCounts?: Record<string, number>;
   defaultOpen?: boolean;
   collapsible?: boolean;
+  hideAI?: boolean;
 }) {
   const [open, setOpen] = useState(defaultOpen);
-  const filtered = items.filter((item) => !item.roles || !userRole || item.roles.includes(userRole));
+  const filtered = items.filter((item) => {
+    if (!item.roles || !userRole || item.roles.includes(userRole)) {
+      if (hideAI && item.aiOnly) return false;
+      return true;
+    }
+    return false;
+  });
   if (filtered.length === 0) return null;
 
   if (!collapsible) {
@@ -227,15 +243,6 @@ const ROLE_GROUPS: { key: string; label: string; roles: string[] }[] = [
   { key: "carrier", label: "Carrier Portal", roles: ["carrier"] },
 ];
 
-const ROLE_DESCRIPTIONS: Record<string, string> = {
-  admin: "Full system access & configuration",
-  yard_manager: "Operational oversight & assignments",
-  gate_guard: "Check-in & check-out only",
-  yard_jockey: "Move tasks & yard positioning",
-  dock_user: "Dock door operations",
-  carrier: "Appointment visibility & status",
-};
-
 function useSidebarBadgeCounts() {
   const { data } = useQuery<{
     gateStats: { expectedToday: number; checkedInToday: number };
@@ -273,6 +280,9 @@ export function AppSidebar({
   onPersonaChange?: (persona: Persona) => void;
 }) {
   const [location] = useLocation();
+  const { mode } = useProductMode();
+  const hideAI = isStandardMode(mode);
+
   const displayName = currentPersona
     ? `${currentPersona.firstName} ${currentPersona.lastName}`
     : "Select User";
@@ -402,7 +412,7 @@ export function AppSidebar({
                   asChild
                   data-active={isDashboardActive}
                   data-testid="nav-"
-                  className={`h-8 text-[13px] transition-colors ${isDashboardActive ? "text-primary font-semibold bg-primary/5" : "text-sidebar-foreground/80 hover:text-sidebar-foreground"}`}
+                  className={`h-8 text-[13px] transition-colors ${isDashboardActive ? "text-primary font-bold bg-primary/10 pl-4" : "text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-accent/50"}`}
                 >
                   <Link href="/">
                     <LayoutDashboard className="h-4 w-4 shrink-0" />
@@ -420,21 +430,33 @@ export function AppSidebar({
           userRole={userRole}
           badgeCounts={badgeCounts}
           collapsible={false}
+          hideAI={hideAI}
         />
 
         <CollapsibleNavGroup
           label="Compliance"
-          items={checksItems}
+          items={complianceItems}
           userRole={userRole}
           badgeCounts={badgeCounts}
           defaultOpen={true}
+          hideAI={hideAI}
         />
 
         <CollapsibleNavGroup
-          label="Configurations"
-          items={configurationsItems}
+          label="Analytics"
+          items={analyticsItems}
           userRole={userRole}
+          badgeCounts={badgeCounts}
           defaultOpen={true}
+          hideAI={hideAI}
+        />
+
+        <CollapsibleNavGroup
+          label="Administration"
+          items={adminItems}
+          userRole={userRole}
+          defaultOpen={false}
+          hideAI={hideAI}
         />
 
       </SidebarContent>

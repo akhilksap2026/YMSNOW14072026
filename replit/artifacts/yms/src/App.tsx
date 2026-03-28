@@ -19,6 +19,8 @@ import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import NotFound from "@/pages/not-found";
 import LoginPage from "@/pages/login";
+import { ProductModeProvider, useProductMode, showAIRecommendations } from "@/lib/product-mode";
+import { ModeSelector } from "@/components/mode-selector";
 
 const SHIFT_START_KEY = "ymsnow_shift_start";
 const LOGIN_KEY = "ymsnow_logged_in";
@@ -345,11 +347,14 @@ function AuthenticatedApp({ onLogout }: { onLogout: () => void }) {
     }
   };
 
+  const { mode } = useProductMode();
+  const aiModeEnabled = showAIRecommendations(mode);
+
   const { data: aiConfig } = useQuery<{ copilotEnabled: boolean }>({
     queryKey: ["/api/ai-config"],
     select: (d: any) => ({ copilotEnabled: d.copilotEnabled }),
   });
-  const aiEnabled = aiConfig?.copilotEnabled !== false;
+  const aiEnabled = aiConfig?.copilotEnabled !== false && aiModeEnabled;
 
   const [emailPanelOpen, setEmailPanelOpen] = useState(false);
   const { data: emailAlerts = [] } = useQuery<{ id: number; alertStatus: string }[]>({
@@ -426,6 +431,8 @@ function AuthenticatedApp({ onLogout }: { onLogout: () => void }) {
             <div className="flex items-center gap-1.5">
               <ShiftClock />
               <Separator orientation="vertical" className="h-4 hidden sm:block" />
+              <ModeSelector />
+              <Separator orientation="vertical" className="h-4 hidden sm:block" />
               <Button
                 size="sm"
                 variant="ghost"
@@ -485,7 +492,7 @@ function AuthenticatedApp({ onLogout }: { onLogout: () => void }) {
           </main>
         </div>
       </div>
-      <AIAssistant currentPath={location} userRole={userRole || "admin"} />
+      {aiEnabled && <AIAssistant currentPath={location} userRole={userRole || "admin"} />}
       {(userRole === "admin" || userRole === "yard_manager") && aiEnabled && (
         <EmailInboxPanel isOpen={emailPanelOpen} onClose={() => setEmailPanelOpen(false)} />
       )}
@@ -524,6 +531,7 @@ function AppGate() {
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
+      <ProductModeProvider>
       <ThemeProvider>
         <TooltipProvider>
           <Switch>
@@ -544,6 +552,7 @@ export default function App() {
           <Toaster />
         </TooltipProvider>
       </ThemeProvider>
+      </ProductModeProvider>
     </QueryClientProvider>
   );
 }

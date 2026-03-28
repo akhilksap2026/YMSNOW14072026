@@ -1,0 +1,67 @@
+You are working on an existing YMS React/TypeScript codebase.
+
+Business goal:
+Transform this product into a crawl-walk-run platform:
+- Standard = conventional YMS
+- Assist = AI-assisted YMS
+- Optimize = AI-enhanced orchestration YMS
+
+In this phase, implement the foundation so the client first experiences a conventional YMS.
+
+Requirements:
+1. Add a global product mode system with 3 modes:
+   - standard
+   - assist
+   - optimize
+2. Persist selected mode in localStorage.
+3. Create a typed context/provider and helper utilities so all pages/components can read the current mode.
+4. Add a top-bar mode selector and visible mode badge:
+   - Standard
+   - Assist
+   - Optimize
+5. Default mode must be "standard".
+6. Refactor the existing navigation so Standard mode feels like a conventional YMS.
+7. In Standard mode:
+   - hide AI-heavy navigation items
+   - hide AI-first pages/panels/cards/badges
+   - keep core YMS workflows intact
+8. Reorganize sidebar/navigation into:
+   - primary operational items
+   - secondary/support items
+   - admin/configuration items
+9. Primary items should prioritize:
+   - Dashboard
+   - Appointments
+   - Gate
+   - Yard
+   - Docks
+   - Moves
+   - Exceptions
+   - Reports
+10. Move lower-priority items like manuals, AI-first surfaces, videos, or extra admin utilities into secondary/admin areas.
+11. Respect existing role-based visibility if present.
+12. Do not delete any AI functionality; just gate it by mode.
+13. Preserve current layout/theme and avoid broad rewrites.
+
+UX intent:
+- Standard mode must feel like a complete, operationally credible, familiar YMS.
+- The client should trust the product before seeing AI.
+
+Implementation guidance:
+- Create a centralized mode config file.
+- Create reusable helpers such as:
+  - isStandardMode
+  - isAssistMode
+  - isOptimizeMode
+  - showAIRecommendations
+  - showPredictivePanels
+  - showOptimizationWidgets
+- Keep changes modular and typed.
+
+Deliverables:
+- mode state layer
+- header mode switcher and badge
+- updated navigation structure
+- mode-gated rendering for AI-heavy surfaces in Standard mode
+- concise summary of files changed
+- short note on what should be manually tested
