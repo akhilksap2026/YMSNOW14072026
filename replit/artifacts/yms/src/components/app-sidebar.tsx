@@ -100,11 +100,11 @@ const analyticsItems: NavItem[] = [
 
 const adminItems: NavItem[] = [
   { title: "Carrier Management", url: "/admin/carriers", icon: Building2, roles: ["admin", "yard_manager"] },
-  { title: "Yard Setup", url: "/admin/yard-setup", icon: Settings2, roles: ["admin"] },
-  { title: "Users", url: "/admin/users", icon: Users, roles: ["admin"] },
-  { title: "Audit Log", url: "/admin/audit", icon: ClipboardList, roles: ["admin", "yard_manager"] },
+  { title: "Yard Setup", url: "/admin/yard-setup", icon: Settings2, roles: ["admin"], secondary: true },
+  { title: "Users", url: "/admin/users", icon: Users, roles: ["admin"], secondary: true },
+  { title: "Audit Log", url: "/admin/audit", icon: ClipboardList, roles: ["admin", "yard_manager"], secondary: true },
   { title: "Email Intelligence", url: "/email-intelligence", icon: Mail, roles: ["admin", "yard_manager"], aiOnly: true },
-  { title: "Lifecycle Video", url: "/video", icon: PlayCircle, aiOnly: true },
+  { title: "Lifecycle Video", url: "/video", icon: PlayCircle, aiOnly: true, subtle: true },
   { title: "AI Configuration", url: "/admin/ai-config", icon: Bot, roles: ["admin"], aiOnly: true, subtle: true },
 ];
 

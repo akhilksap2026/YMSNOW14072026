@@ -153,6 +153,32 @@ New `secondary?: boolean` flag on `NavItem`. Secondary items render at ~55% opac
 
 Primary commercial items at full prominence: Dashboard, Appointments, Gate Operations, Yard Inventory, Dock Management, Yard Moves, Holds & Exceptions, Reports & Analytics, Carrier Management.
 
+## Demo & Presentation Layer
+
+### Demo Helper (`components/demo-helper.tsx`)
+Dismissible mode-explainer card that appears at the top of the dashboard for admin and yard_manager roles. Per-mode localStorage dismissal key (`ymsnow_demo_helper_dismissed`). Content is enterprise-toned:
+- **Standard** — "Core yard operations — full manual control" with 3 operational bullets
+- **Assist** — "AI recommendations reduce manual decision load" with 3 specific capability bullets
+- **Optimize** — "Proactive orchestration — bottlenecks caught before they compound" with 3 intelligence bullets
+
+Each card has a mode badge, heading, subtext, bullet list, and a "Got it" dismiss button. A small note reminds: "Manual workflows remain available in all modes."
+
+### ROI / Impact Panel (`components/optimize/roi-panel.tsx`)
+Mode-gated summary of value delivered, injected into the right column of the admin/supervisor dashboard (stacked below ActionRequiredPanel):
+- **Standard** — returns null (hidden)
+- **Assist** — compact 3-metric violet card: scheduling conflicts caught, move decisions assisted, exceptions auto-analysed
+- **Optimize** — richer blue card: 3 prominent metrics (conflicts prevented, manual decisions reduced, dwell risks identified) + 2 compact rows (move prioritisation speed, carrier self-service efficiency)
+
+Metrics are derived from real dashboard stats where possible, with clearly-framed "estimated impact" labelling.
+
+### Final Sidebar Cleanup
+
+Additional items demoted to `secondary: true` (dimmed, 12px text):
+- Yard Setup — admin configuration, not daily ops
+- Users — admin utility
+- Audit Log — compliance review surface
+- Lifecycle Video — also now `subtle: true` (very faint, admin only)
+
 ## AI Features
 
 The AI assistant and email intelligence use OpenAI. Connect via Replit AI Integrations (OpenAI connector) which sets `AI_INTEGRATIONS_OPENAI_API_KEY` and `AI_INTEGRATIONS_OPENAI_BASE_URL` automatically. The system gracefully degrades if no key is configured.

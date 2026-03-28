@@ -55,6 +55,8 @@ import {
   buildOperationalBrief,
   buildAssistSummary,
 } from "@/lib/recommendation-service";
+import { DemoHelper } from "@/components/demo-helper";
+import { ROIPanel } from "@/components/optimize/roi-panel";
 
 interface DashboardStats {
   yardInventory: number;
@@ -1253,6 +1255,8 @@ function SupervisorDashboard({ s, ms, zc, ds = [], moves = [], exceptions = [] }
 
   return (
     <div className="space-y-4">
+      <DemoHelper />
+
       <PageHeader
         title="Operations Control Board"
         subtitle="Real-time yard performance and action items"
@@ -1275,8 +1279,9 @@ function SupervisorDashboard({ s, ms, zc, ds = [], moves = [], exceptions = [] }
           <RevenueKpiSection />
         </div>
 
-        <div className="lg:col-span-4 self-start">
+        <div className="lg:col-span-4 self-start space-y-4">
           <ActionRequiredPanel s={s} exceptions={exceptions} moves={moves} />
+          <ROIPanel mode={mode} stats={s} />
         </div>
       </div>
 
@@ -1326,6 +1331,8 @@ function AdminDashboard({ s, ms, zc, ds = [], moves = [], exceptions = [] }: { s
 
   return (
     <div className="space-y-4">
+      <DemoHelper />
+
       <PageHeader
         title="Operational Overview"
         subtitle="Full-facility visibility — yard, gate, dock, and fleet"
@@ -1347,8 +1354,9 @@ function AdminDashboard({ s, ms, zc, ds = [], moves = [], exceptions = [] }: { s
           <RevenueKpiSection />
         </div>
 
-        <div className="lg:col-span-4 self-start">
+        <div className="lg:col-span-4 self-start space-y-4">
           <ActionRequiredPanel s={s} exceptions={exceptions} moves={moves} />
+          <ROIPanel mode={mode} stats={s} />
         </div>
       </div>
 
