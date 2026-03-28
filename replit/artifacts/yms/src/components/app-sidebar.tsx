@@ -67,6 +67,7 @@ interface NavItem {
   badgeKey?: string;
   aiOnly?: boolean;
   subtle?: boolean;
+  secondary?: boolean;
 }
 
 const dashboardItem: NavItem = {
@@ -80,21 +81,21 @@ const operationsItems: NavItem[] = [
   { title: "Appointments", url: "/appointments", icon: CalendarDays, roles: ["admin", "yard_manager", "supervisor", "carrier"] },
   { title: "Gate Operations", url: "/gate/check-in", icon: LogIn, roles: ["admin", "yard_manager", "supervisor", "gate_guard"], badgeKey: "gateExpected" },
   { title: "Yard Inventory", url: "/yard/inventory", icon: Truck, roles: ["admin", "yard_manager", "supervisor", "gate_guard", "yard_jockey", "dock_user"] },
-  { title: "Yard Map", url: "/yard/map", icon: MapPin, roles: ["admin", "yard_manager", "supervisor", "yard_jockey"] },
+  { title: "Yard Map", url: "/yard/map", icon: MapPin, roles: ["admin", "yard_manager", "supervisor", "yard_jockey"], secondary: true },
   { title: "Dock Management", url: "/dock", icon: DoorOpen, roles: ["admin", "yard_manager", "supervisor", "dock_user"] },
   { title: "Yard Moves", url: "/moves", icon: ArrowRightLeft, roles: ["admin", "yard_manager", "supervisor", "yard_jockey", "dock_user"], badgeKey: "movePending" },
 ];
 
 const complianceItems: NavItem[] = [
   { title: "Holds & Exceptions", url: "/exceptions", icon: AlertTriangle, roles: ["admin", "yard_manager", "supervisor"], badgeKey: "exceptionsOpen" },
-  { title: "Inspections", url: "/inspections", icon: ShieldCheck, roles: ["admin", "yard_manager", "supervisor", "gate_guard", "dock_user"] },
-  { title: "Yard Audit", url: "/yard/audit", icon: ClipboardCheck, roles: ["admin", "yard_manager", "supervisor"] },
+  { title: "Inspections", url: "/inspections", icon: ShieldCheck, roles: ["admin", "yard_manager", "supervisor", "gate_guard", "dock_user"], secondary: true },
+  { title: "Yard Audit", url: "/yard/audit", icon: ClipboardCheck, roles: ["admin", "yard_manager", "supervisor"], secondary: true },
 ];
 
 const analyticsItems: NavItem[] = [
   { title: "Reports & Analytics", url: "/reports", icon: BarChart3, roles: ["admin", "yard_manager", "supervisor"] },
-  { title: "Revenue", url: "/revenue", icon: TrendingUp, roles: ["admin", "yard_manager", "supervisor"] },
-  { title: "Notifications", url: "/notifications", icon: Bell, badgeKey: "notificationsCount" },
+  { title: "Revenue", url: "/revenue", icon: TrendingUp, roles: ["admin", "yard_manager", "supervisor"], secondary: true },
+  { title: "Notifications", url: "/notifications", icon: Bell, badgeKey: "notificationsCount", secondary: true },
 ];
 
 const adminItems: NavItem[] = [
@@ -116,6 +117,7 @@ function NavItem({ item, badgeCounts }: { item: NavItem; badgeCounts?: Record<st
   const badgeCount = item.badgeKey && badgeCounts ? badgeCounts[item.badgeKey] : 0;
   const isCriticalBadge = item.badgeKey === "exceptionsOpen" && badgeCount > 0;
   const isSubtle = item.subtle && !isActive;
+  const isSecondary = item.secondary && !isActive;
 
   return (
     <SidebarMenuItem className="relative">
@@ -131,12 +133,14 @@ function NavItem({ item, badgeCounts }: { item: NavItem; badgeCounts?: Record<st
             ? "text-primary font-bold bg-primary/10 pl-4"
             : isSubtle
             ? "text-sidebar-foreground/40 hover:text-sidebar-foreground/70 hover:bg-accent/30"
+            : isSecondary
+            ? "text-sidebar-foreground/55 hover:text-sidebar-foreground/80 hover:bg-accent/40"
             : "text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-accent/50"
         }`}
       >
         <Link href={item.url}>
-          <item.icon className={`h-4 w-4 shrink-0 ${isActive ? "text-primary" : isSubtle ? "opacity-40" : ""}`} />
-          <span className={`truncate flex-1 ${isSubtle ? "text-[12px]" : ""}`}>{item.title}</span>
+          <item.icon className={`h-4 w-4 shrink-0 ${isActive ? "text-primary" : isSubtle ? "opacity-40" : isSecondary ? "opacity-50" : ""}`} />
+          <span className={`truncate flex-1 ${isSubtle ? "text-[12px]" : isSecondary ? "text-[12px]" : ""}`}>{item.title}</span>
           {badgeCount > 0 && (
             <Badge
               className={`ml-auto text-[10px] px-1.5 py-0 min-w-[20px] h-5 justify-center border-0 no-default-active-elevate ${

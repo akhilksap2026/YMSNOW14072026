@@ -1,0 +1,150 @@
+Continue working on the same YMS React/TypeScript codebase.
+
+Goal:
+Perform a safe UI refinement pass across the product so the YMS feels cleaner, more commercially credible, and more consistent across Standard, Assist, and Optimize modes.
+
+Important safety rules:
+1. Do not remove or rename existing routes.
+2. Do not delete working pages or core workflows.
+3. Do not do a full redesign or rewrite.
+4. Reuse the current design system, theme, and shared components.
+5. Make targeted UI improvements that improve consistency, readability, and usability without destabilizing the system.
+6. Preserve mode behavior:
+   - Standard = conventional YMS
+   - Assist = AI-assisted YMS
+   - Optimize = orchestration-enhanced YMS
+
+UI refinement requirements:
+
+1. Spacing consistency
+- Standardize spacing between sections, cards, tables, filters, headers, and action bars.
+- Remove cramped layouts and inconsistent padding/margins.
+- Use a consistent spacing rhythm across pages.
+- Keep the UI dense enough for enterprise use, but not visually cluttered.
+
+2. Card density
+- Review dashboard cards, summary tiles, recommendation cards, and side panels.
+- Reduce unnecessary card overload.
+- Make card layouts more scannable and balanced.
+- Avoid too many cards competing equally for attention on the same screen.
+- Ensure one primary information block stands out per major area.
+
+3. Typography hierarchy
+- Improve consistency of page titles, section headers, labels, helper text, KPIs, table headings, and body text.
+- Make page titles clearly distinct from section titles.
+- Ensure important metrics and operational statuses are visually easier to scan.
+- Reduce inconsistent text sizing and weight usage.
+
+4. Button priority rules
+- Standardize button hierarchy across the app:
+  - primary action
+  - secondary action
+  - tertiary/text action
+  - destructive action
+- Avoid multiple primary buttons in the same local area unless clearly necessary.
+- Make the most likely operational action visually obvious.
+- Ensure AI-related actions do not overpower core manual workflow actions.
+
+5. Table readability
+- Improve readability of tables used in yard, moves, appointments, docks, and exceptions.
+- Make rows easier to scan.
+- Improve alignment, spacing, and visual emphasis for key columns like status, priority, age, location, and action.
+- Ensure primary row actions are clear.
+- Reduce visual noise from too many badges or controls inside rows.
+- If helpful, improve sticky columns or visual grouping, but do not rewrite table architecture.
+
+6. Status color consistency
+- Standardize status colors and visual treatment across all modules.
+- The same or similar operational states should use the same color logic everywhere.
+- Normalize chips/badges for states like:
+  - arrived
+  - awaiting slot
+  - in yard
+  - assigned
+  - at dock
+  - loading/unloading
+  - ready out
+  - completed/exited
+  - hold/exception/blocked
+- Keep colors enterprise-appropriate and avoid excessive variety.
+
+7. Empty states
+- Improve empty states across key pages.
+- When no data is present, show:
+  - what the page is for
+  - why it may be empty
+  - what the user should do next
+- Empty states should feel useful and professional, not unfinished.
+- Apply this especially to:
+  - appointments
+  - moves
+  - exceptions
+  - reports
+  - carrier portal states where relevant
+
+8. Form layout cleanup
+- Review important forms such as appointments, gate-related forms, exception resolution forms, and carrier portal flows.
+- Improve field grouping, labels, helper text, spacing, and action placement.
+- Reduce unnecessary visual friction.
+- Keep the forms operationally clear and easy to complete.
+- If the same form has too many steps, simplify only where clearly safe and without breaking logic.
+
+9. Mobile/responsive refinements
+- Improve responsiveness for critical operational screens, especially:
+  - gate-related screens
+  - yard/moves screens
+  - carrier portal
+  - dashboard summary sections
+- Ensure layouts do not break on smaller widths.
+- Improve stacking, spacing, and action visibility on tablet/mobile-like sizes.
+- Do not attempt a full mobile redesign; focus on safe responsive improvements.
+
+10. Visual consistency across pages
+- Make major pages feel like part of the same product family.
+- Standardize:
+  - page header structure
+  - section spacing
+  - card treatment
+  - table toolbars
+  - filter bar placement
+  - detail drawer styling
+  - chip/badge behavior
+  - CTA alignment
+- Reduce page-to-page inconsistency without rewriting each screen from scratch.
+
+11. Mode-aware UI discipline
+- In Standard mode, keep the UI simpler and more conventional.
+- In Assist mode, show AI support in a restrained way that does not increase clutter.
+- In Optimize mode, allow slightly richer operational insight panels, but keep visual hierarchy controlled.
+- Ensure AI cards, badges, and recommendation areas do not make pages visually noisy.
+
+12. Keep commercial credibility in mind
+- The result should feel like enterprise operations software that is practical, readable, and trustworthy.
+- Prefer clarity and discipline over flashy visuals.
+- Reduce gimmicky or overly experimental UI behavior if present.
+
+Implementation guidance:
+- Reuse and improve existing shared components first.
+- If needed, create small reusable helpers for:
+  - section headers
+  - empty states
+  - status chip mapping
+  - button variants
+  - page spacing wrappers
+- Avoid deep refactors unless clearly necessary.
+- Make incremental improvements that are easy to verify.
+
+Deliverables:
+1. Apply a safe UI cleanup pass across major pages.
+2. Summarize:
+   - files changed
+   - shared UI components updated or added
+   - design consistency improvements made
+   - any risky areas left untouched
+3. Provide a short manual QA checklist for:
+   - spacing/layout consistency
+   - tables
+   - forms
+   - status chips
+   - responsive behavior
+   - mode-specific UI behavior

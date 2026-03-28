@@ -110,6 +110,49 @@ All AI enhancements gate behind `showAIRecommendations(mode)` from `lib/product-
 
 AI Copilot renamed to "AI Configuration" with `subtle: true` flag — renders at 40% opacity, smaller font, below Email Intelligence and Lifecycle Video in the Administration section. Still navigable but visually de-emphasized.
 
+## Optimize Mode — Operational Intelligence Layer
+
+### Recommendation Service (`lib/recommendation-service.ts`)
+
+Pure, deterministic, no API calls. Functions:
+- `getBottleneckAlerts(stats, moves, docks)` — overdue moves ≥ 1, all docks occupied, slot backlog ≥ 5
+- `getDwellRiskAlerts(stats)` — trailers aged ≥ 24h, avg dwell ≥ 4h
+- `getRecommendedNextMoves(moves)` — top 3 available moves sorted by priority then age
+- `getDockAppointmentRisk(stats)` — overdue appointments, trailers on hold ≥ 2
+- `getNextBestAction(all)` — highest-priority alert across all buckets
+- `buildOperationalBrief(stats, moves, docks)` → `OperationalBrief` (all 5 buckets + totalAlerts)
+- `buildAssistSummary(stats, moves)` → summary items for the Assist banner
+
+### Optimize Dashboard Panel (`components/optimize/optimize-dashboard-panel.tsx`)
+
+Two exported components:
+
+**`OptimizeDashboardPanel`** (Optimize mode only) — shows:
+- "Next Best Action" — blue bordered call-to-action card, most critical recommendation
+- 4 alert buckets in a 2×2 / 4-column grid: Bottlenecks | Dwell Risk | Recommended Moves | Dock & Appt Risk
+- Each bucket: colour-coded priority dots, top 2 recs, count badge, "View" link, "All clear" state if empty
+
+**`AssistSummaryBanner`** (Assist mode only) — slim violet banner listing pending counts (moves, overdue appointments, exceptions, aged trailers) with links.
+
+### Dashboard Mode Injection
+
+`AdminDashboard` and `SupervisorDashboard` both now:
+1. Call `useProductMode()` to get the current mode
+2. In Assist mode: render `AssistSummaryBanner` between PageHeader and the main grid
+3. In Optimize mode: render `OptimizeDashboardPanel` between PageHeader and the main grid
+4. Standard mode: unchanged — no AI panels, no banners
+
+### Sidebar Secondary Items
+
+New `secondary?: boolean` flag on `NavItem`. Secondary items render at ~55% opacity, smaller text (12px) — still fully accessible, just visually de-emphasised. Demoted items:
+- Yard Map (Yard Inventory is the primary Yard surface)
+- Inspections
+- Yard Audit
+- Revenue
+- Notifications
+
+Primary commercial items at full prominence: Dashboard, Appointments, Gate Operations, Yard Inventory, Dock Management, Yard Moves, Holds & Exceptions, Reports & Analytics, Carrier Management.
+
 ## AI Features
 
 The AI assistant and email intelligence use OpenAI. Connect via Replit AI Integrations (OpenAI connector) which sets `AI_INTEGRATIONS_OPENAI_API_KEY` and `AI_INTEGRATIONS_OPENAI_BASE_URL` automatically. The system gracefully degrades if no key is configured.

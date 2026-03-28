@@ -46,6 +46,15 @@ import {
   Warehouse,
   type LucideIcon,
 } from "lucide-react";
+import { useProductMode, isOptimizeMode, isAssistMode } from "@/lib/product-mode";
+import {
+  OptimizeDashboardPanel,
+  AssistSummaryBanner,
+} from "@/components/optimize/optimize-dashboard-panel";
+import {
+  buildOperationalBrief,
+  buildAssistSummary,
+} from "@/lib/recommendation-service";
 
 interface DashboardStats {
   yardInventory: number;
@@ -1238,6 +1247,10 @@ function ActivityGrid({
 // ─── Role Dashboards ──────────────────────────────────────────────────────────
 
 function SupervisorDashboard({ s, ms, zc, ds = [], moves = [], exceptions = [] }: { s: DashboardStats; ms?: MoveSummary; zc?: ZoneCapacity[]; ds?: DockDoor[]; moves?: MoveTask[]; exceptions?: OpenException[] }) {
+  const { mode } = useProductMode();
+  const brief = isOptimizeMode(mode) ? buildOperationalBrief(s, moves, ds) : null;
+  const assistItems = isAssistMode(mode) ? buildAssistSummary(s, moves) : [];
+
   return (
     <div className="space-y-4">
       <PageHeader
@@ -1247,6 +1260,14 @@ function SupervisorDashboard({ s, ms, zc, ds = [], moves = [], exceptions = [] }
         kpiStrip={<UnifiedKpiStrip6 s={s} ms={ms} zc={zc} />}
         kpiGrid
       />
+
+      {isAssistMode(mode) && assistItems.length > 0 && (
+        <AssistSummaryBanner items={assistItems} />
+      )}
+
+      {isOptimizeMode(mode) && brief && (
+        <OptimizeDashboardPanel brief={brief} />
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
         <div className="lg:col-span-8 space-y-4">
@@ -1299,6 +1320,10 @@ function CarrierDashboard({ s }: { s: DashboardStats }) {
 }
 
 function AdminDashboard({ s, ms, zc, ds = [], moves = [], exceptions = [] }: { s: DashboardStats; ms?: MoveSummary; zc?: ZoneCapacity[]; ds?: DockDoor[]; moves?: MoveTask[]; exceptions?: OpenException[] }) {
+  const { mode } = useProductMode();
+  const brief = isOptimizeMode(mode) ? buildOperationalBrief(s, moves, ds) : null;
+  const assistItems = isAssistMode(mode) ? buildAssistSummary(s, moves) : [];
+
   return (
     <div className="space-y-4">
       <PageHeader
@@ -1308,6 +1333,14 @@ function AdminDashboard({ s, ms, zc, ds = [], moves = [], exceptions = [] }: { s
         kpiStrip={<UnifiedKpiStrip6 s={s} ms={ms} zc={zc} />}
         kpiGrid
       />
+
+      {isAssistMode(mode) && assistItems.length > 0 && (
+        <AssistSummaryBanner items={assistItems} />
+      )}
+
+      {isOptimizeMode(mode) && brief && (
+        <OptimizeDashboardPanel brief={brief} />
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
         <div className="lg:col-span-8 space-y-4">
