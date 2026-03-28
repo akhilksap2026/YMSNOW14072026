@@ -1,0 +1,78 @@
+Continue working on the same YMS React/TypeScript codebase.
+
+Goal:
+Make the product demo-ready, commercially sharper, and simpler while preserving stability and avoiding disruptive cleanup.
+
+Important safety rules:
+1. Do not remove or rename existing routes in this phase.
+2. Do not delete current working pages or admin tools; demote or hide them if needed.
+3. Do not perform large refactors.
+4. Focus on polish, presentation, and safe simplification.
+5. Preserve current working flows unless a tiny cleanup is clearly safe.
+
+Business intent:
+- the client should clearly see:
+  - Standard = conventional YMS
+  - Assist = less manual effort
+  - Optimize = better decisions and orchestration
+- the product should feel focused, not overloaded
+
+Requirements:
+
+1. Add a small demo helper or presenter panel that explains:
+   - what Standard mode is
+   - what Assist mode adds
+   - what Optimize mode adds
+   Keep it enterprise-oriented and dismissible.
+
+2. Add an ROI / impact panel:
+   - hide in Standard mode
+   - show a light impact summary in Assist mode
+   - show a richer value panel in Optimize mode
+   Example metrics:
+   - manual effort reduced
+   - scheduling conflicts prevented
+   - dwell risks identified
+   - faster move prioritization
+   - carrier self-service efficiency
+
+3. Perform a final cleanup pass safely:
+   - demote weak or non-essential surfaces from primary attention
+   - reduce duplicate entry points where this can be done without breaking routing
+   - reduce unnecessary clicks in visible key flows only if clearly safe
+   - keep AI embedded instead of scattered
+
+4. Keep the final visible product centered on:
+   - Dashboard
+   - Appointments
+   - Gate
+   - Yard
+   - Docks
+   - Moves
+   - Exceptions
+   - Reports
+   - Carrier Portal
+
+5. Ensure these items are not primary unless clearly necessary:
+   - manuals
+   - videos
+   - standalone AI destinations
+   - extra admin utilities
+   - weak secondary modules
+
+6. Audit major pages for mode consistency:
+   - Standard feels complete without AI
+   - Assist adds help without clutter
+   - Optimize adds value without chaos
+
+7. Final stabilization:
+   - check that mode switching does not break layout, routing, or major workflows
+   - keep code clean and avoid unnecessary rewrites
+
+Deliverables:
+- demo helper panel
+- ROI / impact panel
+- final cleanup of unnecessary visible complexity
+- concise summary of files changed
+- note any risks introduced
+- final manual QA checklist

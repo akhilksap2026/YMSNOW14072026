@@ -1,0 +1,73 @@
+Continue working on the same YMS React/TypeScript codebase.
+
+Goal:
+Add Optimize mode as a light orchestration layer while preserving current working pages and avoiding risky consolidation.
+
+Important safety rules:
+1. Do not remove or rename existing routes.
+2. Do not rewrite the dashboard, yard, or move pages from scratch.
+3. Do not fully merge Yard Inventory, Yard Map, and Moves in this phase.
+4. Keep current manual workflows available in all modes.
+5. Add optimization features through reusable panels, service utilities, and conditional rendering.
+6. If a consolidation is risky, keep separate pages but align them visually and conceptually.
+
+Business intent:
+- Optimize mode should feel like an upgraded YMS, not a different product
+- overlapping surfaces should become more coherent without destabilizing the app
+
+Requirements:
+
+1. Enhance the dashboard with mode-aware behavior:
+   - Standard mode = conventional dashboard only
+   - Assist mode = light recommendations or summaries
+   - Optimize mode = proactive operational panels
+
+2. In Optimize mode, add only a small set of useful panels:
+   - predicted bottlenecks
+   - dwell-risk alerts
+   - recommended next moves
+   - dock or appointment risk
+   - next best action
+
+3. Do not overload the dashboard:
+   - keep optimization panels limited and meaningful
+   - avoid decorative or experimental AI widgets
+
+4. Create a lightweight recommendation/optimization service layer that can generate structured recommendations for:
+   - appointments
+   - moves
+   - exceptions
+   - docks
+   Use simple deterministic logic for now.
+
+5. Start moving toward a clearer Yard Control concept safely:
+   - enhance the current main Yard area with:
+     - recommended next moves
+     - aging or blocked trailers
+     - key alerts
+   - do not remove Yard Inventory or Yard Map pages in this phase
+   - do not perform a full information architecture rewrite
+
+6. Reduce visible module sprawl safely:
+   - keep commercial focus on:
+     - Dashboard
+     - Appointments
+     - Gate
+     - Yard
+     - Docks
+     - Moves
+     - Exceptions
+     - Reports
+     - Carrier Portal
+   - do not delete secondary modules; only demote or reduce their prominence
+
+7. Preserve manual override and existing workflows in all modes.
+
+Deliverables:
+- optimize-mode dashboard enhancements
+- lightweight recommendation service
+- safer movement toward a Yard Control direction
+- reduced visible module sprawl where safe
+- concise summary of files changed
+- note any risks introduced
+- short manual testing checklist

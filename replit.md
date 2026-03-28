@@ -87,8 +87,28 @@ All AI enhancements gate behind `showAIRecommendations(mode)` from `lib/product-
 ### Assist Features
 
 - **Appointments**: Collapsible panel with slot suggestions, conflict detection (3+ bookings = warning), and "Book from message" text parser to pre-fill booking form fields from pasted emails
-- **Yard/Moves**: Top 3 recommended unassigned moves, ranked by escalation status, urgency, dock dependency, aging age (>60 min SLA warning), with dismissible AI reason cards
-- **Exceptions**: Per-exception inline AI summary, likely-cause tag, confidence score, and suggested next action — type-aware (seal mismatch, damage, customs, etc.)
+- **Yard/Moves**: Top 2 visible (+ "show more") recommended unassigned moves, ranked by escalation status, urgency, dock dependency, aging age (>60 min SLA warning), with dismissible AI reason cards
+- **Exceptions**: Compact inline cause tag + "View insight" button per open exception — opens explainability drawer
+
+### AI Explainability
+
+`components/assist/ai-explainability-drawer.tsx` — a `Sheet`-based side drawer that shows full recommendation context:
+- Reason, relevant signals list, confidence bar, expected impact, suggested action, override reminder
+- Mode-aware language (Assist: "Suggested by AI / Review before applying"; Optimize: "Optimization Insight / Predicted confidence")
+
+`lib/ai-payload.ts` — shared `AIRecommendationPayload` typed interface used by all recommendation cards and the drawer.
+
+`lib/ai-copy.ts` — `getAICopy(mode)` utility returning mode-appropriate labels. Used by all assist components.
+
+### AI Copy Language
+
+- Standard: zero AI labels or badges
+- Assist: "Suggested by AI", "Review before applying", "Confidence"  
+- Optimize: "Optimization Insight", "Predicted by AI", "Predicted risk", "Predicted confidence"
+
+### Sidebar AI Demoting
+
+AI Copilot renamed to "AI Configuration" with `subtle: true` flag — renders at 40% opacity, smaller font, below Email Intelligence and Lifecycle Video in the Administration section. Still navigable but visually de-emphasized.
 
 ## AI Features
 

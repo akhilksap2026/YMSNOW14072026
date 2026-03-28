@@ -66,6 +66,7 @@ interface NavItem {
   roles?: string[];
   badgeKey?: string;
   aiOnly?: boolean;
+  subtle?: boolean;
 }
 
 const dashboardItem: NavItem = {
@@ -102,8 +103,8 @@ const adminItems: NavItem[] = [
   { title: "Users", url: "/admin/users", icon: Users, roles: ["admin"] },
   { title: "Audit Log", url: "/admin/audit", icon: ClipboardList, roles: ["admin", "yard_manager"] },
   { title: "Email Intelligence", url: "/email-intelligence", icon: Mail, roles: ["admin", "yard_manager"], aiOnly: true },
-  { title: "AI Copilot", url: "/admin/ai-config", icon: Bot, roles: ["admin"], aiOnly: true },
   { title: "Lifecycle Video", url: "/video", icon: PlayCircle, aiOnly: true },
+  { title: "AI Configuration", url: "/admin/ai-config", icon: Bot, roles: ["admin"], aiOnly: true, subtle: true },
 ];
 
 export const allNavItems = [dashboardItem, ...operationsItems, ...complianceItems, ...analyticsItems, ...adminItems];
@@ -114,6 +115,7 @@ function NavItem({ item, badgeCounts }: { item: NavItem; badgeCounts?: Record<st
     (item.url === "/gate/check-in" && location === "/gate/check-out");
   const badgeCount = item.badgeKey && badgeCounts ? badgeCounts[item.badgeKey] : 0;
   const isCriticalBadge = item.badgeKey === "exceptionsOpen" && badgeCount > 0;
+  const isSubtle = item.subtle && !isActive;
 
   return (
     <SidebarMenuItem className="relative">
@@ -127,12 +129,14 @@ function NavItem({ item, badgeCounts }: { item: NavItem; badgeCounts?: Record<st
         className={`h-8 text-[13px] transition-colors ${
           isActive
             ? "text-primary font-bold bg-primary/10 pl-4"
+            : isSubtle
+            ? "text-sidebar-foreground/40 hover:text-sidebar-foreground/70 hover:bg-accent/30"
             : "text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-accent/50"
         }`}
       >
         <Link href={item.url}>
-          <item.icon className={`h-4 w-4 shrink-0 ${isActive ? "text-primary" : ""}`} />
-          <span className="truncate flex-1">{item.title}</span>
+          <item.icon className={`h-4 w-4 shrink-0 ${isActive ? "text-primary" : isSubtle ? "opacity-40" : ""}`} />
+          <span className={`truncate flex-1 ${isSubtle ? "text-[12px]" : ""}`}>{item.title}</span>
           {badgeCount > 0 && (
             <Badge
               className={`ml-auto text-[10px] px-1.5 py-0 min-w-[20px] h-5 justify-center border-0 no-default-active-elevate ${

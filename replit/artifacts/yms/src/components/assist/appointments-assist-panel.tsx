@@ -3,6 +3,8 @@ import { Sparkles, ChevronDown, ChevronUp, AlertTriangle, Clock, Zap } from "luc
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { useProductMode } from "@/lib/product-mode";
+import { getAICopy } from "@/lib/ai-copy";
 
 interface ParsedFields {
   carrier?: string;
@@ -112,6 +114,8 @@ interface AppointmentsAssistPanelProps {
 }
 
 export function AppointmentsAssistPanel({ appointments, onPrefill }: AppointmentsAssistPanelProps) {
+  const { mode } = useProductMode();
+  const copy = getAICopy(mode);
   const [expanded, setExpanded] = useState(false);
   const [inputText, setInputText] = useState("");
   const [parsed, setParsed] = useState<ParsedFields | null>(null);
@@ -141,7 +145,7 @@ export function AppointmentsAssistPanel({ appointments, onPrefill }: Appointment
         <div className="flex items-center gap-2">
           <Sparkles className="h-3.5 w-3.5 text-violet-500" />
           <span className="text-[12px] font-semibold text-violet-800 dark:text-violet-200">
-            AI Scheduling Assistant
+            {copy.badge} — Scheduling
           </span>
           {visibleConflicts.length > 0 && (
             <Badge className="h-4 px-1.5 text-[10px] bg-amber-500 text-white border-0 ml-1">
@@ -150,7 +154,7 @@ export function AppointmentsAssistPanel({ appointments, onPrefill }: Appointment
           )}
         </div>
         <div className="flex items-center gap-1 text-muted-foreground">
-          <span className="text-[10px] hidden sm:inline">Slot suggestions · Conflict detection · Email prefill</span>
+          <span className="text-[10px] hidden sm:inline">{copy.reviewNote} · Slot suggestions · Email prefill</span>
           {expanded ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
         </div>
       </button>
