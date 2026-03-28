@@ -151,6 +151,20 @@ const LEGEND_INDICATORS = [
   { node: <span key="out" className="flex items-center gap-1.5"><span className="text-violet-600 font-bold text-sm">▲</span><span className="text-xs text-gray-600">Outbound direction</span></span> },
 ];
 
+const ZONE_DISPLAY_NAMES: Record<string, string> = {
+  "STG-A": "Inbound Staging",
+  "STG-B": "Outbound Ready",
+  "HAZ":   "Insp. Hold",
+  "RFR":   "Reefer Row",
+  "PKG-C": "Live Load / Unload",
+};
+const ZONE_SUBTITLES: Record<string, string> = {
+  "STG-A": "Drop & hook · Inbound",
+  "STG-B": "Pre-departure · Loaded",
+  "RFR":   "Temp-controlled · Plug-in",
+  "PKG-C": "Dock-adjacent · Live moves",
+};
+
 export default function YardMapPage() {
   const { toast } = useToast();
   const { tabletMode } = useTabletView();
@@ -558,7 +572,7 @@ export default function YardMapPage() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All zones</SelectItem>
-              {uniqueZones.map(z => <SelectItem key={z.code} value={z.code}>{z.name}</SelectItem>)}
+              {uniqueZones.map(z => <SelectItem key={z.code} value={z.code}>{ZONE_DISPLAY_NAMES[z.code] || z.name}</SelectItem>)}
             </SelectContent>
           </Select>
 
@@ -804,6 +818,21 @@ export default function YardMapPage() {
             <rect x={-200} y={-200} width={1900} height={1300} fill="#cdc7b8" />
             <rect x={BLDG_X} y={WALL_Y} width={BLDG_W} height={700} fill="#dbd5c5" />
 
+            {/* Dock-adjacent zone — slightly darker apron strip to show dock proximity */}
+            <rect x={BLDG_X} y={WALL_Y} width={BLDG_W} height={230} fill="#c8c2b0" opacity={0.45} />
+
+            {/* Dock split — Receiving (doors 1–4) and Shipping (doors 7–10) coloring on warehouse roof */}
+            <rect x={BLDG_X} y={BLDG_Y} width={DOOR_STEP * 4} height={20} fill="#0c4a6e" opacity={0.18} rx={1} />
+            <text x={BLDG_X + DOOR_STEP * 2} y={BLDG_Y + 13} textAnchor="middle" fontSize={7} fill="#93c5fd" fontFamily="system-ui" letterSpacing="2" opacity={0.9}>RECEIVING</text>
+            <rect x={BLDG_X + DOOR_STEP * 6} y={BLDG_Y} width={DOOR_STEP * 4} height={20} fill="#4c1d95" opacity={0.18} rx={1} />
+            <text x={BLDG_X + DOOR_STEP * 8} y={BLDG_Y + 13} textAnchor="middle" fontSize={7} fill="#c4b5fd" fontFamily="system-ui" letterSpacing="2" opacity={0.9}>SHIPPING</text>
+            <text x={BLDG_X + DOOR_STEP * 5} y={BLDG_Y + 13} textAnchor="middle" fontSize={6.5} fill="#9ab0c0" fontFamily="system-ui" opacity={0.7}>CROSS-DOCK</text>
+
+            {/* Overflow yard area indicator — far right ground (past main zones) */}
+            <rect x={1140} y={480} width={120} height={190} fill="#c8c2b0" opacity={0.3} rx={4} />
+            <text x={1200} y={580} textAnchor="middle" fontSize={8} fill="#9a9080" fontFamily="system-ui" opacity={0.7}
+              transform="rotate(-90, 1200, 580)">OVERFLOW YARD</text>
+
             {/* Hazmat isolation visual boundary */}
             <rect x={1268} y={WALL_Y} width={140} height={570} fill="#fef2f2" opacity={0.3} rx={4} />
             <rect x={1268} y={WALL_Y} width={3} height={570} fill="#dc2626" opacity={0.25} />
@@ -816,6 +845,8 @@ export default function YardMapPage() {
             {[180, 500, 820, 1140].map(x => (
               <polygon key={x} points={`${x},${LANE_Y + LANE_H / 2 - 6} ${x + 14},${LANE_Y + LANE_H / 2} ${x},${LANE_Y + LANE_H / 2 + 6}`} fill="#f5c542" opacity={0.5} />
             ))}
+            {/* Dock approach lane label */}
+            <text x={BLDG_X + BLDG_W / 2} y={LANE_Y + LANE_H / 2 + 4} textAnchor="middle" fontSize={7.5} fill="#9a9280" fontFamily="system-ui" letterSpacing="3" opacity={0.85}>DOCK APPROACH LANE</text>
 
             {/* Center vertical lane */}
             <rect x={VERT_LANE_X} y={LANE_Y + LANE_H} width={VERT_LANE_W} height={500} fill="#c4bcac" />
@@ -823,16 +854,33 @@ export default function YardMapPage() {
             {[280, 380, 530, 630].map(y => (
               <polygon key={y} points={`${VERT_LANE_X + 4},${y} ${VERT_LANE_X + VERT_LANE_W / 2},${y + 12} ${VERT_LANE_X + VERT_LANE_W - 4},${y}`} fill="#f5c542" opacity={0.45} />
             ))}
+            {/* Vertical lane direction labels */}
+            <text x={VERT_LANE_X - 18} y={LANE_Y + LANE_H + 20} textAnchor="middle" fontSize={7} fill="#9a9080" fontFamily="system-ui" opacity={0.8}
+              transform={`rotate(-90, ${VERT_LANE_X - 18}, ${LANE_Y + LANE_H + 55})`}>↑ TO DOCK</text>
+            <text x={VERT_LANE_X - 18} y={BTM_ROAD_Y - 20} textAnchor="middle" fontSize={7} fill="#9a9080" fontFamily="system-ui" opacity={0.8}
+              transform={`rotate(-90, ${VERT_LANE_X - 18}, ${BTM_ROAD_Y - 60})`}>↓ TO GATE</text>
 
             {/* Mid horizontal lane */}
             <rect x={BLDG_X} y={MID_LANE_Y} width={BLDG_W} height={MID_LANE_H} fill="#c4bcac" />
             <line x1={BLDG_X} y1={MID_LANE_Y + MID_LANE_H / 2} x2={BLDG_X + BLDG_W} y2={MID_LANE_Y + MID_LANE_H / 2} stroke="url(#sh)" strokeWidth={2} />
+            {/* Mid lane direction labels — inbound left → right, outbound right → left */}
+            <text x={BLDG_X + 44} y={MID_LANE_Y + MID_LANE_H - 2} textAnchor="start" fontSize={7} fill="#9a9080" fontFamily="system-ui" opacity={0.85}>↑ INBOUND</text>
+            <text x={BLDG_X + BLDG_W - 44} y={MID_LANE_Y + MID_LANE_H - 2} textAnchor="end" fontSize={7} fill="#9a9080" fontFamily="system-ui" opacity={0.85}>OUTBOUND ↓</text>
 
             {/* Bottom access road */}
             <rect x={BLDG_X} y={BTM_ROAD_Y} width={BLDG_W} height={BTM_ROAD_H} fill="#c4bcac" />
             <line x1={BLDG_X} y1={BTM_ROAD_Y + BTM_ROAD_H / 2} x2={BLDG_X + BLDG_W} y2={BTM_ROAD_Y + BTM_ROAD_H / 2} stroke="url(#sh)" strokeWidth={2} />
             {/* Gate approach */}
             <rect x={GATE_X + 20} y={BTM_ROAD_Y} width={GATE_W - 40} height={BTM_ROAD_H} fill="#b8b0a0" />
+            {/* Yard access road label */}
+            <text x={BLDG_X + 82} y={BTM_ROAD_Y + BTM_ROAD_H - 5} textAnchor="start" fontSize={7} fill="#9a9080" fontFamily="system-ui" letterSpacing="2" opacity={0.8}>YARD ACCESS ROAD</text>
+
+            {/* Entry gate (Gate 1 — Inbound Check-in) */}
+            <rect x={120} y={GATE_Y} width={220} height={GATE_H} rx={6} fill="#166534" stroke="#14532d" strokeWidth={2} filter="url(#cs)" />
+            <text x={230} y={GATE_Y + 22} textAnchor="middle" fontSize={9} fontWeight="700" fill="#dcfce7" fontFamily="system-ui">GATE 1 — ENTRY</text>
+            <text x={230} y={GATE_Y + 37} textAnchor="middle" fontSize={7} fill="#86efac" fontFamily="system-ui">Inbound Check-in · Arrival</text>
+            {/* Entry gate approach path */}
+            <rect x={180} y={BTM_ROAD_Y} width={100} height={BTM_ROAD_H} fill="#b0a898" opacity={0.6} />
 
             {/* Corner greenery */}
             {([[BLDG_X - 20, 500], [BLDG_X - 20, 650], [BLDG_X + BLDG_W + 8, 400], [BLDG_X + BLDG_W + 8, 560]] as [number, number][]).map(([tx, ty], i) => (
@@ -911,16 +959,17 @@ export default function YardMapPage() {
 
                   {isHaz ? (
                     <>
-                      <text x={layout.x + layout.w / 2} y={layout.y + 13} textAnchor="middle" fontSize={12} fontWeight="900" fill={theme.title} fontFamily="system-ui">&#9888;</text>
-                      <text x={layout.x + layout.w / 2} y={layout.y + 25} textAnchor="middle" fontSize={8} fontWeight="800" fill={theme.title} fontFamily="system-ui">HAZ</text>
+                      <text x={layout.x + layout.w / 2} y={layout.y + 11} textAnchor="middle" fontSize={10} fontWeight="900" fill={theme.title} fontFamily="system-ui">&#9888;</text>
+                      <text x={layout.x + layout.w / 2} y={layout.y + 22} textAnchor="middle" fontSize={7} fontWeight="800" fill={theme.title} fontFamily="system-ui">INSP.</text>
+                      <text x={layout.x + layout.w / 2} y={layout.y + 32} textAnchor="middle" fontSize={7} fontWeight="800" fill={theme.title} fontFamily="system-ui">HOLD</text>
                     </>
                   ) : (
                     <>
-                      <text x={layout.x + 9} y={layout.y + 16} fontSize={13} fontWeight="500" fill={theme.title} fontFamily="system-ui" textAnchor="start">
-                        {layout.zone?.name || code}
+                      <text x={layout.x + 9} y={layout.y + 15} fontSize={11} fontWeight="600" fill={theme.title} fontFamily="system-ui" textAnchor="start">
+                        {ZONE_DISPLAY_NAMES[code] || layout.zone?.name || code}
                       </text>
-                      <text x={layout.x + 9} y={layout.y + 27} fontSize={8.5} fontWeight="400" fill={theme.title} fontFamily="system-ui" textAnchor="start" opacity={0.65}>
-                        {zs.length} slots · {occ} occupied
+                      <text x={layout.x + 9} y={layout.y + 27} fontSize={8} fontWeight="400" fill={theme.title} fontFamily="system-ui" textAnchor="start" opacity={0.65}>
+                        {occ}/{zs.length} occ · {ZONE_SUBTITLES[code] || ""}
                       </text>
                     </>
                   )}
