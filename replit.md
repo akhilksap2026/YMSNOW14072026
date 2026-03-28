@@ -65,6 +65,31 @@ cd replit && PORT=5000 pnpm --filter @workspace/yms run dev
 - Build: `cd replit && pnpm --filter @workspace/db run push && pnpm --filter @workspace/api-server run build && pnpm --filter @workspace/yms run build`
 - Run: `cd replit && PORT=8080 node artifacts/api-server/dist/index.cjs & PORT=5000 pnpm --filter @workspace/yms run serve`
 
+## Product Mode System
+
+Three-mode product system persisted to `localStorage` (`ymsnow_product_mode`):
+
+- **Standard** — conventional YMS, no AI features rendered
+- **Assist** — AI helper layer injected into existing workflows (non-destructive)
+- **Optimize** — all AI features including predictive panels
+
+### Assist Mode Components
+
+| Component | File | Injected Into |
+|---|---|---|
+| `AIRecommendationCard` | `components/ai-recommendation-card.tsx` | Reusable — used by MovesAssistPanel |
+| `AppointmentsAssistPanel` | `components/assist/appointments-assist-panel.tsx` | `pages/appointments.tsx` (after KPI strip) |
+| `MovesAssistPanel` | `components/assist/moves-assist-panel.tsx` | `pages/move-tasks.tsx` (Unassigned queue tab) |
+| `ExceptionAIInsight` | `components/assist/exception-ai-insight.tsx` | `pages/exceptions.tsx` (inline each open exception card) |
+
+All AI enhancements gate behind `showAIRecommendations(mode)` from `lib/product-mode.tsx`. Standard mode sees no AI content. Manual workflows remain unchanged and are always primary.
+
+### Assist Features
+
+- **Appointments**: Collapsible panel with slot suggestions, conflict detection (3+ bookings = warning), and "Book from message" text parser to pre-fill booking form fields from pasted emails
+- **Yard/Moves**: Top 3 recommended unassigned moves, ranked by escalation status, urgency, dock dependency, aging age (>60 min SLA warning), with dismissible AI reason cards
+- **Exceptions**: Per-exception inline AI summary, likely-cause tag, confidence score, and suggested next action — type-aware (seal mismatch, damage, customs, etc.)
+
 ## AI Features
 
 The AI assistant and email intelligence use OpenAI. Connect via Replit AI Integrations (OpenAI connector) which sets `AI_INTEGRATIONS_OPENAI_API_KEY` and `AI_INTEGRATIONS_OPENAI_BASE_URL` automatically. The system gracefully degrades if no key is configured.

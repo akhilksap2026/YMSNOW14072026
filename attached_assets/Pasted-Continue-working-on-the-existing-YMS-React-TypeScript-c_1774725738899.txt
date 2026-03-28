@@ -1,0 +1,81 @@
+Continue working on the existing YMS React/TypeScript codebase.
+
+Goal:
+Add Assist mode as a light AI helper layer while keeping the current system stable and preserving all working manual workflows.
+
+Important safety rules:
+1. Do not remove or rename existing routes.
+2. Do not delete current working components or pages.
+3. Do not change backend contracts or API shapes unless absolutely necessary.
+4. Preserve all current manual workflows as the default and fallback path.
+5. Add new behavior through conditional rendering and small reusable components.
+6. Reuse existing components and page layouts wherever possible.
+7. If any consolidation is risky, keep the existing structure and only simplify the UI presentation.
+
+Business intent:
+- Standard = conventional YMS
+- Assist = AI helps inside existing workflows
+- The product should become simpler to use without destabilizing the system
+
+Requirements:
+
+1. Build a reusable AI recommendation card component with:
+   - title
+   - short reason
+   - confidence
+   - primary suggested action
+   - accept button
+   - dismiss button
+   - optional "Why this?" action
+
+2. In Standard mode:
+   - do not render AI recommendation cards
+   - keep current conventional YMS workflows unchanged
+
+3. In Assist mode:
+   - show AI help only inside existing core workflows
+   - do not create separate AI-heavy screens or new primary navigation items
+
+4. Focus only on these current workflow areas:
+   - Appointments
+   - Yard / Moves
+   - Exceptions
+
+5. Improve the Appointments flow safely:
+   - keep the current manual appointment flow unchanged
+   - add Assist-mode AI help as a side panel, inline card, or optional helper area
+   - include:
+     - AI prefill from email/message-style input
+     - slot suggestion
+     - conflict warning
+   - user must always review and confirm manually
+   - do not remove existing steps unless a step is clearly duplicated and safe to simplify
+
+6. Improve the Yard / Moves flow safely:
+   - add recommended next move suggestions
+   - add simple priority reasons:
+     - aging trailer
+     - dock dependency
+     - urgency
+   - keep current manual actions primary and unchanged
+   - do not replace existing controls
+
+7. Improve the Exceptions flow safely:
+   - add short AI summary
+   - add likely cause tag
+   - add suggested next action
+   - keep current manual resolution controls primary
+   - if Notifications duplicate Exceptions, do not remove routing yet; only reduce duplication in the visible UI
+
+8. Reduce overlap carefully:
+   - do not fully merge Yard Inventory, Yard Map, or Notifications in this phase
+   - only begin aligning labels and entry points
+   - prefer visual simplification over structural consolidation
+
+Deliverables:
+- reusable recommendation card
+- Assist-mode enhancements in Appointments, Yard/Moves, and Exceptions
+- reduced visible overlap where safe
+- concise summary of files changed
+- note any risks introduced
+- short manual testing checklist

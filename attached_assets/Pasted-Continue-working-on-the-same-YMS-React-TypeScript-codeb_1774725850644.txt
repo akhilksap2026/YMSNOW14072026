@@ -1,0 +1,63 @@
+Continue working on the same YMS React/TypeScript codebase.
+
+Goal:
+Make AI trustworthy and easy to understand while keeping the UI stable and avoiding broad redesign.
+
+Important safety rules:
+1. Do not remove or rename existing routes or pages.
+2. Do not delete existing AI-related pages or components in this phase; demote or hide them where needed.
+3. Keep all current workflows working as they are.
+4. Add explainability and microcopy cleanup through reusable components and conditional rendering.
+5. Avoid large layout refactors.
+
+Business intent:
+- AI should feel transparent and controlled
+- the interface should become cleaner, not riskier
+- users should not feel overwhelmed by labels, cards, or duplicate information
+
+Requirements:
+
+1. Create a reusable AI explainability drawer.
+2. Connect recommendations in Assist or Optimize mode to the drawer using a "Why this?" action.
+3. The drawer should show:
+   - recommendation
+   - short reason
+   - relevant signals
+   - confidence
+   - expected impact
+   - reminder that user can override manually
+
+4. In Standard mode:
+   - do not render the explainability drawer
+   - do not show AI-heavy labels or text
+
+5. Clean up AI language safely:
+   - Standard mode = no AI-heavy language
+   - Assist mode = use language like:
+     - Suggested by AI
+     - Review before applying
+   - Optimize mode = use language like:
+     - Predicted risk
+     - Optimization insight
+
+6. Reduce UI noise safely:
+   - avoid showing too many AI badges/cards on the same screen
+   - if the same recommendation appears in multiple places, keep one primary visible surface and reduce duplicates
+   - do this without removing current working content blocks unless clearly redundant
+
+7. Demote standalone AI emphasis safely:
+   - if AI Copilot or similar exists as a separate major destination, do not delete it
+   - reduce its visual priority and keep AI embedded inside workflows
+
+8. Keep implementation simple:
+   - use a typed recommendation payload
+   - connect recommendation cards to the explainability drawer
+   - do not redesign the full app shell
+
+Deliverables:
+- explainability drawer
+- cleaner AI copy and badges
+- reduced AI UI noise
+- concise summary of files changed
+- note any risks introduced
+- short manual testing checklist

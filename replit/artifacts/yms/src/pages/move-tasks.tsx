@@ -1,5 +1,7 @@
 import { useState, useMemo } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
+import { useProductMode, showAIRecommendations } from "@/lib/product-mode";
+import { MovesAssistPanel } from "@/components/assist/moves-assist-panel";
 import { apiRequest } from "@/lib/queryClient";
 import { invalidateAll } from "@/lib/invalidation";
 import { playMoveComplete } from "@/lib/audio-feedback";
@@ -479,6 +481,8 @@ function JockeyTaskCard({
 
 export default function MoveTasksPage({ userRole, currentPersonaId }: { userRole?: string; currentPersonaId?: string }) {
   const { toast } = useToast();
+  const { mode } = useProductMode();
+  const aiEnabled = showAIRecommendations(mode);
   const [activeQueue, setActiveQueue] = useState<QueueTab>("unassigned");
   const [search, setSearch] = useState("");
   const [quickFilter, setQuickFilter] = useState("all");
@@ -872,6 +876,14 @@ export default function MoveTasksPage({ userRole, currentPersonaId }: { userRole
             </CollapsibleContent>
           </Card>
         </Collapsible>
+      )}
+
+      {/* AI Move Suggestions (Assist/Optimize mode only) */}
+      {aiEnabled && activeQueue === "unassigned" && (
+        <MovesAssistPanel
+          allTasks={allTasks}
+          onAssignTask={(taskId) => setAssignDialog(allTasks.find((t) => t.id === taskId) ?? null)}
+        />
       )}
 
       {/* Unified Filter Bar */}

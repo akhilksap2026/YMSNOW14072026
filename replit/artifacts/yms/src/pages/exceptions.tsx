@@ -1,5 +1,7 @@
 import { useState, useMemo } from "react";
 import { SearchAutocomplete } from "@/components/enterprise/search-autocomplete";
+import { useProductMode, showAIRecommendations } from "@/lib/product-mode";
+import { ExceptionAIInsight } from "@/components/assist/exception-ai-insight";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { invalidateAll } from "@/lib/invalidation";
@@ -89,6 +91,8 @@ function isToday(date: string): boolean {
 
 export default function ExceptionsPage() {
   const { toast } = useToast();
+  const { mode } = useProductMode();
+  const aiEnabled = showAIRecommendations(mode);
   const [, setLocation] = useLocation();
   const urlSearch = useSearch();
   const [statusFilter, setStatusFilter] = useState("open");
@@ -329,6 +333,11 @@ export default function ExceptionsPage() {
                   )}
                 </div>
               </div>
+
+              {/* AI Insight (Assist/Optimize mode only) */}
+              {aiEnabled && exc.status !== "resolved" && (
+                <ExceptionAIInsight exception={exc} />
+              )}
 
               {/* Bottom row */}
               <div className="flex items-center justify-between mt-3 gap-2">

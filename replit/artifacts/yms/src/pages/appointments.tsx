@@ -1,5 +1,7 @@
 import { useState, useMemo, useCallback } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
+import { useProductMode, showAIRecommendations } from "@/lib/product-mode";
+import { AppointmentsAssistPanel } from "@/components/assist/appointments-assist-panel";
 import { apiRequest } from "@/lib/queryClient";
 import { invalidateAll } from "@/lib/invalidation";
 import { Card, CardContent } from "@/components/ui/card";
@@ -642,6 +644,8 @@ export default function AppointmentsPage({
 } = {}) {
   const isCarrier = userRole === "carrier";
   const carrierPersonaId = isCarrier ? currentPersona?.carrierId : null;
+  const { mode } = useProductMode();
+  const aiEnabled = showAIRecommendations(mode);
 
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -1143,6 +1147,11 @@ export default function AppointmentsPage({
             </button>
           ))}
         </div>
+      )}
+
+      {/* AI Scheduling Assistant (Assist/Optimize mode only) */}
+      {aiEnabled && !isCarrier && (
+        <AppointmentsAssistPanel appointments={appointments} />
       )}
 
       {/* Quick filter tabs + secondary filters */}
