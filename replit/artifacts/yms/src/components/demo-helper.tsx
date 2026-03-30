@@ -34,12 +34,12 @@ interface ModeConfig {
 }
 
 const MODE_CONFIG: Record<ProductMode, ModeConfig> = {
-  standard: {
+  core: {
     icon: LayoutDashboard,
     iconClass: "text-slate-600 dark:text-slate-400",
     borderClass: "border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-900/30",
     badgeClass: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
-    badgeLabel: "Standard Mode",
+    badgeLabel: "Core Mode",
     heading: "Core yard operations — full manual control",
     subtext:
       "Every workflow is manual and explicit. Gate, dock, moves, appointments, and exceptions are all accessible without any AI involvement.",
@@ -49,12 +49,12 @@ const MODE_CONFIG: Record<ProductMode, ModeConfig> = {
       "Complete audit trail — no AI dependencies",
     ],
   },
-  assist: {
+  elevate: {
     icon: Sparkles,
     iconClass: "text-violet-600 dark:text-violet-400",
     borderClass: "border-violet-200 dark:border-violet-800/40 bg-violet-50/50 dark:bg-violet-950/20",
     badgeClass: "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300",
-    badgeLabel: "Assist Mode",
+    badgeLabel: "Elevate Mode",
     heading: "AI recommendations reduce manual decision load",
     subtext:
       "The system surfaces suggestions for moves, exceptions, and appointments. Each recommendation is reviewable before acting — you stay in control.",
@@ -64,12 +64,12 @@ const MODE_CONFIG: Record<ProductMode, ModeConfig> = {
       "Exception cause analysis with suggested next actions",
     ],
   },
-  optimize: {
+  enhanced: {
     icon: Zap,
     iconClass: "text-blue-600 dark:text-blue-400",
     borderClass: "border-blue-200 dark:border-blue-800/40 bg-blue-50/50 dark:bg-blue-950/20",
     badgeClass: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300",
-    badgeLabel: "Optimize Mode",
+    badgeLabel: "Enhanced Mode",
     heading: "Proactive orchestration — bottlenecks caught before they compound",
     subtext:
       "The system detects operational risks in real time, recommends the single most impactful next action, and surfaces dwell and scheduling threats early.",

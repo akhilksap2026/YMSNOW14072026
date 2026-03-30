@@ -1,13 +1,13 @@
 import React, { createContext, useContext, useState, useCallback } from "react";
 
-export type ProductMode = "standard" | "assist" | "optimize";
+export type ProductMode = "core" | "elevate" | "enhanced";
 
 const STORAGE_KEY = "ymsnow_product_mode";
-const DEFAULT_MODE: ProductMode = "standard";
+const DEFAULT_MODE: ProductMode = "core";
 
 function readMode(): ProductMode {
   const stored = localStorage.getItem(STORAGE_KEY);
-  if (stored === "standard" || stored === "assist" || stored === "optimize") {
+  if (stored === "core" || stored === "elevate" || stored === "enhanced") {
     return stored;
   }
   return DEFAULT_MODE;
@@ -43,44 +43,44 @@ export function useProductMode() {
 }
 
 export function isStandardMode(mode: ProductMode): boolean {
-  return mode === "standard";
+  return mode === "core";
 }
 
 export function isAssistMode(mode: ProductMode): boolean {
-  return mode === "assist";
+  return mode === "elevate";
 }
 
 export function isOptimizeMode(mode: ProductMode): boolean {
-  return mode === "optimize";
+  return mode === "enhanced";
 }
 
 export function showAIRecommendations(mode: ProductMode): boolean {
-  return mode === "assist" || mode === "optimize";
+  return mode === "elevate" || mode === "enhanced";
 }
 
 export function showPredictivePanels(mode: ProductMode): boolean {
-  return mode === "assist" || mode === "optimize";
+  return mode === "elevate" || mode === "enhanced";
 }
 
 export function showOptimizationWidgets(mode: ProductMode): boolean {
-  return mode === "optimize";
+  return mode === "enhanced";
 }
 
 export const MODE_CONFIG = {
-  standard: {
-    label: "Standard",
+  core: {
+    label: "Core",
     description: "Conventional YMS — core operational workflows",
     badgeClass: "bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700",
     activeClass: "bg-slate-700 text-white",
   },
-  assist: {
-    label: "Assist",
+  elevate: {
+    label: "Elevate",
     description: "AI-assisted YMS — recommendations & alerts",
     badgeClass: "bg-violet-50 text-violet-700 border-violet-200 dark:bg-violet-900/30 dark:text-violet-300 dark:border-violet-700",
     activeClass: "bg-violet-600 text-white",
   },
-  optimize: {
-    label: "Optimize",
+  enhanced: {
+    label: "Enhanced",
     description: "AI-enhanced orchestration — predictive & automated",
     badgeClass: "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-700",
     activeClass: "bg-blue-600 text-white",

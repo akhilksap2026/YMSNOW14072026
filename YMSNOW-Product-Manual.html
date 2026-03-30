@@ -355,9 +355,9 @@
     text-transform: uppercase;
     margin-bottom: 12px;
   }
-  .mode-badge-standard { background: var(--blue); color: #fff; }
-  .mode-badge-assist   { background: var(--violet); color: #fff; }
-  .mode-badge-optimize { background: #9333ea; color: #fff; }
+  .mode-badge-core { background: var(--blue); color: #fff; }
+  .mode-badge-elevate   { background: var(--violet); color: #fff; }
+  .mode-badge-enhanced { background: #9333ea; color: #fff; }
 
   .mode-card h3 { margin-top: 0; }
   .mode-card .mode-tagline {
@@ -640,11 +640,11 @@
   </div>
   <div class="cover-eyebrow">Product Documentation · Confidential</div>
   <h1>Yard Management<br>Intelligence Platform</h1>
-  <p class="cover-sub">A complete operational guide to YMSNOW — covering all modules, the gate-to-gate workflow, and the three-tier intelligence system: Standard, Assist, and Optimize.</p>
+  <p class="cover-sub">A complete operational guide to YMSNOW — covering all modules, the gate-to-gate workflow, and the three-tier intelligence system: Core, Elevate, and Enhanced.</p>
   <div class="cover-badges">
-    <span class="cover-badge">Standard Mode</span>
-    <span class="cover-badge">Assist Mode</span>
-    <span class="cover-badge">Optimize Mode</span>
+    <span class="cover-badge">Core Mode</span>
+    <span class="cover-badge">Elevate Mode</span>
+    <span class="cover-badge">Enhanced Mode</span>
     <span class="cover-badge">Tablet-Ready</span>
     <span class="cover-badge">Real-Time Operations</span>
     <span class="cover-badge">AI-Powered Intelligence</span>
@@ -665,9 +665,9 @@
     <li class="toc-item"><a href="#overview"><span class="toc-num">01</span><span class="toc-label">Product Overview</span></a></li>
     <li class="toc-item"><a href="#modules"><span class="toc-num">02</span><span class="toc-label">Key Modules and Navigation</span></a></li>
     <li class="toc-item"><a href="#flow"><span class="toc-num">03</span><span class="toc-label">Core Yard Management Flow</span></a></li>
-    <li class="toc-item"><a href="#standard"><span class="toc-num">04</span><span class="toc-label">Standard Mode</span></a></li>
-    <li class="toc-item"><a href="#assist"><span class="toc-num">05</span><span class="toc-label">Assist Mode</span></a></li>
-    <li class="toc-item"><a href="#optimize"><span class="toc-num">06</span><span class="toc-label">Optimize Mode</span></a></li>
+    <li class="toc-item"><a href="#standard"><span class="toc-num">04</span><span class="toc-label">Core Mode</span></a></li>
+    <li class="toc-item"><a href="#assist"><span class="toc-num">05</span><span class="toc-label">Elevate Mode</span></a></li>
+    <li class="toc-item"><a href="#optimize"><span class="toc-num">06</span><span class="toc-label">Enhanced Mode</span></a></li>
     <li class="toc-item"><a href="#walkthrough"><span class="toc-num">07</span><span class="toc-label">Screenshot Walkthrough</span></a></li>
     <li class="toc-item"><a href="#journey"><span class="toc-num">08</span><span class="toc-label">Operational Journey — Appointment to Exit</span></a></li>
     <li class="toc-item"><a href="#value"><span class="toc-num">09</span><span class="toc-label">Business Value and Differentiation</span></a></li>
@@ -698,7 +698,7 @@
     <div class="module-card">
       <div class="module-icon">🏢</div>
       <h4>Yard Managers</h4>
-      <p>Full operational oversight — dashboard KPIs, exception resolution, dock assignment, jockey dispatch, and mode switching between Standard, Assist, and Optimize.</p>
+      <p>Full operational oversight — dashboard KPIs, exception resolution, dock assignment, jockey dispatch, and mode switching between Core, Elevate, and Enhanced.</p>
     </div>
     <div class="module-card">
       <div class="module-icon">🛡️</div>
@@ -720,9 +720,9 @@
   <h3>Three Tiers of Intelligence</h3>
   <p>YMSNOW operates in three distinct product modes, allowing facilities to adopt the level of AI and automation that fits their operational maturity:</p>
   <ul>
-    <li><strong>Standard</strong> — full manual control with complete visibility, no AI involvement</li>
-    <li><strong>Assist</strong> — AI recommendations appear alongside human decisions; email intelligence active</li>
-    <li><strong>Optimize</strong> — full AI-driven dock assignment, move prioritization, and conflict detection</li>
+    <li><strong>Core</strong> — full manual control with complete visibility, no AI involvement</li>
+    <li><strong>Elevate</strong> — AI recommendations appear alongside human decisions; email intelligence active</li>
+    <li><strong>Enhanced</strong> — full AI-driven dock assignment, move prioritization, and conflict detection</li>
   </ul>
   <p>Modes can be switched live from the top header bar without reloading. All data and manual workflows remain available in every mode.</p>
 </div>
@@ -798,7 +798,7 @@
       <div class="module-icon">📧</div>
       <h4>Email Intelligence</h4>
       <p>AI parses inbound carrier emails to extract shipment references, detect conflicts with existing appointments, and surface supervisor alerts automatically.</p>
-      <span class="module-badge badge-ai">Assist + Optimize</span>
+      <span class="module-badge badge-ai">Elevate + Enhanced</span>
     </div>
   </div>
 
@@ -905,7 +905,7 @@
   <p>The trailer is parked in its assigned slot within the appropriate yard zone (Inbound Staging, Outbound Ready, Reefer Row, Live Load/Unload, or Inspection Hold). Yard Inventory shows its live position, dwell time, and next step. The Yard Map shows its slot on the interactive map with real-time status color.</p>
 
   <h3>Stage 4 — Move to Dock</h3>
-  <p>A yard move task is created — either manually by a dispatcher or automatically suggested by the AI (Assist / Optimize modes). A jockey is assigned and moves the trailer from its yard slot to a dock door. The move is tracked in the Yard Moves queue with real-time progress updates.</p>
+  <p>A yard move task is created — either manually by a dispatcher or automatically suggested by the AI (Elevate / Enhanced modes). A jockey is assigned and moves the trailer from its yard slot to a dock door. The move is tracked in the Yard Moves queue with real-time progress updates.</p>
 
   <h3>Stage 5 — Dock Activity</h3>
   <p>While at a dock door, the trailer status changes to Loading or Unloading. Dock Management shows the real-time status of all 10 dock doors. SLA timers monitor dock duration and flag Over SLA breaches. Supervisors can drag trailers between dock columns or reassign doors.</p>
@@ -921,12 +921,12 @@
      SECTION 4 — STANDARD MODE
 ══════════════════════════════════════════ -->
 <div class="section" id="standard">
-  <div class="section-eyebrow"><span class="section-eyebrow-num">04</span> Standard Mode</div>
-  <h2>Standard Mode</h2>
-  <p class="section-lead">Standard Mode is full manual control — every workflow is human-driven, every decision is explicit, and no AI is involved. It delivers complete real-time visibility without any AI dependency.</p>
+  <div class="section-eyebrow"><span class="section-eyebrow-num">04</span> Core Mode</div>
+  <h2>Core Mode</h2>
+  <p class="section-lead">Core Mode is full manual control — every workflow is human-driven, every decision is explicit, and no AI is involved. It delivers complete real-time visibility without any AI dependency.</p>
 
   <div class="mode-card mode-card-standard">
-    <span class="mode-badge mode-badge-standard">Standard</span>
+    <span class="mode-badge mode-badge-core">Core</span>
     <div class="mode-tagline">Core Yard Operations — Full Manual Control</div>
     <p class="mode-desc">Designed for facilities that want a reliable, transparent operational platform with no automation or AI dependency. Every gate, dock, move, and exception is handled by yard staff with full system support.</p>
     <ul class="feature-list">
@@ -944,18 +944,18 @@
     <div class="mode-meta">
       <div class="mode-meta-item"><strong>Best For</strong>Facilities new to YMS, compliance-sensitive operations, or those preferring manual control</div>
       <div class="mode-meta-item"><strong>AI Features</strong>None — all workflows are manual</div>
-      <div class="mode-meta-item"><strong>Maturity Level</strong>All — Standard is available to every customer tier</div>
+      <div class="mode-meta-item"><strong>Maturity Level</strong>All — Core is available to every customer tier</div>
     </div>
   </div>
 
   <h3>What Changes in the UI</h3>
-  <p>In Standard Mode, the mode badge in the top header reads <span class="tag tag-blue">Standard</span>. The AI assistant panel is hidden. Email Intelligence is accessible but shows no AI-parsed alerts. No recommendation banners or AI suggestion overlays appear on any page. The Dashboard mode banner explains the operational model to new users.</p>
+  <p>In Core Mode, the mode badge in the top header reads <span class="tag tag-blue">Standard</span>. The AI assistant panel is hidden. Email Intelligence is accessible but shows no AI-parsed alerts. No recommendation banners or AI suggestion overlays appear on any page. The Dashboard mode banner explains the operational model to new users.</p>
 
   <h3>Key Capabilities</h3>
-  <p>Standard Mode gives full access to the entire operational platform — every module is available. The difference from Assist and Optimize is only the absence of AI recommendations and automated suggestions. Dispatchers make all decisions manually, with full system data to support those decisions.</p>
+  <p>Core Mode gives full access to the entire operational platform — every module is available. The difference from Elevate and Enhanced is only the absence of AI recommendations and automated suggestions. Dispatchers make all decisions manually, with full system data to support those decisions.</p>
 
   <div class="callout callout-info">
-    <strong>Switching is live.</strong> Operators can switch between Standard, Assist, and Optimize from the top header mode selector at any time. No data is lost and no page reload is required.
+    <strong>Switching is live.</strong> Operators can switch between Core, Elevate, and Enhanced from the top header mode selector at any time. No data is lost and no page reload is required.
   </div>
 </div>
 
@@ -963,16 +963,16 @@
      SECTION 5 — ASSIST MODE
 ══════════════════════════════════════════ -->
 <div class="section" id="assist">
-  <div class="section-eyebrow"><span class="section-eyebrow-num">05</span> Assist Mode</div>
-  <h2>Assist Mode</h2>
-  <p class="section-lead">Assist Mode keeps humans in control of every decision while surfacing AI suggestions, alerts, and insights alongside manual workflows. It is designed for teams ready to accelerate decisions without removing oversight.</p>
+  <div class="section-eyebrow"><span class="section-eyebrow-num">05</span> Elevate Mode</div>
+  <h2>Elevate Mode</h2>
+  <p class="section-lead">Elevate Mode keeps humans in control of every decision while surfacing AI suggestions, alerts, and insights alongside manual workflows. It is designed for teams ready to accelerate decisions without removing oversight.</p>
 
   <div class="mode-card mode-card-assist">
-    <span class="mode-badge mode-badge-assist">Assist</span>
+    <span class="mode-badge mode-badge-elevate">Elevate</span>
     <div class="mode-tagline">AI Co-Pilot — Recommendations Alongside Manual Control</div>
     <p class="mode-desc">The AI surfaces dock assignment suggestions, move prioritization insights, carrier email alerts, and exception detection — but all decisions remain with your team. Every AI recommendation can be accepted or overridden.</p>
     <ul class="feature-list">
-      <li><span class="feat-check">✓</span> Everything in Standard Mode</li>
+      <li><span class="feat-check">✓</span> Everything in Core Mode</li>
       <li><span class="feat-ai">✦</span> AI-powered Email Intelligence — carrier email parsing</li>
       <li><span class="feat-ai">✦</span> AI dock assignment recommendations</li>
       <li><span class="feat-ai">✦</span> Move prioritization suggestions in Yard Moves</li>
@@ -991,13 +991,13 @@
 
   <div class="screenshot">
     <img src="screenshots/email-intelligence.jpg" alt="Email Intelligence Module" />
-    <div class="screenshot-caption"><strong>Figure 5.1 — Carrier Email Intelligence</strong> · Available in Assist and Optimize modes. The AI parses inbound carrier emails, extracts shipment references, detects conflicts with existing appointments, and surfaces alerts for supervisor review. Registered carrier contacts are managed within the same module.</div>
+    <div class="screenshot-caption"><strong>Figure 5.1 — Carrier Email Intelligence</strong> · Available in Elevate and Enhanced modes. The AI parses inbound carrier emails, extracts shipment references, detects conflicts with existing appointments, and surfaces alerts for supervisor review. Registered carrier contacts are managed within the same module.</div>
   </div>
 
   <div class="ai-block">
-    <div class="ai-block-title">AI Capabilities — Assist Mode</div>
-    <h3>How the AI Works in Assist Mode</h3>
-    <p>In Assist Mode, the AI operates as a decision-support layer. It reads operational data in real time, applies rule-based and ML models, and surfaces the results as visible recommendations — not automatic changes. Every suggestion requires human confirmation.</p>
+    <div class="ai-block-title">AI Capabilities — Elevate Mode</div>
+    <h3>How the AI Works in Elevate Mode</h3>
+    <p>In Elevate Mode, the AI operates as a decision-support layer. It reads operational data in real time, applies rule-based and ML models, and surfaces the results as visible recommendations — not automatic changes. Every suggestion requires human confirmation.</p>
     <div class="ai-feature-row">
       <div class="ai-feature">
         <div class="ai-feature-icon">📧</div>
@@ -1018,23 +1018,23 @@
   </div>
 
   <h3>What Changes in the UI</h3>
-  <p>In Assist Mode, the mode badge reads <span class="tag tag-violet">Assist</span>. The AI Copilot assistant button appears in the lower-right corner of the screen. Email Intelligence shows AI-parsed alerts and conflict flags. Recommendation banners may appear on Dock Management and Yard Moves pages. The Dashboard surfaces AI-identified action items alongside standard holds and overdue moves.</p>
+  <p>In Elevate Mode, the mode badge reads <span class="tag tag-violet">Assist</span>. The AI Copilot assistant button appears in the lower-right corner of the screen. Email Intelligence shows AI-parsed alerts and conflict flags. Recommendation banners may appear on Dock Management and Yard Moves pages. The Dashboard surfaces AI-identified action items alongside standard holds and overdue moves.</p>
 </div>
 
 <!-- ══════════════════════════════════════════
      SECTION 6 — OPTIMIZE MODE
 ══════════════════════════════════════════ -->
 <div class="section" id="optimize">
-  <div class="section-eyebrow"><span class="section-eyebrow-num">06</span> Optimize Mode</div>
-  <h2>Optimize Mode</h2>
-  <p class="section-lead">Optimize Mode enables the full AI engine. The system proactively recommends dock assignments, sequences move tasks, identifies detention risk, and surfaces optimization insights across the entire yard operation.</p>
+  <div class="section-eyebrow"><span class="section-eyebrow-num">06</span> Enhanced Mode</div>
+  <h2>Enhanced Mode</h2>
+  <p class="section-lead">Enhanced Mode enables the full AI engine. The system proactively recommends dock assignments, sequences move tasks, identifies detention risk, and surfaces optimization insights across the entire yard operation.</p>
 
   <div class="mode-card mode-card-optimize">
-    <span class="mode-badge mode-badge-optimize">Optimize</span>
+    <span class="mode-badge mode-badge-enhanced">Enhanced</span>
     <div class="mode-tagline">Full AI Optimization — Maximum Yard Intelligence</div>
     <p class="mode-desc">The complete AI-powered yard experience. Every layer of the platform — gate, yard, dock, moves, and exception management — is augmented with optimization intelligence. Designed for high-throughput facilities running at scale.</p>
     <ul class="feature-list">
-      <li><span class="feat-check">✓</span> Everything in Assist Mode</li>
+      <li><span class="feat-check">✓</span> Everything in Elevate Mode</li>
       <li><span class="feat-ai">✦</span> Automated dock assignment optimization</li>
       <li><span class="feat-ai">✦</span> AI-generated yard move sequences</li>
       <li><span class="feat-ai">✦</span> Detention risk scoring and early alerts</li>
@@ -1052,13 +1052,13 @@
   </div>
 
   <h3>What Changes in the UI</h3>
-  <p>In Optimize Mode, the mode badge reads <span class="tag tag-violet">Optimize</span>. All Assist Mode AI surfaces are active, plus additional optimization panels appear across Dock Management, Yard Moves, and the Dashboard. The AI Copilot has expanded context including optimization recommendations and carrier scoring.</p>
+  <p>In Enhanced Mode, the mode badge reads <span class="tag tag-violet">Optimize</span>. All Elevate Mode AI surfaces are active, plus additional optimization panels appear across Dock Management, Yard Moves, and the Dashboard. The AI Copilot has expanded context including optimization recommendations and carrier scoring.</p>
 
   <h3>Key Distinction — AI as a Recommendation Engine</h3>
-  <p>In all three modes — Standard, Assist, and Optimize — the system never performs irreversible actions automatically. The AI surfaces recommendations, the operator approves. This maintains full human accountability and compliance traceability regardless of mode.</p>
+  <p>In all three modes — Core, Elevate, and Enhanced — the system never performs irreversible actions automatically. The AI surfaces recommendations, the operator approves. This maintains full human accountability and compliance traceability regardless of mode.</p>
 
   <div class="callout callout-tip">
-    <strong>Upgrade path.</strong> Facilities typically begin with Standard Mode to establish operational baselines, move to Assist once staff are comfortable with the platform, then unlock Optimize when throughput goals require more automation.
+    <strong>Upgrade path.</strong> Facilities typically begin with Core Mode to establish operational baselines, move to Elevate once staff are comfortable with the platform, then unlock Enhanced when throughput goals require more automation.
   </div>
 </div>
 
@@ -1147,7 +1147,7 @@
 <div class="section" id="journey">
   <div class="section-eyebrow"><span class="section-eyebrow-num">08</span> Operational Journey</div>
   <h2>From Appointment to Exit</h2>
-  <p class="section-lead">A step-by-step example of how a single inbound trailer moves through the YMSNOW platform — from appointment creation to gate exit — showing which screen handles each stage and where AI adds value in Assist and Optimize modes.</p>
+  <p class="section-lead">A step-by-step example of how a single inbound trailer moves through the YMSNOW platform — from appointment creation to gate exit — showing which screen handles each stage and where AI adds value in Elevate and Enhanced modes.</p>
 
   <div class="screenshot-row">
     <div>
@@ -1171,7 +1171,7 @@
         <th>Action</th>
         <th>Who</th>
         <th>Screen</th>
-        <th>AI in Assist/Optimize</th>
+        <th>AI in Elevate/Enhanced</th>
       </tr>
     </thead>
     <tbody>
@@ -1236,7 +1236,7 @@
         <td>When dock activity completes, trailer status changes to Ready Out. It appears in Gate Check-Out's expected list. Dispatcher may move it to Outbound Ready staging if dock-to-gate sequencing is needed.</td>
         <td class="td-who">Dispatcher / Dock Staff</td>
         <td class="td-screen">Yard Inventory / Yard Map</td>
-        <td class="td-ai">Standard flagging; AI in Optimize can sequence outbound departures to reduce yard congestion</td>
+        <td class="td-ai">Standard flagging; AI in Enhanced can sequence outbound departures to reduce yard congestion</td>
       </tr>
       <tr>
         <td class="td-step">10. Gate Exit</td>
@@ -1285,7 +1285,7 @@
 <div class="section" id="value">
   <div class="section-eyebrow"><span class="section-eyebrow-num">09</span> Business Value</div>
   <h2>Why YMSNOW</h2>
-  <p class="section-lead">YMSNOW delivers measurable operational improvements across dwell time, dock utilization, exception resolution speed, and carrier accountability — from day one in Standard Mode, with compounding returns as AI capabilities are unlocked.</p>
+  <p class="section-lead">YMSNOW delivers measurable operational improvements across dwell time, dock utilization, exception resolution speed, and carrier accountability — from day one in Core Mode, with compounding returns as AI capabilities are unlocked.</p>
 
   <div class="value-grid">
     <div class="value-card">
@@ -1314,7 +1314,7 @@
 
   <div class="card">
     <div class="card-title">Three-Mode Product Architecture</div>
-    <p>YMSNOW is the only YMS with a structured Standard / Assist / Optimize tier system, allowing facilities to adopt AI at their own pace without switching platforms. The mode selector is live, instant, and non-disruptive.</p>
+    <p>YMSNOW is the only YMS with a structured Core / Elevate / Enhanced tier system, allowing facilities to adopt AI at their own pace without switching platforms. The mode selector is live, instant, and non-disruptive.</p>
   </div>
 
   <div class="card">
@@ -1324,7 +1324,7 @@
 
   <div class="card">
     <div class="card-title">AI That Augments, Never Replaces</div>
-    <p>Every AI recommendation in Assist and Optimize modes requires human confirmation. The AI never makes irreversible changes unilaterally. This maintains compliance, accountability, and operator trust — a critical requirement in regulated or carrier-facing environments.</p>
+    <p>Every AI recommendation in Elevate and Enhanced modes requires human confirmation. The AI never makes irreversible changes unilaterally. This maintains compliance, accountability, and operator trust — a critical requirement in regulated or carrier-facing environments.</p>
   </div>
 
   <div class="card">
@@ -1339,7 +1339,7 @@
 
   <div class="card">
     <div class="card-title">Zero External Dependencies for Core Operations</div>
-    <p>Standard Mode operates fully offline from any AI or external service. All core gate, dock, inventory, and move workflows are self-contained. AI features in Assist and Optimize require API connectivity but never block the core operational platform.</p>
+    <p>Core Mode operates fully offline from any AI or external service. All core gate, dock, inventory, and move workflows are self-contained. AI features in Elevate and Enhanced require API connectivity but never block the core operational platform.</p>
   </div>
 
   <h3>Deployment Readiness</h3>
@@ -1358,22 +1358,22 @@
       <tr>
         <td class="td-step">Yard Manager / Admin</td>
         <td>Dashboard, all modules, Reports, AI Config</td>
-        <td>Optimize (or Assist during transition)</td>
+        <td>Enhanced (or Elevate during transition)</td>
       </tr>
       <tr>
         <td class="td-step">Gate Guard</td>
         <td>Gate Check-In, Gate Check-Out, Inspections</td>
-        <td>Standard (Guard Mode available)</td>
+        <td>Core (Guard Mode available)</td>
       </tr>
       <tr>
         <td class="td-step">Dock Supervisor</td>
         <td>Dock Management, Yard Inventory, Yard Moves</td>
-        <td>Assist or Optimize</td>
+        <td>Elevate or Enhanced</td>
       </tr>
       <tr>
         <td class="td-step">Yard Jockey</td>
         <td>Yard Moves (tablet view)</td>
-        <td>Standard (tablet layout)</td>
+        <td>Core (tablet layout)</td>
       </tr>
       <tr>
         <td class="td-step">Operations Analyst</td>

@@ -183,7 +183,7 @@ export function OptimizeDashboardPanel({ brief }: OptimizeDashboardPanelProps) {
         </div>
         <span className="text-[10px] font-semibold uppercase tracking-wider text-blue-600 dark:text-blue-400 flex items-center gap-1">
           <Sparkles className="h-3 w-3" />
-          Optimize
+          Enhanced
         </span>
       </div>
 

@@ -11,7 +11,7 @@ interface AICopy {
 }
 
 export function getAICopy(mode: ProductMode): AICopy {
-  if (mode === "optimize") {
+  if (mode === "enhanced") {
     return {
       badge: "Optimization Insight",
       source: "Predicted by AI",

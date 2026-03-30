@@ -143,9 +143,9 @@ interface ROIPanelProps {
 }
 
 export function ROIPanel({ mode, stats }: ROIPanelProps) {
-  if (mode === "standard") return null;
+  if (mode === "core") return null;
 
-  if (mode === "assist") {
+  if (mode === "elevate") {
     const metrics = buildAssistMetrics(stats);
     return (
       <Card className="border-violet-200 dark:border-violet-800/40 bg-violet-50/30 dark:bg-violet-950/10">
@@ -154,7 +154,7 @@ export function ROIPanel({ mode, stats }: ROIPanelProps) {
             <div className="flex items-center gap-1.5">
               <Sparkles className="h-3.5 w-3.5 text-violet-500" />
               <CardTitle className="text-[11px] font-bold uppercase tracking-wider text-violet-700 dark:text-violet-400">
-                Assist Impact — This Session
+                Elevate Impact — This Session
               </CardTitle>
             </div>
             <Link href="/reports">
