@@ -90,7 +90,6 @@ const AdminAuditPage    = lazy(() => import("@/pages/admin-audit"));
 const YardAuditPage     = lazy(() => import("@/pages/yard-audit"));
 const InspectionsPage   = lazy(() => import("@/pages/inspections"));
 const ReportsPage       = lazy(() => import("@/pages/reports"));
-const ManualPage        = lazy(() => import("@/pages/manual"));
 const AdminAiConfigPage = lazy(() => import("@/pages/admin-ai-config"));
 const RevenuePage       = lazy(() => import("@/pages/revenue"));
 const EmailIntelligencePage = lazy(() => import("@/pages/email-intelligence"));
@@ -138,7 +137,7 @@ function Breadcrumbs() {
     const ops = ["Dashboard", "Appointments", "Gate Check-In", "Gate Check-Out", "Inspections", "Yard Inventory", "Yard Map"];
     const wf = ["Dock Management", "Move Tasks", "Holds & Exceptions", "Yard Walk", "Email Intelligence"];
     const analytics = ["Reports & Analytics"];
-    const admin = ["Carrier Management", "Yard Setup", "Users", "Audit Log", "AI Console", "Product Manual"];
+    const admin = ["Carrier Management", "Yard Setup", "Users", "Audit Log", "AI Console"];
     if (!current) return null;
     if (ops.includes(current.title)) return "Operations";
     if (wf.includes(current.title)) return "Workflow";
@@ -268,9 +267,6 @@ function AppRouter({ userRole, currentPersona }: { userRole?: string; currentPer
         <RoleGuard allowedRoles={["admin", "yard_manager"]} userRole={userRole}>
           <EmailIntelligencePage />
         </RoleGuard>
-      </Route>
-      <Route path="/manual">
-        <ManualPage />
       </Route>
       <Route path="/notifications">
         <NotificationsPage />
