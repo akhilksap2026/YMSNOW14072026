@@ -18,15 +18,25 @@ const TabletViewContext = createContext<TabletViewContextValue>({
   setTabletMode: () => {},
 });
 
+function getUrlParam(name: string): string | null {
+  if (typeof window === "undefined") return null;
+  return new URLSearchParams(window.location.search).get(name);
+}
+
 export function TabletViewProvider({ children }: { children: ReactNode }) {
-  const [tabletMode, setTabletMode] = useState(() =>
-    localStorage.getItem("ymsnow_tablet_mode") === "true"
-  );
+  const [tabletMode, setTabletMode] = useState(() => {
+    const urlParam = getUrlParam("tablet");
+    if (urlParam === "1" || urlParam === "true") return true;
+    if (urlParam === "0" || urlParam === "false") return false;
+    return localStorage.getItem("ymsnow_tablet_mode") === "true";
+  });
   const [orientation, setOrientation] = useState<TabletOrientation>(() =>
     (localStorage.getItem("ymsnow_tablet_orientation") as TabletOrientation) || "landscape"
   );
 
   useEffect(() => {
+    const urlParam = getUrlParam("tablet");
+    if (urlParam !== null) return;
     localStorage.setItem("ymsnow_tablet_mode", String(tabletMode));
   }, [tabletMode]);
 

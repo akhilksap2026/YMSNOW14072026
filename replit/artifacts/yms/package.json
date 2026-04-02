@@ -71,6 +71,7 @@
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@vitejs/plugin-react": "catalog:",
+    "puppeteer": "^24.40.0",
     "tailwindcss": "catalog:",
     "vite": "catalog:"
   }

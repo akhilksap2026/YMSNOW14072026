@@ -511,7 +511,15 @@ function AuthenticatedApp({ onLogout }: { onLogout: () => void }) {
 }
 
 function AppGate() {
-  const [isLoggedIn, setIsLoggedIn] = useState(() => localStorage.getItem(LOGIN_KEY) === "true");
+  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get("autologin") === "1") {
+      localStorage.setItem(LOGIN_KEY, "true");
+      localStorage.setItem(PERSONA_KEY, "demo-admin-001");
+      return true;
+    }
+    return localStorage.getItem(LOGIN_KEY) === "true";
+  });
 
   const handleLogin = (userId: string, role: string) => {
     localStorage.setItem(LOGIN_KEY, "true");

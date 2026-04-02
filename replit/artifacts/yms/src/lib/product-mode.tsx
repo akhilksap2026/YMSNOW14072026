@@ -6,6 +6,10 @@ const STORAGE_KEY = "ymsnow_product_mode";
 const DEFAULT_MODE: ProductMode = "core";
 
 function readMode(): ProductMode {
+  const urlParam = new URLSearchParams(window.location.search).get("mode");
+  if (urlParam === "core" || urlParam === "elevate" || urlParam === "enhanced") {
+    return urlParam;
+  }
   const stored = localStorage.getItem(STORAGE_KEY);
   if (stored === "core" || stored === "elevate" || stored === "enhanced") {
     return stored;
