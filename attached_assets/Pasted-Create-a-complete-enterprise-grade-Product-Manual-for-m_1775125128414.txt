@@ -1,0 +1,283 @@
+Create a complete, enterprise-grade Product Manual for my YMS (Yard Management System).
+
+This document must function as:
+- Product documentation
+- Operational playbook
+- Sales enablement guide
+- Implementation reference
+
+It must be structured, decision-oriented, and grounded in real system behavior.
+
+Do NOT write generic or marketing-heavy content.
+Do NOT invent features that are not present or logically inferred.
+Ensure consistency in terminology across the document.
+
+==================================================
+PRIMARY OBJECTIVE
+==================================================
+
+Deliver a production-ready YMS Product Manual that:
+
+- Explains the system clearly and completely
+- Enables users to operate the product
+- Helps buyers compare versions (Core vs Elevate vs Enhanced)
+- Provides decision clarity through structured comparisons
+- Shows how each screen/module drives real actions
+- Reflects real logistics operations
+
+==================================================
+MANDATORY OUTPUT FORMAT RULES
+==================================================
+
+- Use numbered sections (1 → 12)
+- Use tables wherever comparison or structure is needed
+- Use checkbox-style matrices for feature comparisons
+- Use consistent naming across all sections
+- Avoid duplication across sections
+- Keep language precise and operational
+- Each section must provide actionable insight, not just description
+
+==================================================
+DOCUMENT STRUCTURE
+==================================================
+
+1. Executive Summary  
+2. Product Overview  
+3. Version Comparison (Core vs Elevate vs Enhanced)  
+4. Unique Selling Propositions (USPs)  
+5. Platform Architecture  
+6. Roles & Access Control  
+7. Module Reference (Detailed)  
+8. Feature Availability Matrix (Checkbox-based)  
+9. Screen-Level Usability (Action-Oriented)  
+10. Workflows & Business Processes  
+11. Notifications & Alerts  
+12. Data, Reporting & Glossary  
+
+==================================================
+1. EXECUTIVE SUMMARY
+==================================================
+
+Provide a concise overview for leadership and sales:
+
+- What YMS is
+- Who it is for
+- Key capabilities
+- When to choose Core vs Elevate vs Enhanced
+- Top 5 differentiators
+
+==================================================
+2. PRODUCT OVERVIEW
+==================================================
+
+Explain:
+
+- What the system does
+- What problems it solves
+- Where it fits in logistics operations
+- Operational layers covered (yard, gate, dock, drivers, dispatch)
+
+Include:
+- “Who It’s Built For”
+- “Operational Scope”
+
+==================================================
+3. VERSION COMPARISON (CRITICAL)
+==================================================
+
+Compare:
+- YMS Core
+- YMS Elevate
+- YMS Enhanced
+
+For each version:
+- Positioning (basic / mid / advanced)
+- Target customer type
+- Operational maturity supported
+
+MANDATORY TABLE:
+
+Feature | Core | Elevate | Enhanced
+--------|------|---------|---------
+<features with ✓ / ✗>
+
+Also include:
+- Upgrade triggers
+- Limitations of each version
+- Ideal use cases per version
+
+==================================================
+4. UNIQUE SELLING PROPOSITIONS (USPs)
+==================================================
+
+Each USP must include:
+
+- Problem it solves
+- How the system enables it
+- Operational impact
+
+Avoid generic statements. Keep it functional.
+
+==================================================
+5. PLATFORM ARCHITECTURE
+==================================================
+
+Explain:
+
+- Navigation structure (rail + sidebar)
+- Module grouping
+- Role-based visibility
+
+List all major sections and their purpose.
+
+==================================================
+6. ROLES & ACCESS CONTROL
+==================================================
+
+For each role:
+
+- Role name
+- Responsibilities
+- Access scope
+- Actions allowed
+- Restrictions
+
+Include:
+- Approval hierarchy
+- Sensitive permissions
+- Override capabilities
+
+==================================================
+7. MODULE REFERENCE (CORE SECTION)
+==================================================
+
+For EACH module:
+
+Include:
+
+- Module Name
+- Purpose
+- Key Features
+- Views (table / board / etc.)
+- Key Actions
+- Status lifecycle
+
+MANDATORY ADDITION:
+
+“HOW THIS MODULE ENABLES USER ACTION”
+
+Explain:
+- What decisions it supports
+- What actions it accelerates
+- What operational problems it solves
+
+==================================================
+8. FEATURE AVAILABILITY MATRIX
+==================================================
+
+Create grouped matrices:
+
+Categories:
+- Operations
+- Automation
+- Visibility
+- Reporting
+- Integrations
+- Security
+
+Format:
+
+Feature | Core | Elevate | Enhanced
+--------|------|---------|---------
+Feature A | ✓ | ✓ | ✓
+
+==================================================
+9. SCREEN-LEVEL USABILITY (CRITICAL)
+==================================================
+
+For key screens:
+
+Explain:
+
+- What the user sees
+- What actions they can take immediately
+- What decisions are enabled
+- What problems are solved
+
+Focus on:
+👉 “What does this screen allow the user to DO?”
+
+==================================================
+10. WORKFLOWS & BUSINESS PROCESSES
+==================================================
+
+Document step-by-step workflows:
+
+Each workflow must include:
+
+- Actors
+- Steps
+- System actions
+- Decision points
+- Outcomes
+
+Examples:
+- Gate → Yard → Dock → Exit
+- Move lifecycle
+- Exception handling
+
+==================================================
+11. NOTIFICATIONS & ALERTS
+==================================================
+
+Explain:
+
+- Trigger events
+- Recipients
+- Priority levels
+- Actions enabled by alerts
+
+==================================================
+12. DATA, REPORTING & GLOSSARY
+==================================================
+
+Include:
+
+A. Data Model Overview  
+- Key entities  
+- Relationships  
+
+B. Reporting  
+- KPIs  
+- Operational metrics  
+
+C. Glossary  
+- Define all logistics and system terms  
+
+==================================================
+QUALITY CONTROL REQUIREMENTS
+==================================================
+
+Before completing:
+
+- Ensure no duplicate content across sections
+- Ensure version comparison is clear and actionable
+- Ensure every module explains user impact
+- Ensure usability sections are practical, not descriptive
+- Ensure tables are used where appropriate
+- Ensure tone is professional and operational
+
+==================================================
+FINAL GOAL
+==================================================
+
+Deliver a Product Manual that:
+
+- Explains the system deeply
+- Helps users operate it
+- Helps buyers choose the right version
+- Helps teams implement it
+- Feels like a real enterprise product document
+
+Prioritize:
+clarity > structure > usability > completeness > polish

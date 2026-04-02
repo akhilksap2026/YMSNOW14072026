@@ -37,484 +37,117 @@
   }
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   html { scroll-behavior: smooth; }
+  body { font-family: 'Inter', system-ui, sans-serif; color: var(--gray-800); background: #fff; font-size: 15px; line-height: 1.65; }
 
-  body {
-    font-family: 'Inter', system-ui, sans-serif;
-    color: var(--gray-800);
-    background: #fff;
-    font-size: 15px;
-    line-height: 1.65;
-  }
-
-  /* ── Cover ────────────────────────────────────────────────────── */
-  .cover {
-    background: linear-gradient(135deg, #0f1c3a 0%, #1e3a5f 40%, #0f2d52 100%);
-    color: #fff;
-    padding: 80px 60px 70px;
-    position: relative;
-    overflow: hidden;
-    page-break-after: always;
-  }
-  .cover::before {
-    content: '';
-    position: absolute;
-    top: -60px; right: -60px;
-    width: 400px; height: 400px;
-    background: radial-gradient(circle, rgba(37,99,235,0.35) 0%, transparent 70%);
-    pointer-events: none;
-  }
-  .cover::after {
-    content: '';
-    position: absolute;
-    bottom: -80px; left: -40px;
-    width: 300px; height: 300px;
-    background: radial-gradient(circle, rgba(124,58,237,0.25) 0%, transparent 70%);
-    pointer-events: none;
-  }
-  .cover-logo {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 64px;
-  }
-  .cover-logo-mark {
-    width: 44px; height: 44px;
-    background: var(--blue);
-    border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 22px;
-  }
+  /* Cover */
+  .cover { background: linear-gradient(135deg, #0f1c3a 0%, #1e3a5f 40%, #0f2d52 100%); color: #fff; padding: 80px 60px 70px; position: relative; overflow: hidden; page-break-after: always; }
+  .cover::before { content: ''; position: absolute; top: -60px; right: -60px; width: 400px; height: 400px; background: radial-gradient(circle, rgba(37,99,235,0.35) 0%, transparent 70%); pointer-events: none; }
+  .cover::after { content: ''; position: absolute; bottom: -80px; left: -40px; width: 300px; height: 300px; background: radial-gradient(circle, rgba(124,58,237,0.25) 0%, transparent 70%); pointer-events: none; }
+  .cover-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 64px; }
+  .cover-logo-mark { width: 44px; height: 44px; background: var(--blue); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
   .cover-logo-text { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
-  .cover-logo-text span { color: var(--blue); }
-  .cover-eyebrow {
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: #60a5fa;
-    margin-bottom: 16px;
-  }
-  .cover h1 {
-    font-size: 52px;
-    font-weight: 800;
-    line-height: 1.08;
-    letter-spacing: -1.5px;
-    margin-bottom: 20px;
-    max-width: 640px;
-  }
-  .cover-sub {
-    font-size: 17px;
-    color: #94a3b8;
-    max-width: 560px;
-    line-height: 1.6;
-    margin-bottom: 48px;
-  }
-  .cover-badges {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-  }
-  .cover-badge {
-    background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255,255,255,0.15);
-    color: #e2e8f0;
-    padding: 6px 14px;
-    border-radius: 100px;
-    font-size: 12px;
-    font-weight: 500;
-    letter-spacing: 0.3px;
-  }
-  .cover-meta {
-    position: absolute;
-    bottom: 40px;
-    right: 60px;
-    text-align: right;
-    color: #64748b;
-    font-size: 12px;
-    line-height: 1.6;
-  }
+  .cover-logo-text span { color: #60a5fa; }
+  .cover-eyebrow { font-size: 11px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: #60a5fa; margin-bottom: 16px; }
+  .cover h1 { font-size: 52px; font-weight: 800; line-height: 1.08; letter-spacing: -1.5px; margin-bottom: 20px; max-width: 640px; }
+  .cover-sub { font-size: 17px; color: #94a3b8; max-width: 560px; line-height: 1.6; margin-bottom: 48px; }
+  .cover-badges { display: flex; gap: 10px; flex-wrap: wrap; }
+  .cover-badge { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: #e2e8f0; padding: 6px 14px; border-radius: 100px; font-size: 12px; font-weight: 500; letter-spacing: 0.3px; }
+  .cover-meta { position: absolute; bottom: 40px; right: 60px; text-align: right; color: #64748b; font-size: 12px; line-height: 1.6; }
 
-  /* ── Layout ───────────────────────────────────────────────────── */
-  .page {
-    max-width: 960px;
-    margin: 0 auto;
-    padding: 0 40px;
-  }
+  /* Layout */
+  .page { max-width: 960px; margin: 0 auto; padding: 0 40px; }
 
-  /* ── TOC ──────────────────────────────────────────────────────── */
-  .toc-page {
-    padding: 64px 40px;
-    max-width: 960px;
-    margin: 0 auto;
-    border-bottom: 1px solid var(--border);
-  }
-  .toc-title {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--gray-400);
-    margin-bottom: 32px;
-  }
+  /* TOC */
+  .toc-page { padding: 64px 40px; max-width: 960px; margin: 0 auto; border-bottom: 1px solid var(--border); }
+  .toc-title { font-size: 11px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--gray-400); margin-bottom: 32px; }
   .toc-list { list-style: none; }
-  .toc-item {
-    display: flex;
-    align-items: baseline;
-    gap: 0;
-    padding: 6px 0;
-    border-bottom: 1px solid var(--gray-100);
-  }
-  .toc-num {
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--blue);
-    width: 28px;
-    flex-shrink: 0;
-    font-family: 'JetBrains Mono', monospace;
-  }
-  .toc-label {
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--gray-800);
-    flex: 1;
-  }
+  .toc-item { display: flex; align-items: baseline; gap: 0; padding: 6px 0; border-bottom: 1px solid var(--gray-100); }
+  .toc-num { font-size: 11px; font-weight: 700; color: var(--blue); width: 28px; flex-shrink: 0; font-family: 'JetBrains Mono', monospace; }
+  .toc-label { font-size: 14px; font-weight: 500; color: var(--gray-800); flex: 1; }
   .toc-item a { color: inherit; text-decoration: none; }
   .toc-item a:hover .toc-label { color: var(--blue); }
 
-  /* ── Section ──────────────────────────────────────────────────── */
-  .section {
-    padding: 72px 40px 56px;
-    max-width: 960px;
-    margin: 0 auto;
-    border-bottom: 1px solid var(--gray-100);
-  }
+  /* Section */
+  .section { padding: 72px 40px 56px; max-width: 960px; margin: 0 auto; border-bottom: 1px solid var(--gray-100); }
   .section:last-child { border-bottom: none; }
-
-  .section-eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--blue);
-    margin-bottom: 12px;
-  }
-  .section-eyebrow-num {
-    background: var(--blue);
-    color: #fff;
-    width: 18px; height: 18px;
-    border-radius: 4px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 9px;
-    font-weight: 800;
-    font-family: 'JetBrains Mono', monospace;
-  }
-
-  h2 {
-    font-size: 34px;
-    font-weight: 800;
-    letter-spacing: -0.8px;
-    line-height: 1.15;
-    color: var(--gray-900);
-    margin-bottom: 16px;
-  }
-  .section-lead {
-    font-size: 16px;
-    color: var(--gray-500);
-    max-width: 680px;
-    line-height: 1.7;
-    margin-bottom: 40px;
-  }
-
-  h3 {
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--gray-900);
-    letter-spacing: -0.3px;
-    margin: 36px 0 12px;
-  }
-  h4 {
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--gray-700);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin: 24px 0 8px;
-  }
-
-  p {
-    margin-bottom: 14px;
-    color: var(--gray-700);
-    line-height: 1.7;
-  }
-
-  ul, ol {
-    padding-left: 20px;
-    margin-bottom: 16px;
-    color: var(--gray-700);
-  }
+  .section-eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: 10px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--blue); margin-bottom: 12px; }
+  .section-eyebrow-num { background: var(--blue); color: #fff; width: 18px; height: 18px; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 800; font-family: 'JetBrains Mono', monospace; }
+  h2 { font-size: 34px; font-weight: 800; letter-spacing: -0.8px; line-height: 1.15; color: var(--gray-900); margin-bottom: 16px; }
+  .section-lead { font-size: 16px; color: var(--gray-500); max-width: 680px; line-height: 1.7; margin-bottom: 40px; }
+  h3 { font-size: 20px; font-weight: 700; color: var(--gray-900); letter-spacing: -0.3px; margin: 36px 0 12px; }
+  h4 { font-size: 14px; font-weight: 700; color: var(--gray-700); text-transform: uppercase; letter-spacing: 1px; margin: 24px 0 8px; }
+  p { margin-bottom: 14px; color: var(--gray-700); line-height: 1.7; }
+  ul, ol { padding-left: 20px; margin-bottom: 16px; color: var(--gray-700); }
   li { margin-bottom: 5px; line-height: 1.6; }
 
-  /* ── Screenshot ───────────────────────────────────────────────── */
-  .screenshot {
-    margin: 28px 0;
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-    border: 1px solid var(--gray-200);
-    box-shadow: var(--shadow-lg);
-  }
-  .screenshot img {
-    width: 100%;
-    display: block;
-  }
-  .screenshot-caption {
-    background: var(--gray-50);
-    border-top: 1px solid var(--gray-200);
-    padding: 10px 16px;
-    font-size: 12px;
-    color: var(--gray-500);
-    line-height: 1.5;
-  }
-  .screenshot-caption strong {
-    color: var(--gray-700);
-    font-weight: 600;
-  }
+  /* Screenshots */
+  .screenshot { margin: 28px 0; border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--gray-200); box-shadow: var(--shadow-lg); }
+  .screenshot img { width: 100%; display: block; }
+  .screenshot-caption { background: var(--gray-50); border-top: 1px solid var(--gray-200); padding: 10px 16px; font-size: 12px; color: var(--gray-500); line-height: 1.5; }
+  .screenshot-caption strong { color: var(--gray-700); font-weight: 600; }
+  .screenshot-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 28px 0; }
 
-  .screenshot-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    margin: 28px 0;
-  }
-
-  /* ── Cards / callouts ─────────────────────────────────────────── */
-  .card {
-    background: var(--gray-50);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 24px;
-    margin-bottom: 16px;
-  }
-  .card-title {
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--gray-800);
-    margin-bottom: 6px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
+  /* Cards / callouts */
+  .card { background: var(--gray-50); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin-bottom: 16px; }
+  .card-title { font-size: 13px; font-weight: 700; color: var(--gray-800); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
   .card p { font-size: 14px; margin-bottom: 0; }
-
-  .callout {
-    border-left: 4px solid;
-    border-radius: 0 var(--radius) var(--radius) 0;
-    padding: 16px 20px;
-    margin: 20px 0;
-    font-size: 14px;
-    line-height: 1.6;
-  }
+  .callout { border-left: 4px solid; border-radius: 0 var(--radius) var(--radius) 0; padding: 16px 20px; margin: 20px 0; font-size: 14px; line-height: 1.6; }
   .callout-info { border-color: var(--blue); background: var(--blue-light); color: #1e40af; }
   .callout-tip { border-color: var(--green); background: var(--green-light); color: #14532d; }
   .callout-warn { border-color: var(--amber); background: var(--amber-light); color: #92400e; }
 
-  /* ── Mode cards ───────────────────────────────────────────────── */
-  .mode-card {
-    border-radius: var(--radius-lg);
-    padding: 32px;
-    margin-bottom: 32px;
-    border: 1.5px solid;
-  }
-  .mode-card-standard {
-    background: linear-gradient(135deg, #f0f7ff 0%, #e8f0fe 100%);
-    border-color: #bfdbfe;
-  }
-  .mode-card-assist {
-    background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
-    border-color: #c4b5fd;
-  }
-  .mode-card-optimize {
-    background: linear-gradient(135deg, #fdf4ff 0%, #fae8ff 100%);
-    border-color: #e9d5ff;
-  }
-
-  .mode-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 4px 12px;
-    border-radius: 100px;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    margin-bottom: 12px;
-  }
+  /* Mode cards */
+  .mode-card { border-radius: var(--radius-lg); padding: 32px; margin-bottom: 32px; border: 1.5px solid; }
+  .mode-card-core { background: linear-gradient(135deg, #f0f7ff 0%, #e8f0fe 100%); border-color: #bfdbfe; }
+  .mode-card-elevate { background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%); border-color: #c4b5fd; }
+  .mode-card-enhanced { background: linear-gradient(135deg, #fdf4ff 0%, #fae8ff 100%); border-color: #e9d5ff; }
+  .mode-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 100px; font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; }
   .mode-badge-core { background: var(--blue); color: #fff; }
-  .mode-badge-elevate   { background: var(--violet); color: #fff; }
+  .mode-badge-elevate { background: var(--violet); color: #fff; }
   .mode-badge-enhanced { background: #9333ea; color: #fff; }
-
   .mode-card h3 { margin-top: 0; }
-  .mode-card .mode-tagline {
-    font-size: 18px;
-    font-weight: 700;
-    letter-spacing: -0.3px;
-    margin-bottom: 10px;
-    color: var(--gray-900);
-  }
+  .mode-card .mode-tagline { font-size: 18px; font-weight: 700; letter-spacing: -0.3px; margin-bottom: 10px; color: var(--gray-900); }
   .mode-desc { font-size: 14px; color: var(--gray-600); margin-bottom: 20px; }
-
-  .feature-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 6px;
-  }
-  .feature-list li {
-    font-size: 13px;
-    color: var(--gray-700);
-    padding: 4px 0;
-    display: flex;
-    gap: 8px;
-    align-items: flex-start;
-    margin: 0;
-  }
+  .feature-list { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .feature-list li { font-size: 13px; color: var(--gray-700); padding: 4px 0; display: flex; gap: 8px; align-items: flex-start; margin: 0; }
   .feat-check { color: var(--green); font-weight: 700; flex-shrink: 0; }
-  .feat-ai    { color: var(--violet); font-weight: 700; flex-shrink: 0; }
-
-  .mode-meta {
-    margin-top: 18px;
-    padding-top: 16px;
-    border-top: 1px solid rgba(0,0,0,0.07);
-    display: flex;
-    gap: 32px;
-    font-size: 13px;
-  }
+  .feat-ai { color: var(--violet); font-weight: 700; flex-shrink: 0; }
+  .feat-x { color: var(--gray-400); font-weight: 700; flex-shrink: 0; }
+  .mode-meta { margin-top: 18px; padding-top: 16px; border-top: 1px solid rgba(0,0,0,0.07); display: flex; gap: 32px; font-size: 13px; flex-wrap: wrap; }
   .mode-meta-item { color: var(--gray-600); }
   .mode-meta-item strong { display: block; color: var(--gray-800); font-weight: 600; margin-bottom: 2px; }
 
-  /* ── Flow diagram ─────────────────────────────────────────────── */
-  .flow {
-    display: flex;
-    align-items: flex-start;
-    gap: 0;
-    margin: 32px 0;
-    overflow-x: auto;
-    padding-bottom: 8px;
-  }
-  .flow-step {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    flex: 1;
-    min-width: 100px;
-  }
-  .flow-node {
-    width: 52px; height: 52px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-    font-weight: 700;
-    margin-bottom: 10px;
-    flex-shrink: 0;
-    border: 2px solid;
-    position: relative;
-  }
+  /* Flow diagram */
+  .flow { display: flex; align-items: flex-start; gap: 0; margin: 32px 0; overflow-x: auto; padding-bottom: 8px; }
+  .flow-step { display: flex; flex-direction: column; align-items: center; flex: 1; min-width: 90px; }
+  .flow-node { width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-bottom: 10px; flex-shrink: 0; border: 2px solid; }
   .flow-node-blue   { background: #eff6ff; border-color: #93c5fd; color: var(--blue); }
   .flow-node-green  { background: #f0fdf4; border-color: #86efac; color: var(--green); }
   .flow-node-violet { background: #f5f3ff; border-color: #c4b5fd; color: var(--violet); }
   .flow-node-amber  { background: #fffbeb; border-color: #fde68a; color: var(--amber); }
   .flow-node-gray   { background: var(--gray-100); border-color: var(--gray-300); color: var(--gray-500); }
-  .flow-label {
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: var(--gray-700);
-    text-align: center;
-    line-height: 1.3;
-  }
-  .flow-sub {
-    font-size: 10px;
-    color: var(--gray-400);
-    text-align: center;
-    margin-top: 3px;
-  }
-  .flow-arrow {
-    color: var(--gray-300);
-    font-size: 20px;
-    margin-top: 14px;
-    flex-shrink: 0;
-    padding: 0 4px;
-  }
+  .flow-node-red    { background: #fef2f2; border-color: #fca5a5; color: var(--red); }
+  .flow-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--gray-700); text-align: center; line-height: 1.3; }
+  .flow-sub { font-size: 10px; color: var(--gray-400); text-align: center; margin-top: 3px; }
+  .flow-arrow { color: var(--gray-300); font-size: 20px; margin-top: 12px; flex-shrink: 0; padding: 0 4px; }
 
-  /* ── Module grid ──────────────────────────────────────────────── */
-  .module-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 14px;
-    margin: 24px 0;
-  }
-  .module-card {
-    background: var(--gray-50);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 18px;
-  }
-  .module-icon {
-    font-size: 22px;
-    margin-bottom: 8px;
-  }
-  .module-card h4 {
-    font-size: 12px;
-    margin: 0 0 6px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: var(--gray-700);
-  }
-  .module-card p {
-    font-size: 12px;
-    color: var(--gray-500);
-    margin: 0;
-    line-height: 1.5;
-  }
-  .module-badge {
-    display: inline-block;
-    margin-top: 8px;
-    font-size: 9px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    padding: 2px 7px;
-    border-radius: 4px;
-  }
-  .badge-std  { background: #dbeafe; color: var(--blue); }
-  .badge-ai   { background: #ede9fe; color: var(--violet); }
-  .badge-opt  { background: #fae8ff; color: #9333ea; }
+  /* Module grid */
+  .module-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 24px 0; }
+  .module-card { background: var(--gray-50); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; }
+  .module-icon { font-size: 22px; margin-bottom: 8px; }
+  .module-card h4 { font-size: 12px; margin: 0 0 6px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--gray-700); }
+  .module-card p { font-size: 12px; color: var(--gray-500); margin: 0; line-height: 1.5; }
+  .module-badge { display: inline-block; margin-top: 8px; font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 2px 7px; border-radius: 4px; }
+  .badge-std { background: #dbeafe; color: var(--blue); }
+  .badge-ai  { background: #ede9fe; color: var(--violet); }
+  .badge-opt { background: #fae8ff; color: #9333ea; }
 
-  /* ── Journey table ────────────────────────────────────────────── */
+  /* Tables */
   table { width: 100%; border-collapse: collapse; margin: 24px 0; font-size: 13px; }
-  th {
-    background: var(--gray-900);
-    color: #fff;
-    padding: 10px 14px;
-    text-align: left;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-  }
+  th { background: var(--gray-900); color: #fff; padding: 10px 14px; text-align: left; font-size: 11px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; }
   th:first-child { border-radius: var(--radius) 0 0 0; }
-  th:last-child  { border-radius: 0 var(--radius) 0 0; }
+  th:last-child { border-radius: 0 var(--radius) 0 0; }
   td { padding: 10px 14px; border-bottom: 1px solid var(--gray-100); vertical-align: top; }
   tr:last-child td { border-bottom: none; }
   tr:nth-child(even) td { background: var(--gray-50); }
@@ -522,881 +155,1894 @@
   .td-who  { color: var(--gray-500); font-size: 12px; }
   .td-ai   { color: var(--violet); font-size: 12px; font-weight: 600; }
   .td-screen { color: var(--blue); font-size: 12px; font-weight: 500; }
+  .td-center { text-align: center; }
+  .check { color: var(--green); font-size: 15px; font-weight: 700; }
+  .cross { color: var(--gray-300); font-size: 15px; }
+  .partial { color: var(--amber); font-size: 13px; font-weight: 600; }
 
-  /* ── Value props ──────────────────────────────────────────────── */
-  .value-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin: 24px 0;
-  }
-  .value-card {
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 22px;
-    background: #fff;
-  }
-  .value-num {
-    font-size: 36px;
-    font-weight: 800;
-    letter-spacing: -1px;
-    color: var(--blue);
-    line-height: 1;
-    margin-bottom: 4px;
-  }
-  .value-label {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--gray-700);
-    margin-bottom: 6px;
-  }
+  /* Value / USP grid */
+  .value-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 24px 0; }
+  .value-card { border: 1px solid var(--border); border-radius: var(--radius); padding: 22px; background: #fff; }
+  .value-num { font-size: 36px; font-weight: 800; letter-spacing: -1px; color: var(--blue); line-height: 1; margin-bottom: 4px; }
+  .value-label { font-size: 13px; font-weight: 600; color: var(--gray-700); margin-bottom: 6px; }
   .value-desc { font-size: 12px; color: var(--gray-500); margin: 0; line-height: 1.5; }
 
-  /* ── AI explain block ─────────────────────────────────────────── */
-  .ai-block {
-    background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
-    border-radius: var(--radius-lg);
-    padding: 28px;
-    color: #e0e7ff;
-    margin: 24px 0;
-  }
-  .ai-block-title {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: #a5b4fc;
-    margin-bottom: 8px;
-  }
+  /* AI block */
+  .ai-block { background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); border-radius: var(--radius-lg); padding: 28px; color: #e0e7ff; margin: 24px 0; }
+  .ai-block-title { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #a5b4fc; margin-bottom: 8px; }
   .ai-block h3 { color: #fff; margin: 0 0 10px; font-size: 18px; }
   .ai-block p  { color: #c7d2fe; font-size: 14px; line-height: 1.65; margin-bottom: 10px; }
-  .ai-feature-row {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-    margin-top: 18px;
-  }
-  .ai-feature {
-    background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 8px;
-    padding: 14px;
-  }
+  .ai-feature-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 18px; }
+  .ai-feature { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); border-radius: 8px; padding: 14px; }
   .ai-feature-icon { font-size: 18px; margin-bottom: 6px; }
   .ai-feature-name { font-size: 12px; font-weight: 700; color: #e0e7ff; margin-bottom: 4px; }
   .ai-feature-desc { font-size: 11px; color: #a5b4fc; line-height: 1.5; }
 
-  /* ── Footer ───────────────────────────────────────────────────── */
-  .doc-footer {
-    background: var(--gray-900);
-    color: #6b7280;
-    padding: 40px;
-    font-size: 12px;
-    text-align: center;
-    line-height: 1.8;
-    margin-top: 60px;
-  }
+  /* Role cards */
+  .role-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 24px 0; }
+  .role-card { border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; background: #fff; }
+  .role-title { font-size: 13px; font-weight: 700; color: var(--gray-900); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+  .role-scope { font-size: 11px; font-weight: 600; color: var(--blue); margin-bottom: 10px; }
+  .role-card ul { margin: 0; padding-left: 16px; }
+  .role-card li { font-size: 12px; color: var(--gray-600); margin-bottom: 3px; }
+
+  /* Workflow steps */
+  .wf-steps { counter-reset: wf-counter; margin: 20px 0; }
+  .wf-step { display: flex; gap: 16px; margin-bottom: 16px; align-items: flex-start; }
+  .wf-step-num { counter-increment: wf-counter; background: var(--blue); color: #fff; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; flex-shrink: 0; margin-top: 1px; font-family: 'JetBrains Mono', monospace; }
+  .wf-step-num::before { content: counter(wf-counter); }
+  .wf-step-body { flex: 1; }
+  .wf-step-title { font-size: 14px; font-weight: 700; color: var(--gray-900); margin-bottom: 3px; }
+  .wf-step-detail { font-size: 13px; color: var(--gray-600); line-height: 1.6; }
+  .wf-step-actor { display: inline-block; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--gray-400); margin-bottom: 4px; }
+  .wf-step-decision { background: var(--amber-light); border: 1px solid #fde68a; border-radius: 6px; padding: 8px 12px; font-size: 12px; color: #92400e; margin-top: 6px; }
+
+  /* Notification table */
+  .notif-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 20px 0; }
+  .notif-card { border-radius: var(--radius); padding: 16px; border: 1px solid; }
+  .notif-card-critical { background: #fef2f2; border-color: #fca5a5; }
+  .notif-card-warn { background: var(--amber-light); border-color: #fde68a; }
+  .notif-card-info { background: var(--blue-light); border-color: var(--blue-mid); }
+  .notif-level { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+  .notif-card-critical .notif-level { color: var(--red); }
+  .notif-card-warn .notif-level { color: var(--amber); }
+  .notif-card-info .notif-level { color: var(--blue); }
+  .notif-card ul { margin: 0; padding-left: 14px; }
+  .notif-card li { font-size: 12px; color: var(--gray-700); margin-bottom: 3px; }
+
+  /* Module detail */
+  .mod-detail { background: var(--gray-50); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 28px; margin: 20px 0; }
+  .mod-detail-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 16px; gap: 16px; }
+  .mod-detail-icon { font-size: 28px; }
+  .mod-detail-title { font-size: 18px; font-weight: 800; color: var(--gray-900); letter-spacing: -0.3px; margin-bottom: 3px; }
+  .mod-detail-purpose { font-size: 13px; color: var(--gray-500); line-height: 1.5; max-width: 480px; }
+  .mod-meta-row { display: flex; gap: 24px; flex-wrap: wrap; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .mod-meta-pill { font-size: 11px; font-weight: 600; color: var(--gray-600); background: #fff; border: 1px solid var(--border); border-radius: 100px; padding: 3px 10px; }
+  .mod-section-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--gray-400); margin-bottom: 8px; margin-top: 16px; }
+  .mod-actions ul { list-style: none; padding: 0; margin: 0; }
+  .mod-actions li { font-size: 13px; color: var(--gray-700); padding: 5px 0; border-bottom: 1px solid var(--gray-100); display: flex; gap: 8px; align-items: center; }
+  .mod-actions li:last-child { border-bottom: none; }
+  .mod-action-icon { font-size: 14px; flex-shrink: 0; }
+  .mod-impact { background: linear-gradient(135deg, #f0f7ff 0%, #e8f0fe 100%); border: 1px solid #bfdbfe; border-radius: var(--radius); padding: 16px 20px; margin-top: 16px; }
+  .mod-impact-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--blue); margin-bottom: 8px; }
+  .mod-impact ul { margin: 0; padding-left: 16px; }
+  .mod-impact li { font-size: 13px; color: var(--gray-700); margin-bottom: 4px; }
+
+  /* Screen usability */
+  .screen-block { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; margin: 24px 0; }
+  .screen-header { background: var(--gray-900); color: #fff; padding: 16px 20px; display: flex; align-items: center; gap: 12px; }
+  .screen-header-icon { font-size: 18px; }
+  .screen-header-title { font-size: 14px; font-weight: 700; }
+  .screen-header-path { font-size: 11px; color: #6b7280; font-family: 'JetBrains Mono', monospace; margin-left: auto; }
+  .screen-body { padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .screen-col-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--gray-400); margin-bottom: 10px; }
+  .screen-body ul { margin: 0; padding-left: 16px; }
+  .screen-body li { font-size: 13px; color: var(--gray-700); margin-bottom: 5px; }
+  .screen-action-list { list-style: none; padding: 0; margin: 0; }
+  .screen-action-item { display: flex; gap: 8px; align-items: flex-start; padding: 6px 0; border-bottom: 1px solid var(--gray-100); font-size: 13px; color: var(--gray-700); }
+  .screen-action-item:last-child { border-bottom: none; }
+  .screen-action-badge { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding: 2px 6px; border-radius: 4px; flex-shrink: 0; margin-top: 2px; }
+  .sab-primary { background: var(--blue-light); color: var(--blue); }
+  .sab-ai { background: var(--violet-light); color: var(--violet); }
+  .sab-alert { background: #fef2f2; color: var(--red); }
+
+  /* Glossary */
+  .glossary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin: 20px 0; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+  .glossary-item { padding: 12px 16px; border-bottom: 1px solid var(--gray-100); }
+  .glossary-item:last-child { border-bottom: none; }
+  .glossary-term { font-size: 13px; font-weight: 700; color: var(--gray-900); margin-bottom: 2px; }
+  .glossary-def { font-size: 12px; color: var(--gray-500); line-height: 1.5; }
+
+  /* Footer */
+  .doc-footer { background: var(--gray-900); color: #6b7280; padding: 40px; font-size: 12px; text-align: center; line-height: 1.8; margin-top: 60px; }
   .doc-footer strong { color: #d1d5db; }
 
-  /* ── Utility ──────────────────────────────────────────────────── */
-  .tag {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 5px;
-    font-size: 11px;
-    font-weight: 600;
-  }
+  /* Utility */
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 5px; font-size: 11px; font-weight: 600; }
   .tag-blue   { background: #dbeafe; color: #1d4ed8; }
   .tag-violet { background: #ede9fe; color: #6d28d9; }
   .tag-green  { background: #dcfce7; color: #15803d; }
   .tag-red    { background: #fee2e2; color: #991b1b; }
   .tag-amber  { background: #fef3c7; color: #92400e; }
-
   hr { border: none; border-top: 1px solid var(--gray-200); margin: 40px 0; }
-
-  code {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-    background: var(--gray-100);
-    padding: 1px 6px;
-    border-radius: 4px;
-    color: var(--gray-800);
-  }
-
-  @media print {
-    .cover, .section { page-break-inside: avoid; }
-  }
+  code { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: var(--gray-100); padding: 1px 6px; border-radius: 4px; color: var(--gray-800); }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin: 20px 0; }
+  .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin: 24px 0; }
+  .kpi-box { background: var(--gray-50); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; text-align: center; }
+  .kpi-num { font-size: 28px; font-weight: 800; letter-spacing: -1px; color: var(--blue); line-height: 1; margin-bottom: 4px; }
+  .kpi-label { font-size: 11px; font-weight: 600; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.5px; }
+  @media print { .cover, .section { page-break-inside: avoid; } }
 </style>
 </head>
 <body>
 
-<!-- ══════════════════════════════════════════
-     COVER PAGE
-══════════════════════════════════════════ -->
+<!-- COVER -->
 <div class="cover">
   <div class="cover-logo">
     <div class="cover-logo-mark">🚚</div>
     <div class="cover-logo-text">YMS<span>NOW</span></div>
   </div>
-  <div class="cover-eyebrow">Product Documentation · Confidential</div>
+  <div class="cover-eyebrow">Enterprise Product Manual · Confidential</div>
   <h1>Yard Management<br>Intelligence Platform</h1>
-  <p class="cover-sub">A complete operational guide to YMSNOW — covering all modules, the gate-to-gate workflow, and the three-tier intelligence system: Core, Elevate, and Enhanced.</p>
+  <p class="cover-sub">A complete operational, sales, and implementation reference for YMSNOW — covering all 18 modules, the gate-to-gate workflow, role-based access control, and the three-tier intelligence system: Core, Elevate, and Enhanced.</p>
   <div class="cover-badges">
     <span class="cover-badge">Core Mode</span>
     <span class="cover-badge">Elevate Mode</span>
     <span class="cover-badge">Enhanced Mode</span>
+    <span class="cover-badge">7 User Roles</span>
+    <span class="cover-badge">AI-Powered Intelligence</span>
     <span class="cover-badge">Tablet-Ready</span>
     <span class="cover-badge">Real-Time Operations</span>
-    <span class="cover-badge">AI-Powered Intelligence</span>
   </div>
   <div class="cover-meta">
-    Version 1.0<br>
-    March 2026<br>
-    Confidential — For authorized personnel only
+    Version 2.0<br>
+    April 2026<br>
+    Confidential — Authorized Personnel Only
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════
-     TABLE OF CONTENTS
-══════════════════════════════════════════ -->
+<!-- TABLE OF CONTENTS -->
 <div class="toc-page">
   <div class="toc-title">Table of Contents</div>
-  <ol class="toc-list">
-    <li class="toc-item"><a href="#overview"><span class="toc-num">01</span><span class="toc-label">Product Overview</span></a></li>
-    <li class="toc-item"><a href="#modules"><span class="toc-num">02</span><span class="toc-label">Key Modules and Navigation</span></a></li>
-    <li class="toc-item"><a href="#flow"><span class="toc-num">03</span><span class="toc-label">Core Yard Management Flow</span></a></li>
-    <li class="toc-item"><a href="#core"><span class="toc-num">04</span><span class="toc-label">Core Mode</span></a></li>
-    <li class="toc-item"><a href="#elevate"><span class="toc-num">05</span><span class="toc-label">Elevate Mode</span></a></li>
-    <li class="toc-item"><a href="#enhanced"><span class="toc-num">06</span><span class="toc-label">Enhanced Mode</span></a></li>
-    <li class="toc-item"><a href="#walkthrough"><span class="toc-num">07</span><span class="toc-label">Screenshot Walkthrough</span></a></li>
-    <li class="toc-item"><a href="#journey"><span class="toc-num">08</span><span class="toc-label">Operational Journey — Appointment to Exit</span></a></li>
-    <li class="toc-item"><a href="#value"><span class="toc-num">09</span><span class="toc-label">Business Value and Differentiation</span></a></li>
+  <ul class="toc-list">
+    <li class="toc-item"><a href="#s1"><span class="toc-num">01</span><span class="toc-label">Executive Summary</span></a></li>
+    <li class="toc-item"><a href="#s2"><span class="toc-num">02</span><span class="toc-label">Product Overview</span></a></li>
+    <li class="toc-item"><a href="#s3"><span class="toc-num">03</span><span class="toc-label">Version Comparison — Core, Elevate & Enhanced</span></a></li>
+    <li class="toc-item"><a href="#s4"><span class="toc-num">04</span><span class="toc-label">Unique Selling Propositions</span></a></li>
+    <li class="toc-item"><a href="#s5"><span class="toc-num">05</span><span class="toc-label">Platform Architecture</span></a></li>
+    <li class="toc-item"><a href="#s6"><span class="toc-num">06</span><span class="toc-label">Roles & Access Control</span></a></li>
+    <li class="toc-item"><a href="#s7"><span class="toc-num">07</span><span class="toc-label">Module Reference</span></a></li>
+    <li class="toc-item"><a href="#s8"><span class="toc-num">08</span><span class="toc-label">Feature Availability Matrix</span></a></li>
+    <li class="toc-item"><a href="#s9"><span class="toc-num">09</span><span class="toc-label">Screen-Level Usability</span></a></li>
+    <li class="toc-item"><a href="#s10"><span class="toc-num">10</span><span class="toc-label">Workflows & Business Processes</span></a></li>
+    <li class="toc-item"><a href="#s11"><span class="toc-num">11</span><span class="toc-label">Notifications & Alerts</span></a></li>
+    <li class="toc-item"><a href="#s12"><span class="toc-num">12</span><span class="toc-label">Data, Reporting & Glossary</span></a></li>
+  </ul>
+</div>
+
+<!-- ══ SECTION 1 — EXECUTIVE SUMMARY ══ -->
+<div class="section" id="s1">
+  <div class="section-eyebrow"><span class="section-eyebrow-num">01</span> Executive Summary</div>
+  <h2>For Leadership & Sales</h2>
+  <p class="section-lead">YMSNOW is a production-grade Yard Management System designed for logistics operations that require real-time trailer tracking, dock coordination, and exception resolution — with optional AI intelligence layered on top.</p>
+
+  <h3>What YMSNOW Is</h3>
+  <p>YMSNOW is a web-based yard management and intelligence platform. It replaces clipboards, radio calls, and spreadsheets with a single operational interface that connects gate guards, dispatchers, jockeys, dock operators, and supervisors around a live, shared view of the yard.</p>
+  <p>The system manages the full trailer lifecycle: appointment creation → gate check-in → yard staging → dock activity → gate check-out. Every action is logged, every actor is accountable, and every trailer is traceable from arrival to departure.</p>
+
+  <h3>Who It Is For</h3>
+  <div class="role-grid">
+    <div class="role-card">
+      <div class="role-title">Distribution Centers</div>
+      <div class="role-scope">Inbound / outbound volume operations</div>
+      <ul>
+        <li>Managing 10–200+ dock doors</li>
+        <li>Multi-carrier scheduling</li>
+        <li>High-frequency move dispatching</li>
+      </ul>
+    </div>
+    <div class="role-card">
+      <div class="role-title">Third-Party Logistics (3PLs)</div>
+      <div class="role-scope">Multi-client yard management</div>
+      <ul>
+        <li>Carrier accountability and SCAC tracking</li>
+        <li>Detention billing and revenue intelligence</li>
+        <li>Compliance-grade audit trails</li>
+      </ul>
+    </div>
+    <div class="role-card">
+      <div class="role-title">Manufacturing Facilities</div>
+      <div class="role-scope">JIT supply chain operations</div>
+      <ul>
+        <li>Slot assignment tied to production schedule</li>
+        <li>SLA breach prevention at dock</li>
+        <li>Exception-first exception resolution</li>
+      </ul>
+    </div>
+    <div class="role-card">
+      <div class="role-title">Retail & E-Commerce DCs</div>
+      <div class="role-scope">High-throughput, peak-season operations</div>
+      <ul>
+        <li>Live load and live unload coordination</li>
+        <li>Yard map with real-time trailer positions</li>
+        <li>AI-prioritized move sequencing (Enhanced)</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>When to Choose Each Version</h3>
+  <table>
+    <tr><th>Scenario</th><th>Recommended Version</th><th>Reason</th></tr>
+    <tr><td>New to digital YMS, manual workflows preferred</td><td><span class="tag tag-blue">Core</span></td><td>Full operational platform, zero AI dependency</td></tr>
+    <tr><td>Established operation, wants decision support</td><td><span class="tag tag-violet">Elevate</span></td><td>AI recommendations alongside manual control</td></tr>
+    <tr><td>High-volume DC with complex dock/move optimization needs</td><td><span class="tag tag-violet">Enhanced</span></td><td>Full AI orchestration and predictive intelligence</td></tr>
+    <tr><td>Compliance-sensitive or regulated environments</td><td><span class="tag tag-blue">Core</span></td><td>No AI dependency, full manual audit trail</td></tr>
+    <tr><td>Carrier accountability and detention management focus</td><td><span class="tag tag-blue">Core</span> or <span class="tag tag-violet">Elevate</span></td><td>Revenue intelligence active in all modes</td></tr>
+  </table>
+
+  <h3>Top 5 Differentiators</h3>
+  <ol>
+    <li><strong>Live mode switching.</strong> Operators can switch between Core, Elevate, and Enhanced in real time from the header — no reload, no data loss, no downtime.</li>
+    <li><strong>Human-in-the-loop AI.</strong> AI in Elevate and Enhanced never acts autonomously. Every recommendation requires human confirmation, maintaining accountability in all modes.</li>
+    <li><strong>Carrier Email Intelligence.</strong> AI parses inbound carrier emails, extracts shipment references, detects appointment conflicts, and surfaces alerts — reducing manual email triage by eliminating it entirely.</li>
+    <li><strong>Integrated Revenue Intelligence.</strong> Detention billing signals, dwell benchmarks, and accruing carrier charges are surfaced in real time on the dashboard — turning operational data into financial visibility.</li>
+    <li><strong>Role-based operational clarity.</strong> Every user sees exactly what their role requires — gate guards see arrivals, jockeys see move queues, dock users see dock boards, supervisors see everything.</li>
   </ol>
 </div>
 
-<!-- ══════════════════════════════════════════
-     SECTION 1 — PRODUCT OVERVIEW
-══════════════════════════════════════════ -->
-<div class="section" id="overview">
-  <div class="section-eyebrow"><span class="section-eyebrow-num">01</span> Product Overview</div>
-  <h2>What is YMSNOW?</h2>
-  <p class="section-lead">YMSNOW is a production-grade Yard Management System designed for distribution centers, warehouse operators, 3PLs, and logistics-intensive facilities that need complete, real-time visibility and control from gate arrival to gate exit.</p>
+<!-- ══ SECTION 2 — PRODUCT OVERVIEW ══ -->
+<div class="section" id="s2">
+  <div class="section-eyebrow"><span class="section-eyebrow-num">02</span> Product Overview</div>
+  <h2>What YMSNOW Does</h2>
+  <p class="section-lead">YMSNOW covers the operational gap between a TMS (transportation management) and a WMS (warehouse management) — the physical yard where trailers wait, dock doors are assigned, and jockeys move equipment.</p>
 
-  <div class="screenshot">
-    <img src="screenshots/landing.jpg" alt="YMSNOW Landing Page" />
-    <div class="screenshot-caption"><strong>Figure 1.1 — YMSNOW Login</strong> · The secure operations access portal with role-based authentication. Operators select their profile and authenticate to enter the platform.</div>
-  </div>
-
-  <h3>The Problem YMSNOW Solves</h3>
-  <p>Modern distribution centers operate dozens of trailers, dock doors, yard jockeys, and carrier appointments simultaneously — often with no single source of truth. Trailers arrive without slots, docks sit idle while trailers age in the yard, and exceptions go unresolved for hours while staff use radios and spreadsheets to coordinate.</p>
-
-  <p>YMSNOW replaces fragmented coordination with a unified, real-time operational platform. Every trailer, every dock door, every appointment, every exception, and every yard move is tracked, visible, and actionable from a single interface.</p>
-
-  <h3>Who Uses YMSNOW?</h3>
-
-  <div class="module-grid" style="grid-template-columns: repeat(2, 1fr);">
-    <div class="module-card">
-      <div class="module-icon">🏢</div>
-      <h4>Yard Managers</h4>
-      <p>Full operational oversight — dashboard KPIs, exception resolution, dock assignment, jockey dispatch, and mode switching between Core, Elevate, and Enhanced.</p>
+  <h3>Problems It Solves</h3>
+  <div class="value-grid">
+    <div class="value-card">
+      <div class="value-label">Trailer Visibility Gaps</div>
+      <p class="value-desc">Dispatchers can't locate trailers in real time. YMSNOW provides live position tracking across every zone, slot, and dock door.</p>
     </div>
-    <div class="module-card">
-      <div class="module-icon">🛡️</div>
-      <h4>Gate Guards</h4>
-      <p>Process inbound arrivals, verify drivers, take photos, assign yard slots, and issue gate passes. Check-out clearance verification at exit.</p>
+    <div class="value-card">
+      <div class="value-label">Dock Coordination Failures</div>
+      <p class="value-desc">Dock doors sit idle while trailers wait in wrong zones. YMSNOW's dock board and move queue connect staging to dock assignment in a closed loop.</p>
     </div>
-    <div class="module-card">
-      <div class="module-icon">⚡</div>
-      <h4>Dock Staff / Dispatchers</h4>
-      <p>Monitor dock utilization, track loading and unloading progress, manage SLA compliance, and drag trailers between doors.</p>
+    <div class="value-card">
+      <div class="value-label">Untracked Detention Exposure</div>
+      <p class="value-desc">Carriers rack up detention hours invisibly. YMSNOW surfaces accruing dwell time and detention charges in real time on the dashboard.</p>
     </div>
-    <div class="module-card">
-      <div class="module-icon">🚛</div>
-      <h4>Yard Jockeys</h4>
-      <p>Receive move tasks on the Yard Moves queue, execute trailer repositioning assignments, and log completions in real time.</p>
+    <div class="value-card">
+      <div class="value-label">Exception Blind Spots</div>
+      <p class="value-desc">Holds (customs, security, damage) sit unresolved for hours. YMSNOW's exception module centralizes all holds with severity classification and one-click resolution.</p>
+    </div>
+    <div class="value-card">
+      <div class="value-label">Manual Gate Overhead</div>
+      <p class="value-desc">Gate check-in is slow and error-prone. YMSNOW's step-by-step check-in process — with Quick Mode for high-volume gates — reduces dwell at the gate.</p>
+    </div>
+    <div class="value-card">
+      <div class="value-label">No Carrier Accountability</div>
+      <p class="value-desc">Late arrivals and missed appointments go untracked. YMSNOW records every carrier interaction, supports SCAC validation, and flags No Show / Late status automatically.</p>
     </div>
   </div>
 
-  <h3>Three Tiers of Intelligence</h3>
-  <p>YMSNOW operates in three distinct product modes, allowing facilities to adopt the level of AI and automation that fits their operational maturity:</p>
-  <ul>
-    <li><strong>Core</strong> — full manual control with complete visibility, no AI involvement</li>
-    <li><strong>Elevate</strong> — AI recommendations appear alongside human decisions; email intelligence active</li>
-    <li><strong>Enhanced</strong> — full AI-driven dock assignment, move prioritization, and conflict detection</li>
-  </ul>
-  <p>Modes can be switched live from the top header bar without reloading. All data and manual workflows remain available in every mode.</p>
-</div>
-
-<!-- ══════════════════════════════════════════
-     SECTION 2 — MODULES
-══════════════════════════════════════════ -->
-<div class="section" id="modules">
-  <div class="section-eyebrow"><span class="section-eyebrow-num">02</span> Key Modules and Navigation</div>
-  <h2>What's in the Platform</h2>
-  <p class="section-lead">YMSNOW is organized into five navigation groups — Operations, Workflow, Compliance, Analytics, and Administration. All modules are accessible from the persistent left sidebar.</p>
-
-  <div class="screenshot">
-    <img src="screenshots/dashboard.jpg" alt="YMSNOW Dashboard" />
-    <div class="screenshot-caption"><strong>Figure 2.1 — Dashboard</strong> · The operations command center shows yard inventory, utilization, active holds, aged trailers, overdue moves, and action items in a single view. The product mode banner explains which tier is active.</div>
-  </div>
-
-  <h3>Operations Group</h3>
-  <div class="module-grid">
-    <div class="module-card">
-      <div class="module-icon">📊</div>
-      <h4>Dashboard</h4>
-      <p>Real-time KPI tiles: yard inventory, utilization, holds, aged trailers, overdue moves, and ready-out count. Action Required panel surfaces all items needing attention.</p>
-      <span class="module-badge badge-std">All Modes</span>
-    </div>
-    <div class="module-card">
-      <div class="module-icon">📅</div>
-      <h4>Appointments</h4>
-      <p>Calendar and list view for inbound and outbound trailer appointments. Supports Day / Week / Month views, type filtering, and direct appointment creation.</p>
-      <span class="module-badge badge-std">All Modes</span>
-    </div>
-    <div class="module-card">
-      <div class="module-icon">🚪</div>
-      <h4>Gate Operations</h4>
-      <p>Check-In and Check-Out tabs on a single screen. Step-by-step workflow: Find Visit → Verify Driver → Photos/Seal → Assign or Hold → Gate Pass.</p>
-      <span class="module-badge badge-std">All Modes</span>
-    </div>
-    <div class="module-card">
-      <div class="module-icon">📋</div>
-      <h4>Yard Inventory</h4>
-      <p>Live tabular list of all trailers currently on site. Columns: visit, trailer, carrier, location, status, time on yard, last update, next step. Filterable by status, zone, and carrier.</p>
-      <span class="module-badge badge-std">All Modes</span>
-    </div>
-    <div class="module-card">
-      <div class="module-icon">🗺️</div>
-      <h4>Yard Map / Yard Control</h4>
-      <p>Live SVG map of the entire yard. Three-panel layout: Operational Queue (left), Map Canvas (center), Slot Detail (right). Pan, zoom, drag-to-move, and zone filters.</p>
-      <span class="module-badge badge-std">All Modes</span>
-    </div>
-    <div class="module-card">
-      <div class="module-icon">🏭</div>
-      <h4>Dock Management</h4>
-      <p>Kanban board showing dock doors across Available, At Dock, Loading, and Unloading columns. SLA breach alerts with drag-to-reassign. Schedule view for planning.</p>
-      <span class="module-badge badge-std">All Modes</span>
-    </div>
-  </div>
-
-  <h3>Workflow Group</h3>
-  <div class="module-grid">
-    <div class="module-card">
-      <div class="module-icon">🔄</div>
-      <h4>Yard Moves</h4>
-      <p>Jockey task queue — Unassigned, Assigned, In Progress, and Completed tabs. Create moves, assign jockeys, and track execution in real time.</p>
-      <span class="module-badge badge-std">All Modes</span>
-    </div>
-    <div class="module-card">
-      <div class="module-icon">⚠️</div>
-      <h4>Holds & Exceptions</h4>
-      <p>Live list of all active holds: customs, security, documentation, damage. Severity classification (Critical / High / Medium). One-click Resolve workflow.</p>
-      <span class="module-badge badge-std">All Modes</span>
-    </div>
-    <div class="module-card">
-      <div class="module-icon">📧</div>
-      <h4>Email Intelligence</h4>
-      <p>AI parses inbound carrier emails to extract shipment references, detect conflicts with existing appointments, and surface supervisor alerts automatically.</p>
-      <span class="module-badge badge-ai">Elevate + Enhanced</span>
-    </div>
-  </div>
-
-  <h3>Compliance Group</h3>
-  <div class="module-grid">
-    <div class="module-card">
-      <div class="module-icon">🔍</div>
-      <h4>Inspections</h4>
-      <p>Trailer inspection records — physical condition, seal verification, documentation review. Linked to gate check-in workflow.</p>
-      <span class="module-badge badge-std">All Modes</span>
-    </div>
-    <div class="module-card">
-      <div class="module-icon">📁</div>
-      <h4>Yard Audit</h4>
-      <p>Physical yard walk record — periodic slot verification against live system data. Flags discrepancies between physical count and system inventory.</p>
-      <span class="module-badge badge-std">All Modes</span>
-    </div>
-  </div>
-
-  <h3>Analytics Group</h3>
-  <div class="module-grid">
-    <div class="module-card">
-      <div class="module-icon">📈</div>
-      <h4>Reports & Analytics</h4>
-      <p>Overview, Carrier, Dock, Move Tasks, and Revenue & Billing tabs. KPIs: avg dwell time, yard occupancy, dock utilization, on-time arrivals, hold rate. Export CSV / PDF.</p>
-      <span class="module-badge badge-std">All Modes</span>
-    </div>
-    <div class="module-card">
-      <div class="module-icon">💰</div>
-      <h4>Revenue Intelligence</h4>
-      <p>Detention billing, carrier charge tracking, and revenue opportunity identification. Surfaces accruing detention charges in real time on the dashboard.</p>
-      <span class="module-badge badge-std">All Modes</span>
-    </div>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════════
-     SECTION 3 — CORE FLOW
-══════════════════════════════════════════ -->
-<div class="section" id="flow">
-  <div class="section-eyebrow"><span class="section-eyebrow-num">03</span> Core Yard Management Flow</div>
-  <h2>Gate-to-Gate Operational Flow</h2>
-  <p class="section-lead">Every trailer that enters the facility follows a structured journey from pre-arrival appointment to final gate exit. YMSNOW tracks every stage of this journey and surfaces it across the relevant modules.</p>
-
+  <h3>Operational Scope</h3>
   <div class="flow">
     <div class="flow-step">
       <div class="flow-node flow-node-blue">📅</div>
-      <div class="flow-label">Appointment<br>Scheduled</div>
+      <div class="flow-label">Pre-Arrival</div>
       <div class="flow-sub">Appointments</div>
     </div>
     <div class="flow-arrow">→</div>
     <div class="flow-step">
       <div class="flow-node flow-node-green">🚪</div>
-      <div class="flow-label">Gate<br>Check-In</div>
+      <div class="flow-label">Gate In</div>
       <div class="flow-sub">Gate Operations</div>
     </div>
     <div class="flow-arrow">→</div>
     <div class="flow-step">
       <div class="flow-node flow-node-blue">🅿️</div>
-      <div class="flow-label">Yard<br>Staging</div>
+      <div class="flow-label">Yard Staging</div>
       <div class="flow-sub">Yard Map / Inventory</div>
     </div>
     <div class="flow-arrow">→</div>
     <div class="flow-step">
       <div class="flow-node flow-node-violet">🔄</div>
-      <div class="flow-label">Move to<br>Dock</div>
+      <div class="flow-label">Move to Dock</div>
       <div class="flow-sub">Yard Moves</div>
     </div>
     <div class="flow-arrow">→</div>
     <div class="flow-step">
       <div class="flow-node flow-node-amber">🏭</div>
-      <div class="flow-label">Dock<br>Activity</div>
+      <div class="flow-label">Dock Activity</div>
       <div class="flow-sub">Dock Management</div>
     </div>
     <div class="flow-arrow">→</div>
     <div class="flow-step">
       <div class="flow-node flow-node-green">✅</div>
-      <div class="flow-label">Ready<br>Out</div>
+      <div class="flow-label">Ready Out</div>
       <div class="flow-sub">Yard Inventory</div>
     </div>
     <div class="flow-arrow">→</div>
     <div class="flow-step">
       <div class="flow-node flow-node-gray">🚪</div>
-      <div class="flow-label">Gate<br>Check-Out</div>
+      <div class="flow-label">Gate Out</div>
       <div class="flow-sub">Gate Operations</div>
     </div>
   </div>
 
-  <h3>Stage 1 — Appointment Scheduling</h3>
-  <p>Carriers or dispatchers create appointments before arrival. Each appointment captures: carrier, trailer number, appointment type (inbound / outbound / live load / live unload / empty drop), scheduled time, and PO or reference number.</p>
-  <p>The appointment calendar provides Day, Week, and Month views with color-coded appointment types. Late, No Show, and Confirmed status filters help dispatchers manage day-of scheduling.</p>
-
-  <h3>Stage 2 — Gate Check-In</h3>
-  <p>When a truck arrives, the gate guard searches by appointment number, trailer number, or driver name. The system walks through a four-step process:</p>
-  <ol>
-    <li><strong>Find Visit</strong> — match to a scheduled appointment or register as a walk-in</li>
-    <li><strong>Verify Driver</strong> — confirm driver identity and capture license details</li>
-    <li><strong>Photos / Seal</strong> — document trailer condition and seal number</li>
-    <li><strong>Assign or Hold</strong> — assign a yard slot or place the trailer on hold for inspection</li>
-  </ol>
-  <p>On completion, a gate pass is issued and the trailer appears immediately in Yard Inventory and on the Yard Map.</p>
-
-  <h3>Stage 3 — Yard Staging</h3>
-  <p>The trailer is parked in its assigned slot within the appropriate yard zone (Inbound Staging, Outbound Ready, Reefer Row, Live Load/Unload, or Inspection Hold). Yard Inventory shows its live position, dwell time, and next step. The Yard Map shows its slot on the interactive map with real-time status color.</p>
-
-  <h3>Stage 4 — Move to Dock</h3>
-  <p>A yard move task is created — either manually by a dispatcher or automatically suggested by the AI (Elevate / Enhanced modes). A jockey is assigned and moves the trailer from its yard slot to a dock door. The move is tracked in the Yard Moves queue with real-time progress updates.</p>
-
-  <h3>Stage 5 — Dock Activity</h3>
-  <p>While at a dock door, the trailer status changes to Loading or Unloading. Dock Management shows the real-time status of all 10 dock doors. SLA timers monitor dock duration and flag Over SLA breaches. Supervisors can drag trailers between dock columns or reassign doors.</p>
-
-  <h3>Stage 6 — Ready Out</h3>
-  <p>When dock activity is complete, the trailer is marked Ready Out. It may return to a yard slot (outbound staging) before exit, or proceed directly to gate check-out. The Ready Out count is visible on the dashboard and in Gate Check-Out's "Expected Check-Outs" list.</p>
-
-  <h3>Stage 7 — Gate Check-Out</h3>
-  <p>The gate guard searches the trailer and steps through: Find Visit → Verify Unit → Check Clearance → Confirm Exit → Issue Exit Pass. The system verifies no outstanding holds block exit. A QR scan code is also supported for faster processing. Once confirmed, the visit is closed and the slot becomes available.</p>
+  <h3>Operational Layers Covered</h3>
+  <table>
+    <tr><th>Layer</th><th>Function</th><th>Modules</th></tr>
+    <tr><td><strong>Yard</strong></td><td>Slot assignment, trailer positioning, zone management</td><td>Yard Map, Yard Inventory, Yard Audit</td></tr>
+    <tr><td><strong>Gate</strong></td><td>Arrival/departure processing, driver verification, documentation</td><td>Gate Operations, Appointments, Inspections</td></tr>
+    <tr><td><strong>Dock</strong></td><td>Door assignment, loading/unloading tracking, SLA management</td><td>Dock Management</td></tr>
+    <tr><td><strong>Dispatch</strong></td><td>Jockey move task creation, assignment, and tracking</td><td>Yard Moves</td></tr>
+    <tr><td><strong>Compliance</strong></td><td>Exception handling, hold resolution, audit logging</td><td>Holds & Exceptions, Yard Audit, Audit Log</td></tr>
+    <tr><td><strong>Intelligence</strong></td><td>AI recommendations, email parsing, congestion prediction</td><td>Email Intelligence, AI Copilot, AI Configuration</td></tr>
+    <tr><td><strong>Finance</strong></td><td>Detention billing, carrier charges, revenue reporting</td><td>Revenue Intelligence, Reports & Analytics</td></tr>
+  </table>
 </div>
 
-<!-- ══════════════════════════════════════════
-     SECTION 4 — CORE MODE
-══════════════════════════════════════════ -->
-<div class="section" id="core">
-  <div class="section-eyebrow"><span class="section-eyebrow-num">04</span> Core Mode</div>
-  <h2>Core Mode</h2>
-  <p class="section-lead">Core Mode is full manual control — every workflow is human-driven, every decision is explicit, and no AI is involved. It delivers complete real-time visibility without any AI dependency.</p>
+<!-- ══ SECTION 3 — VERSION COMPARISON ══ -->
+<div class="section" id="s3">
+  <div class="section-eyebrow"><span class="section-eyebrow-num">03</span> Version Comparison</div>
+  <h2>Core vs Elevate vs Enhanced</h2>
+  <p class="section-lead">Three product tiers — each a complete YMS. The difference is the depth of AI intelligence layered on top of the operational platform.</p>
 
-  <div class="mode-card mode-card-standard">
+  <div class="mode-card mode-card-core">
     <span class="mode-badge mode-badge-core">Core</span>
-    <div class="mode-tagline">Core Yard Operations — Full Manual Control</div>
-    <p class="mode-desc">Designed for facilities that want a reliable, transparent operational platform with no automation or AI dependency. Every gate, dock, move, and exception is handled by yard staff with full system support.</p>
+    <div class="mode-tagline">Full Manual Control — No AI Dependency</div>
+    <p class="mode-desc">Every workflow is human-driven and explicit. Complete real-time visibility across gate, yard, dock, and moves — without any AI involvement. Designed for operations that demand full human accountability or that are new to digital YMS.</p>
     <ul class="feature-list">
-      <li><span class="feat-check">✓</span> Real-time yard visibility across gate, dock, inventory</li>
-      <li><span class="feat-check">✓</span> Manual gate check-in and check-out workflow</li>
-      <li><span class="feat-check">✓</span> Live dock management and SLA tracking</li>
-      <li><span class="feat-check">✓</span> Appointment scheduling — Day / Week / Month calendar</li>
-      <li><span class="feat-check">✓</span> Interactive yard map with drag-and-drop move creation</li>
-      <li><span class="feat-check">✓</span> Yard moves queue with jockey assignment</li>
-      <li><span class="feat-check">✓</span> Holds &amp; Exceptions management with severity classification</li>
-      <li><span class="feat-check">✓</span> Reports &amp; Analytics — dwell, occupancy, dock, carrier</li>
-      <li><span class="feat-check">✓</span> Revenue &amp; detention billing intelligence</li>
-      <li><span class="feat-check">✓</span> Complete audit trail — no AI dependencies</li>
+      <li><span class="feat-check">✓</span> Real-time yard inventory</li>
+      <li><span class="feat-check">✓</span> Gate check-in / check-out</li>
+      <li><span class="feat-check">✓</span> Dock management board</li>
+      <li><span class="feat-check">✓</span> Yard map with slot tracking</li>
+      <li><span class="feat-check">✓</span> Jockey move dispatch</li>
+      <li><span class="feat-check">✓</span> Holds & exception resolution</li>
+      <li><span class="feat-check">✓</span> Appointments & scheduling</li>
+      <li><span class="feat-check">✓</span> Reports & analytics</li>
+      <li><span class="feat-check">✓</span> Revenue intelligence</li>
+      <li><span class="feat-check">✓</span> Carrier management</li>
     </ul>
     <div class="mode-meta">
-      <div class="mode-meta-item"><strong>Best For</strong>Facilities new to YMS, compliance-sensitive operations, or those preferring manual control</div>
-      <div class="mode-meta-item"><strong>AI Features</strong>None — all workflows are manual</div>
-      <div class="mode-meta-item"><strong>Maturity Level</strong>All — Core is available to every customer tier</div>
+      <div class="mode-meta-item"><strong>Positioning</strong>Foundation YMS</div>
+      <div class="mode-meta-item"><strong>Target</strong>New adopters, compliance-sensitive ops</div>
+      <div class="mode-meta-item"><strong>AI</strong>None</div>
+      <div class="mode-meta-item"><strong>Upgrade Trigger</strong>Staff ready for decision support</div>
     </div>
   </div>
 
-  <h3>What Changes in the UI</h3>
-  <p>In Core Mode, the mode badge in the top header reads <span class="tag tag-blue">Core</span>. The AI assistant panel is hidden. Email Intelligence is accessible but shows no AI-parsed alerts. No recommendation banners or AI suggestion overlays appear on any page. The Dashboard mode banner explains the operational model to new users.</p>
+  <div class="mode-card mode-card-elevate">
+    <span class="mode-badge mode-badge-elevate">Elevate</span>
+    <div class="mode-tagline">AI Decision Support — Human Confirms Every Action</div>
+    <p class="mode-desc">Everything in Core, plus AI-generated recommendations for moves, exceptions, and appointments. Carriers' emails are parsed automatically. The AI Copilot assistant answers operational questions in plain language. Every suggestion is visible and reviewable before action.</p>
+    <ul class="feature-list">
+      <li><span class="feat-check">✓</span> Everything in Core</li>
+      <li><span class="feat-ai">✦</span> AI move priority suggestions</li>
+      <li><span class="feat-ai">✦</span> Appointment conflict detection</li>
+      <li><span class="feat-ai">✦</span> Exception cause analysis</li>
+      <li><span class="feat-ai">✦</span> Email Intelligence (carrier email parsing)</li>
+      <li><span class="feat-ai">✦</span> AI Copilot — natural language assistant</li>
+      <li><span class="feat-ai">✦</span> Congestion risk bar (60s polling)</li>
+      <li><span class="feat-ai">✦</span> Action items dashboard banner</li>
+    </ul>
+    <div class="mode-meta">
+      <div class="mode-meta-item"><strong>Positioning</strong>AI-Assisted YMS</div>
+      <div class="mode-meta-item"><strong>Target</strong>Established ops seeking decision acceleration</div>
+      <div class="mode-meta-item"><strong>AI</strong>Advisory &amp; Assistive</div>
+      <div class="mode-meta-item"><strong>Upgrade Trigger</strong>Throughput goals require prediction</div>
+    </div>
+  </div>
 
-  <h3>Key Capabilities</h3>
-  <p>Core Mode gives full access to the entire operational platform — every module is available. The difference from Elevate and Enhanced is only the absence of AI recommendations and automated suggestions. Dispatchers make all decisions manually, with full system data to support those decisions.</p>
+  <div class="mode-card mode-card-enhanced">
+    <span class="mode-badge mode-badge-enhanced">Enhanced</span>
+    <div class="mode-tagline">Full AI Orchestration — Maximum Yard Intelligence</div>
+    <p class="mode-desc">Everything in Elevate, plus the complete optimization engine. The system proactively recommends dock assignments, sequences move tasks, identifies detention risk, and surfaces a single prioritized "Next Best Action" that updates as yard conditions change.</p>
+    <ul class="feature-list">
+      <li><span class="feat-check">✓</span> Everything in Elevate</li>
+      <li><span class="feat-ai">✦</span> Dock assignment optimization</li>
+      <li><span class="feat-ai">✦</span> AI-ranked move sequencing</li>
+      <li><span class="feat-ai">✦</span> Next Best Action widget</li>
+      <li><span class="feat-ai">✦</span> Detention risk scoring</li>
+      <li><span class="feat-ai">✦</span> Predictive SLA breach warnings</li>
+      <li><span class="feat-ai">✦</span> Carrier performance scoring</li>
+      <li><span class="feat-ai">✦</span> ROI/impact panel (session metrics)</li>
+    </ul>
+    <div class="mode-meta">
+      <div class="mode-meta-item"><strong>Positioning</strong>AI-Enhanced YMS</div>
+      <div class="mode-meta-item"><strong>Target</strong>High-volume DCs, 3PLs, complex multi-dock ops</div>
+      <div class="mode-meta-item"><strong>AI</strong>Predictive &amp; Optimization</div>
+      <div class="mode-meta-item"><strong>Upgrade Trigger</strong>Mature data quality, scale demands</div>
+    </div>
+  </div>
+
+  <h3>Feature Comparison Table</h3>
+  <table>
+    <tr>
+      <th style="width:40%">Feature</th>
+      <th class="td-center" style="width:20%">Core</th>
+      <th class="td-center" style="width:20%">Elevate</th>
+      <th class="td-center" style="width:20%">Enhanced</th>
+    </tr>
+    <tr><td colspan="4" style="background:#f9fafb;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#9ca3af;padding:6px 14px;">Operations</td></tr>
+    <tr><td>Real-time yard inventory</td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td>Yard map (interactive SVG)</td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td>Gate check-in / check-out</td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td>Dock management board</td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td>Jockey move dispatch</td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td>Appointment scheduling</td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td>Holds & exception resolution</td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td>Carrier management (SCAC)</td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td colspan="4" style="background:#f9fafb;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#9ca3af;padding:6px 14px;">Compliance & Reporting</td></tr>
+    <tr><td>Inspections (trailer condition)</td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td>Yard audit (physical walk)</td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td>Full audit log</td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td>Reports & analytics (5 tabs)</td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td>Revenue & detention billing</td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td colspan="4" style="background:#f9fafb;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#9ca3af;padding:6px 14px;">AI — Advisory Layer</td></tr>
+    <tr><td>AI Copilot assistant (chat)</td><td class="td-center"><span class="cross">—</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td>Email Intelligence (carrier parsing)</td><td class="td-center"><span class="cross">—</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td>Congestion risk bar</td><td class="td-center"><span class="cross">—</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td>AI move priority suggestions</td><td class="td-center"><span class="cross">—</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td>Exception cause analysis</td><td class="td-center"><span class="cross">—</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td>Appointment conflict detection</td><td class="td-center"><span class="cross">—</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td>AI dashboard action banner</td><td class="td-center"><span class="cross">—</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td colspan="4" style="background:#f9fafb;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#9ca3af;padding:6px 14px;">AI — Optimization Layer</td></tr>
+    <tr><td>Next Best Action widget</td><td class="td-center"><span class="cross">—</span></td><td class="td-center"><span class="cross">—</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td>Dock assignment optimization</td><td class="td-center"><span class="cross">—</span></td><td class="td-center"><span class="cross">—</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td>AI-ranked move sequencing</td><td class="td-center"><span class="cross">—</span></td><td class="td-center"><span class="cross">—</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td>Detention risk scoring</td><td class="td-center"><span class="cross">—</span></td><td class="td-center"><span class="cross">—</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td>Predictive SLA breach warnings</td><td class="td-center"><span class="cross">—</span></td><td class="td-center"><span class="cross">—</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td>ROI / session impact panel</td><td class="td-center"><span class="cross">—</span></td><td class="td-center"><span class="cross">—</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td>Carrier performance scoring</td><td class="td-center"><span class="cross">—</span></td><td class="td-center"><span class="cross">—</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+  </table>
+
+  <h3>Limitations by Version</h3>
+  <table>
+    <tr><th>Version</th><th>Limitation</th><th>Mitigation</th></tr>
+    <tr><td><span class="tag tag-blue">Core</span></td><td>No AI recommendations; all decisions are manual</td><td>Full data visibility supports informed decisions</td></tr>
+    <tr><td><span class="tag tag-blue">Core</span></td><td>Email triage is entirely manual</td><td>Carrier portal available for self-service scheduling</td></tr>
+    <tr><td><span class="tag tag-violet">Elevate</span></td><td>Recommendations are advisory — no automated sequencing</td><td>One-click apply on all AI suggestions</td></tr>
+    <tr><td><span class="tag tag-violet">Elevate</span></td><td>No predictive SLA or detention risk scoring</td><td>Congestion risk bar covers aggregate risk</td></tr>
+    <tr><td><span class="tag tag-violet">Enhanced</span></td><td>Requires mature data quality for accurate predictions</td><td>Core → Elevate baseline period recommended first</td></tr>
+    <tr><td><span class="tag tag-violet">Enhanced</span></td><td>AI never acts autonomously — human approval required</td><td>By design — maintains compliance accountability</td></tr>
+  </table>
 
   <div class="callout callout-info">
-    <strong>Switching is live.</strong> Operators can switch between Core, Elevate, and Enhanced from the top header mode selector at any time. No data is lost and no page reload is required.
+    <strong>Switching is live and non-disruptive.</strong> Operators can change modes from the top header mode selector at any time. No data is lost, no page reload is required, and all manual workflows remain available in every mode.
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════
-     SECTION 5 — ELEVATE MODE
-══════════════════════════════════════════ -->
-<div class="section" id="elevate">
-  <div class="section-eyebrow"><span class="section-eyebrow-num">05</span> Elevate Mode</div>
-  <h2>Elevate Mode</h2>
-  <p class="section-lead">Elevate Mode keeps humans in control of every decision while surfacing AI suggestions, alerts, and insights alongside manual workflows. It is designed for teams ready to accelerate decisions without removing oversight.</p>
+<!-- ══ SECTION 4 — USPs ══ -->
+<div class="section" id="s4">
+  <div class="section-eyebrow"><span class="section-eyebrow-num">04</span> Unique Selling Propositions</div>
+  <h2>What Makes YMSNOW Different</h2>
+  <p class="section-lead">Each USP solves a specific operational problem that generic YMS platforms leave unaddressed.</p>
 
-  <div class="mode-card mode-card-assist">
-    <span class="mode-badge mode-badge-elevate">Elevate</span>
-    <div class="mode-tagline">AI Co-Pilot — Recommendations Alongside Manual Control</div>
-    <p class="mode-desc">The AI surfaces dock assignment suggestions, move prioritization insights, carrier email alerts, and exception detection — but all decisions remain with your team. Every AI recommendation can be accepted or overridden.</p>
-    <ul class="feature-list">
-      <li><span class="feat-check">✓</span> Everything in Core Mode</li>
-      <li><span class="feat-ai">✦</span> AI-powered Email Intelligence — carrier email parsing</li>
-      <li><span class="feat-ai">✦</span> AI dock assignment recommendations</li>
-      <li><span class="feat-ai">✦</span> Move prioritization suggestions in Yard Moves</li>
-      <li><span class="feat-ai">✦</span> AI Copilot assistant panel — context-aware Q&amp;A</li>
-      <li><span class="feat-ai">✦</span> Conflict detection — appointment overlaps and slot conflicts</li>
-      <li><span class="feat-ai">✦</span> Proactive exception flagging from email content</li>
-      <li><span class="feat-check">✓</span> All manual workflows remain fully available</li>
-      <li><span class="feat-check">✓</span> Every AI recommendation is explainable and overridable</li>
+  <h3>USP 1 — Live AI Mode Switching</h3>
+  <table>
+    <tr><th>Problem</th><th>Solution</th><th>Operational Impact</th></tr>
+    <tr>
+      <td>Facilities can't pilot AI without committing to a separate platform or full migration.</td>
+      <td>Three modes (Core → Elevate → Enhanced) are available on the same platform, switchable in real time from the header.</td>
+      <td>Teams adopt AI at their own pace. Night shifts can run Core; day supervisors can run Enhanced. No data sync required.</td>
+    </tr>
+  </table>
+
+  <h3>USP 2 — Carrier Email Intelligence</h3>
+  <table>
+    <tr><th>Problem</th><th>Solution</th><th>Operational Impact</th></tr>
+    <tr>
+      <td>Dispatchers spend 30–60 minutes per shift manually reading carrier emails, extracting PO references, and cross-checking appointments.</td>
+      <td>AI parses inbound carrier emails, extracts shipment references, detects conflicts with existing appointments, and surfaces supervisor alerts automatically. Registered carrier contacts are managed in the same module.</td>
+      <td>Eliminates manual email triage. Conflicts are flagged before the truck arrives. Reduces check-in delays caused by undocumented or conflicting appointments.</td>
+    </tr>
+  </table>
+
+  <h3>USP 3 — Revenue Intelligence Embedded in Operations</h3>
+  <table>
+    <tr><th>Problem</th><th>Solution</th><th>Operational Impact</th></tr>
+    <tr>
+      <td>Detention charges accrue invisibly. Finance teams discover billing opportunities days later when carriers have already left.</td>
+      <td>Accruing detention charges are displayed in real time on the dashboard. The Revenue module tracks billable events, carrier charge history, and dwell benchmarks against industry averages.</td>
+      <td>Dispatchers can act to reduce dwell before detention thresholds are breached. Billing teams have a pre-built record of every chargeable event.</td>
+    </tr>
+  </table>
+
+  <h3>USP 4 — Human-in-the-Loop AI Governance</h3>
+  <table>
+    <tr><th>Problem</th><th>Solution</th><th>Operational Impact</th></tr>
+    <tr>
+      <td>AI in logistics is blocked by compliance, accountability, and trust concerns. Operations managers won't deploy AI that acts without approval.</td>
+      <td>The AI Configuration module allows admins to set automation level (Advisory / Assistive / Automated), control which data sources the AI can read or act on, and require supervisor approval for AI-triggered actions.</td>
+      <td>Compliance teams have full governance visibility. Operations managers retain override authority at every step. AI recommendations are traceable and auditable.</td>
+    </tr>
+  </table>
+
+  <h3>USP 5 — Role-Native Operational Clarity</h3>
+  <table>
+    <tr><th>Problem</th><th>Solution</th><th>Operational Impact</th></tr>
+    <tr>
+      <td>Generic YMS platforms show every user the same screen. Gate guards see dock reports. Jockeys see carrier billing. Noise kills adoption.</td>
+      <td>Every module is scoped by role. Sidebar navigation shows only what the logged-in role can access. Badge counts (pending moves, open exceptions, expected arrivals) are role-relevant.</td>
+      <td>Gate guards open the app and immediately see expected arrivals. Jockeys see their move queue. Supervisors see the full picture. Onboarding time is dramatically reduced.</td>
+    </tr>
+  </table>
+
+  <h3>USP 6 — Tablet-First Design at Key Touchpoints</h3>
+  <table>
+    <tr><th>Problem</th><th>Solution</th><th>Operational Impact</th></tr>
+    <tr>
+      <td>Gate guards, jockeys, and dock users operate on 10-inch tablets in loud, mobile environments. Desktop-optimized YMS screens are unusable.</td>
+      <td>A tablet view toggle adapts major operational pages (Dashboard, Appointments, Gate, Moves, Dock) to a 10-inch layout with larger touch targets and simplified information hierarchy.</td>
+      <td>Operational adoption at the point of work — not just at dispatch desks. Guards can process check-ins on a mounted tablet at the gate booth.</td>
+    </tr>
+  </table>
+</div>
+
+<!-- ══ SECTION 5 — PLATFORM ARCHITECTURE ══ -->
+<div class="section" id="s5">
+  <div class="section-eyebrow"><span class="section-eyebrow-num">05</span> Platform Architecture</div>
+  <h2>Navigation & Module Structure</h2>
+  <p class="section-lead">YMSNOW is organized as a persistent left-sidebar application with five collapsible navigation groups. All modules are accessible without page reload.</p>
+
+  <h3>Navigation Structure</h3>
+  <table>
+    <tr><th>Group</th><th>Modules</th><th>Primary Users</th><th>Collapsible</th></tr>
+    <tr>
+      <td><strong>Dashboard</strong></td>
+      <td>Operations command center</td>
+      <td>All roles</td>
+      <td>Always visible</td>
+    </tr>
+    <tr>
+      <td><strong>Operations</strong></td>
+      <td>Appointments, Gate Operations, Yard Inventory, Yard Map, Dock Management, Yard Moves</td>
+      <td>Yard Manager, Supervisor, Gate Guard, Jockey, Dock User</td>
+      <td>No (always open)</td>
+    </tr>
+    <tr>
+      <td><strong>Compliance</strong></td>
+      <td>Holds & Exceptions, Inspections, Yard Audit</td>
+      <td>Admin, Yard Manager, Supervisor, Gate Guard, Dock User</td>
+      <td>Yes</td>
+    </tr>
+    <tr>
+      <td><strong>Analytics</strong></td>
+      <td>Reports & Analytics, Revenue, Notifications</td>
+      <td>Admin, Yard Manager, Supervisor</td>
+      <td>Yes</td>
+    </tr>
+    <tr>
+      <td><strong>Administration</strong></td>
+      <td>Carrier Management, Yard Setup, Users, Audit Log, Email Intelligence, AI Configuration</td>
+      <td>Admin, Yard Manager (limited)</td>
+      <td>Yes (default closed)</td>
+    </tr>
+  </table>
+
+  <h3>Header Elements</h3>
+  <p>The persistent top header contains:</p>
+  <ul>
+    <li><strong>Breadcrumb navigation</strong> — current section and module name, with group context (Operations, Workflow, Analytics, Administration)</li>
+    <li><strong>Mode selector</strong> — dropdown pill showing current mode (Core / Elevate / Enhanced); Elevate and Enhanced show a Sparkles icon</li>
+    <li><strong>Tablet view toggle</strong> — switches the current page between desktop and 10-inch tablet layout; persisted to localStorage</li>
+    <li><strong>Theme toggle</strong> — switches between light and dark UI themes</li>
+    <li><strong>Notifications bell</strong> — with unread badge count</li>
+  </ul>
+
+  <h3>Role-Based Visibility</h3>
+  <p>Navigation items are filtered by the active user role. The sidebar also filters AI-only items (Email Intelligence, AI Configuration, Lifecycle Video) when the platform is in Core mode — these are hidden entirely in Core and shown in Elevate / Enhanced.</p>
+
+  <div class="callout callout-info">
+    <strong>Persona system.</strong> The sidebar includes a user/persona switcher that allows switching between pre-configured user profiles (Admin, Yard Manager, Gate Guard, Jockey, Dock User, Supervisor, Carrier) without re-authenticating. Role-based visibility updates instantly on switch.
+  </div>
+
+  <h3>Technical Architecture</h3>
+  <table>
+    <tr><th>Layer</th><th>Technology</th><th>Notes</th></tr>
+    <tr><td>Frontend</td><td>React + TypeScript, Vite, Wouter (routing)</td><td>SPA — no page reloads on navigation</td></tr>
+    <tr><td>State</td><td>TanStack Query</td><td>60-second polling for live data; stale-while-revalidate</td></tr>
+    <tr><td>UI</td><td>Tailwind CSS, shadcn/ui, Radix UI</td><td>Dark mode supported; tablet-responsive layouts</td></tr>
+    <tr><td>Backend</td><td>Node.js API server (port 8080)</td><td>REST API; Vite proxy /api → localhost:8080</td></tr>
+    <tr><td>Database</td><td>PostgreSQL</td><td>Drizzle ORM; shared schema</td></tr>
+    <tr><td>AI Layer</td><td>LLM streaming via SSE</td><td>System prompt includes live yard context; role + screen injected per query</td></tr>
+    <tr><td>Auth</td><td>Session-based, localStorage-persisted</td><td>Role guard components wrap all protected routes</td></tr>
+  </table>
+</div>
+
+<!-- ══ SECTION 6 — ROLES & ACCESS CONTROL ══ -->
+<div class="section" id="s6">
+  <div class="section-eyebrow"><span class="section-eyebrow-num">06</span> Roles & Access Control</div>
+  <h2>Who Can Do What</h2>
+  <p class="section-lead">YMSNOW has seven defined roles. Each role sees a scoped navigation, receives role-relevant badge counts, and is restricted from modules outside their operational scope.</p>
+
+  <h3>Role Definitions</h3>
+
+  <div class="mod-detail">
+    <div class="mod-detail-header">
+      <div>
+        <div class="mod-detail-title">Administrator</div>
+        <div class="mod-detail-purpose">Full system access. Responsible for platform configuration, user management, and AI governance.</div>
+      </div>
+      <span class="mode-badge mode-badge-core" style="white-space:nowrap">All Modules</span>
+    </div>
+    <div class="mod-section-label">Accessible Modules</div>
+    <p style="font-size:13px;color:var(--gray-600)">All modules including Yard Setup, Users, Audit Log, AI Configuration, Email Intelligence, and all operational modules.</p>
+    <div class="mod-section-label">Exclusive Permissions</div>
+    <ul style="font-size:13px;color:var(--gray-700);padding-left:16px;margin:0">
+      <li>Create, edit, and deactivate users and roles</li>
+      <li>Configure AI automation level and data source access</li>
+      <li>Manage yard layout, zones, dock doors, and slot tiers</li>
+      <li>Access full platform audit log</li>
+      <li>Override any hold, move, or dock assignment</li>
     </ul>
-    <div class="mode-meta">
-      <div class="mode-meta-item"><strong>Best For</strong>Facilities with experienced yard staff ready to augment decisions with AI insights</div>
-      <div class="mode-meta-item"><strong>AI Features</strong>Email intelligence, recommendations, copilot assistant</div>
-      <div class="mode-meta-item"><strong>Maturity Level</strong>Mid-tier — teams comfortable with data-driven suggestions</div>
+  </div>
+
+  <div class="role-grid">
+    <div class="role-card">
+      <div class="role-title">Yard Manager</div>
+      <div class="role-scope">Operational leadership — all yard modules</div>
+      <ul>
+        <li>Dashboard, Appointments, Gate Operations</li>
+        <li>Yard Inventory, Yard Map, Dock Management</li>
+        <li>Yard Moves, Holds & Exceptions, Yard Audit</li>
+        <li>Reports & Analytics, Revenue, Notifications</li>
+        <li>Carrier Management, Audit Log, Email Intelligence</li>
+        <li><em>Cannot manage users or configure AI</em></li>
+      </ul>
+    </div>
+    <div class="role-card">
+      <div class="role-title">Supervisor</div>
+      <div class="role-scope">Shift supervision — operational modules only</div>
+      <ul>
+        <li>Dashboard, Appointments, Gate Operations</li>
+        <li>Yard Inventory, Yard Map, Dock Management</li>
+        <li>Yard Moves, Holds & Exceptions, Yard Audit</li>
+        <li>Reports & Analytics (read), Notifications</li>
+        <li><em>Cannot access Admin, Revenue, or AI Config</em></li>
+      </ul>
+    </div>
+    <div class="role-card">
+      <div class="role-title">Gate Guard</div>
+      <div class="role-scope">Gate operations — arrival and departure processing</div>
+      <ul>
+        <li>Dashboard (limited), Gate Operations (full)</li>
+        <li>Yard Inventory (read), Inspections</li>
+        <li><em>Cannot access Dock, Moves, Reports, or Admin</em></li>
+        <li>Operates in tablet layout at gate booth</li>
+      </ul>
+    </div>
+    <div class="role-card">
+      <div class="role-title">Yard Jockey</div>
+      <div class="role-scope">Move execution — jockey task queue</div>
+      <ul>
+        <li>Dashboard (limited), Yard Inventory (read)</li>
+        <li>Yard Map (read), Yard Moves (full task execution)</li>
+        <li><em>Cannot create appointments, resolve exceptions, or access Reports</em></li>
+        <li>Primary tablet user on yard</li>
+      </ul>
+    </div>
+    <div class="role-card">
+      <div class="role-title">Dock User</div>
+      <div class="role-scope">Dock operations — door assignment and loading tracking</div>
+      <ul>
+        <li>Dashboard (limited), Yard Inventory (read)</li>
+        <li>Dock Management (full), Yard Moves (read + accept)</li>
+        <li>Inspections (create), Holds & Exceptions (read)</li>
+        <li><em>Cannot access Gate, Appointments, Reports, or Admin</em></li>
+      </ul>
+    </div>
+    <div class="role-card">
+      <div class="role-title">Carrier</div>
+      <div class="role-scope">Carrier portal — self-service appointment access</div>
+      <ul>
+        <li>Appointments (own carrier only, limited)</li>
+        <li>Cannot access any operational, compliance, analytics, or admin module</li>
+        <li>Read-only visibility into own scheduled appointments</li>
+        <li>Contact information managed by Admin in Carrier Management</li>
+      </ul>
     </div>
   </div>
 
-  <div class="screenshot">
-    <img src="screenshots/email-intelligence.jpg" alt="Email Intelligence Module" />
-    <div class="screenshot-caption"><strong>Figure 5.1 — Carrier Email Intelligence</strong> · Available in Elevate and Enhanced modes. The AI parses inbound carrier emails, extracts shipment references, detects conflicts with existing appointments, and surfaces alerts for supervisor review. Registered carrier contacts are managed within the same module.</div>
-  </div>
+  <h3>Approval Hierarchy</h3>
+  <table>
+    <tr><th>Action</th><th>Who Can Initiate</th><th>Who Can Approve / Override</th></tr>
+    <tr><td>Place trailer on hold</td><td>Gate Guard, Supervisor, Yard Manager, Admin</td><td>Supervisor, Yard Manager, Admin</td></tr>
+    <tr><td>Resolve exception / clear hold</td><td>Supervisor, Yard Manager, Admin</td><td>Yard Manager, Admin</td></tr>
+    <tr><td>Override dock assignment</td><td>Supervisor, Yard Manager, Admin</td><td>Yard Manager, Admin</td></tr>
+    <tr><td>Apply AI recommendation</td><td>Any role with module access</td><td>Human confirmation required; Supervisor+ for Automated level</td></tr>
+    <tr><td>Configure AI automation level</td><td>Admin only</td><td>Admin only</td></tr>
+    <tr><td>Create / deactivate users</td><td>Admin only</td><td>Admin only</td></tr>
+    <tr><td>Initiate gate check-out</td><td>Gate Guard, Supervisor, Yard Manager, Admin</td><td>No approval required (step-based flow)</td></tr>
+  </table>
 
-  <div class="ai-block">
-    <div class="ai-block-title">AI Capabilities — Elevate Mode</div>
-    <h3>How the AI Works in Elevate Mode</h3>
-    <p>In Elevate Mode, the AI operates as a decision-support layer. It reads operational data in real time, applies rule-based and ML models, and surfaces the results as visible recommendations — not automatic changes. Every suggestion requires human confirmation.</p>
-    <div class="ai-feature-row">
-      <div class="ai-feature">
-        <div class="ai-feature-icon">📧</div>
-        <div class="ai-feature-name">Email Intelligence</div>
-        <div class="ai-feature-desc">Parses inbound carrier emails, extracts trailer/visit references, detects schedule conflicts, and creates supervisor alerts automatically.</div>
-      </div>
-      <div class="ai-feature">
-        <div class="ai-feature-icon">🤖</div>
-        <div class="ai-feature-name">AI Copilot Assistant</div>
-        <div class="ai-feature-desc">Context-aware chat panel. Ask questions about yard status, carrier history, or exception recommendations and receive immediate answers.</div>
-      </div>
-      <div class="ai-feature">
-        <div class="ai-feature-icon">⚡</div>
-        <div class="ai-feature-name">Move Prioritization</div>
-        <div class="ai-feature-desc">AI suggests which yard moves to prioritize based on dock readiness, SLA risk, dwell time, and appointment urgency.</div>
-      </div>
-    </div>
+  <div class="callout callout-warn">
+    <strong>Sensitive permissions:</strong> AI automation level configuration, user management, and yard physical setup (slot/zone/dock configuration) are restricted to Admin only. Yard Managers have operational authority but cannot change platform configuration.
   </div>
-
-  <h3>What Changes in the UI</h3>
-  <p>In Elevate Mode, the mode badge reads <span class="tag tag-violet">Elevate</span>. The AI Copilot assistant button appears in the lower-right corner of the screen. Email Intelligence shows AI-parsed alerts and conflict flags. Recommendation banners may appear on Dock Management and Yard Moves pages. The Dashboard surfaces AI-identified action items alongside standard holds and overdue moves.</p>
 </div>
 
-<!-- ══════════════════════════════════════════
-     SECTION 6 — ENHANCED MODE
-══════════════════════════════════════════ -->
-<div class="section" id="enhanced">
-  <div class="section-eyebrow"><span class="section-eyebrow-num">06</span> Enhanced Mode</div>
-  <h2>Enhanced Mode</h2>
-  <p class="section-lead">Enhanced Mode enables the full AI engine. The system proactively recommends dock assignments, sequences move tasks, identifies detention risk, and surfaces optimization insights across the entire yard operation.</p>
-
-  <div class="mode-card mode-card-optimize">
-    <span class="mode-badge mode-badge-enhanced">Enhanced</span>
-    <div class="mode-tagline">Full AI Optimization — Maximum Yard Intelligence</div>
-    <p class="mode-desc">The complete AI-powered yard experience. Every layer of the platform — gate, yard, dock, moves, and exception management — is augmented with optimization intelligence. Designed for high-throughput facilities running at scale.</p>
-    <ul class="feature-list">
-      <li><span class="feat-check">✓</span> Everything in Elevate Mode</li>
-      <li><span class="feat-ai">✦</span> Automated dock assignment optimization</li>
-      <li><span class="feat-ai">✦</span> AI-generated yard move sequences</li>
-      <li><span class="feat-ai">✦</span> Detention risk scoring and early alerts</li>
-      <li><span class="feat-ai">✦</span> Proactive slot assignment recommendations</li>
-      <li><span class="feat-ai">✦</span> Carrier performance intelligence</li>
-      <li><span class="feat-ai">✦</span> Predictive SLA breach warnings</li>
-      <li><span class="feat-ai">✦</span> Revenue optimization — detention billing signals</li>
-      <li><span class="feat-check">✓</span> All manual overrides retained — AI never acts unilaterally</li>
-    </ul>
-    <div class="mode-meta">
-      <div class="mode-meta-item"><strong>Best For</strong>High-volume DCs, 3PLs, and facilities with complex multi-carrier, multi-dock operations</div>
-      <div class="mode-meta-item"><strong>AI Features</strong>Full optimization engine — dock, moves, detention, carriers, slots</div>
-      <div class="mode-meta-item"><strong>Maturity Level</strong>Advanced — facilities with established operational baselines and data quality</div>
-    </div>
-  </div>
-
-  <h3>What Changes in the UI</h3>
-  <p>In Enhanced Mode, the mode badge reads <span class="tag tag-violet">Enhanced</span>. All Elevate Mode AI surfaces are active, plus additional optimization panels appear across Dock Management, Yard Moves, and the Dashboard. The AI Copilot has expanded context including optimization recommendations and carrier scoring.</p>
-
-  <h3>Key Distinction — AI as a Recommendation Engine</h3>
-  <p>In all three modes — Core, Elevate, and Enhanced — the system never performs irreversible actions automatically. The AI surfaces recommendations, the operator approves. This maintains full human accountability and compliance traceability regardless of mode.</p>
-
-  <div class="callout callout-tip">
-    <strong>Upgrade path.</strong> Facilities typically begin with Core Mode to establish operational baselines, move to Elevate once staff are comfortable with the platform, then unlock Enhanced when throughput goals require more automation.
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════════
-     SECTION 7 — SCREENSHOT WALKTHROUGH
-══════════════════════════════════════════ -->
-<div class="section" id="walkthrough">
-  <div class="section-eyebrow"><span class="section-eyebrow-num">07</span> Screenshot Walkthrough</div>
-  <h2>Key Screens</h2>
-  <p class="section-lead">A visual tour of the platform's most-used operational screens, showing how each module supports the day-to-day work of yard management teams.</p>
+<!-- ══ SECTION 7 — MODULE REFERENCE ══ -->
+<div class="section" id="s7">
+  <div class="section-eyebrow"><span class="section-eyebrow-num">07</span> Module Reference</div>
+  <h2>Every Module — Purpose, Actions & Impact</h2>
+  <p class="section-lead">Detailed reference for all 18 modules. Each entry covers what the module does, what actions it enables, and what operational problem it directly solves.</p>
 
   <!-- Dashboard -->
-  <h3>Dashboard — Operations Command Center</h3>
-  <div class="screenshot">
-    <img src="screenshots/dashboard.jpg" alt="Dashboard" />
-    <div class="screenshot-caption"><strong>Figure 7.1 — Dashboard</strong> · Six KPI tiles provide instant operational status: Yard Inventory, Utilization, On Hold, Aged Trailers, Overdue Moves, and Ready Out. The Revenue Intelligence section and Action Required panel (right) surface escalation items. The mode banner at top explains the current operating mode to all users.</div>
+  <div class="mod-detail">
+    <div class="mod-detail-header">
+      <div class="mod-detail-icon">📊</div>
+      <div>
+        <div class="mod-detail-title">Dashboard</div>
+        <div class="mod-detail-purpose">Operations command center. Real-time KPI tiles, action items, revenue signals, and (in Elevate/Enhanced) AI-prioritized action banners.</div>
+      </div>
+      <span class="badge-std module-badge">All Modes</span>
+    </div>
+    <div class="mod-meta-row">
+      <span class="mod-meta-pill">📍 Route: /</span>
+      <span class="mod-meta-pill">👥 All Roles</span>
+      <span class="mod-meta-pill">🔄 Live polling</span>
+    </div>
+    <div class="mod-section-label">Key KPI Tiles</div>
+    <p style="font-size:13px;color:var(--gray-600)">Yard Inventory (total on site) · Utilization % · On Hold count · Aged Trailers (dwell &gt; threshold) · Overdue Moves · Ready Out count. Revenue Intelligence section shows accruing detention. Action Required panel surfaces all items needing attention.</p>
+    <div class="mod-section-label">Mode Differences</div>
+    <ul style="font-size:13px;color:var(--gray-700);padding-left:16px;margin:0">
+      <li><strong>Core:</strong> KPI tiles, Action Required, Revenue section only</li>
+      <li><strong>Elevate:</strong> + AI action items banner (prioritized attention list)</li>
+      <li><strong>Enhanced:</strong> + Next Best Action widget + Optimization panel with bottleneck alerts</li>
+    </ul>
+    <div class="mod-impact">
+      <div class="mod-impact-label">How This Module Enables User Action</div>
+      <ul>
+        <li>Gives supervisors a single screen to assess yard health without opening any other module</li>
+        <li>Revenue Intelligence tile triggers immediate jockey dispatch to avoid detention threshold breach</li>
+        <li>In Enhanced mode, Next Best Action tells the supervisor exactly what to do next — ranked by yard-wide impact</li>
+      </ul>
+    </div>
   </div>
 
   <!-- Appointments -->
-  <h3>Appointments — Calendar and Scheduling</h3>
-  <div class="screenshot">
-    <img src="screenshots/appointments.jpg" alt="Appointments Calendar" />
-    <div class="screenshot-caption"><strong>Figure 7.2 — Appointments</strong> · The weekly calendar view shows all scheduled arrivals and departures. Status summary tiles (Today, Late, No Show, Confirmed, Cancelled) give instant snapshot visibility. Appointments are color-coded by type: Inbound/Loaded, Outbound, Live Load, Live Unload, and Empty Drop. Day, Week, and Month view options are available.</div>
+  <div class="mod-detail">
+    <div class="mod-detail-header">
+      <div class="mod-detail-icon">📅</div>
+      <div>
+        <div class="mod-detail-title">Appointments</div>
+        <div class="mod-detail-purpose">Calendar and list view for scheduling inbound and outbound trailer appointments. Supports Day, Week, and Month views.</div>
+      </div>
+      <span class="badge-std module-badge">All Modes</span>
+    </div>
+    <div class="mod-meta-row">
+      <span class="mod-meta-pill">📍 Route: /appointments</span>
+      <span class="mod-meta-pill">👥 Yard Manager, Supervisor, Admin, Carrier</span>
+    </div>
+    <div class="mod-section-label">Appointment Types</div>
+    <p style="font-size:13px;color:var(--gray-600)">Inbound Loaded · Outbound · Live Load · Live Unload · Empty Drop</p>
+    <div class="mod-section-label">Status Lifecycle</div>
+    <p style="font-size:13px;color:var(--gray-600)">Scheduled → Confirmed → Checked In → Late / No Show → Cancelled</p>
+    <div class="mod-section-label">Key Actions</div>
+    <div class="mod-actions">
+      <ul>
+        <li><span class="mod-action-icon">➕</span> Create appointment with carrier, type, time, and PO reference</li>
+        <li><span class="mod-action-icon">✏️</span> Edit appointment details and reschedule</li>
+        <li><span class="mod-action-icon">🔍</span> Filter by status (Late, No Show, Confirmed, Cancelled)</li>
+        <li><span class="mod-action-icon">📅</span> Switch between Day, Week, and Month calendar views</li>
+        <li><span class="mod-action-icon">🤖</span> <em>(Elevate/Enhanced)</em> AI conflict detection flags scheduling overlaps</li>
+      </ul>
+    </div>
+    <div class="mod-impact">
+      <div class="mod-impact-label">How This Module Enables User Action</div>
+      <ul>
+        <li>Dispatchers see the full day's expected arrivals before the shift starts</li>
+        <li>Late and No Show filters enable immediate follow-up with carriers</li>
+        <li>In Elevate/Enhanced, conflict alerts prevent double-booking before trucks arrive</li>
+      </ul>
+    </div>
   </div>
 
-  <!-- Gate Check-In -->
-  <h3>Gate Check-In — Arrival Processing</h3>
-  <div class="screenshot">
-    <img src="screenshots/gate-checkin.jpg" alt="Gate Check-In" />
-    <div class="screenshot-caption"><strong>Figure 7.3 — Gate Check-In</strong> · The four-step arrival process: Find Visit → Verify Driver → Photos/Seal → Assign or Hold → Gate Pass. The right panel shows all expected arrivals for the current shift with status flags. Fast Lane and Guard Mode can be toggled from the header.</div>
+  <!-- Gate Operations -->
+  <div class="mod-detail">
+    <div class="mod-detail-header">
+      <div class="mod-detail-icon">🚪</div>
+      <div>
+        <div class="mod-detail-title">Gate Operations</div>
+        <div class="mod-detail-purpose">Unified Check-In and Check-Out interface. Two tabs with badge counts showing pending queue size for each. The entry point for every trailer's on-site lifecycle.</div>
+      </div>
+      <span class="badge-std module-badge">All Modes</span>
+    </div>
+    <div class="mod-meta-row">
+      <span class="mod-meta-pill">📍 Route: /gate/check-in · /gate/check-out</span>
+      <span class="mod-meta-pill">👥 Gate Guard, Supervisor, Yard Manager, Admin</span>
+    </div>
+    <div class="mod-section-label">Check-In Flow (4 Steps)</div>
+    <p style="font-size:13px;color:var(--gray-600)"><strong>1.</strong> Find Visit (match appointment or register walk-in) → <strong>2.</strong> Verify Driver (identity, license) → <strong>3.</strong> Photos / Seal (trailer condition, seal number) → <strong>4.</strong> Assign or Hold (yard slot or inspection hold)</p>
+    <div class="mod-section-label">Check-In Modes</div>
+    <p style="font-size:13px;color:var(--gray-600)"><strong>Standard Check-In:</strong> Full 4-step form with all documentation fields. <strong>Quick Check-In:</strong> Minimal fields for high-volume gates — creates the visit record with trailer number and carrier only.</p>
+    <div class="mod-section-label">Check-Out Flow</div>
+    <p style="font-size:13px;color:var(--gray-600)">Find Visit → Verify → Issue Gate Pass. Closes the visit record and removes the trailer from yard inventory.</p>
+    <div class="mod-impact">
+      <div class="mod-impact-label">How This Module Enables User Action</div>
+      <ul>
+        <li>Creates the visit record that drives the entire trailer lifecycle — every subsequent module references this record</li>
+        <li>Quick Check-In processes trucks in under 30 seconds at high-volume gates</li>
+        <li>Step-by-step flow prevents missed documentation steps</li>
+        <li>Slot assignment at step 4 immediately updates Yard Inventory and Yard Map</li>
+      </ul>
+    </div>
   </div>
 
   <!-- Yard Inventory -->
-  <h3>Yard Inventory — Live Trailer Register</h3>
-  <div class="screenshot">
-    <img src="screenshots/yard-inventory.jpg" alt="Yard Inventory" />
-    <div class="screenshot-caption"><strong>Figure 7.4 — Yard Inventory</strong> · Every trailer on site shown in a sortable, filterable table. Columns include visit reference, trailer ID, carrier, location (slot and zone), status, time on yard, last update, and the recommended next step. Alert badges flag active holds, aged trailers, and units awaiting dock slots.</div>
+  <div class="mod-detail">
+    <div class="mod-detail-header">
+      <div class="mod-detail-icon">📋</div>
+      <div>
+        <div class="mod-detail-title">Yard Inventory</div>
+        <div class="mod-detail-purpose">Live tabular list of every trailer currently on site. The operational source of truth for trailer location, status, and next step.</div>
+      </div>
+      <span class="badge-std module-badge">All Modes</span>
+    </div>
+    <div class="mod-meta-row">
+      <span class="mod-meta-pill">📍 Route: /yard/inventory</span>
+      <span class="mod-meta-pill">👥 All operational roles</span>
+    </div>
+    <div class="mod-section-label">Columns</div>
+    <p style="font-size:13px;color:var(--gray-600)">Visit ID · Trailer # · Carrier · Location (slot/dock) · Status · Time on Yard · Last Update · Next Step</p>
+    <div class="mod-section-label">Filters</div>
+    <p style="font-size:13px;color:var(--gray-600)">By status (Staged, At Dock, Loading, Unloading, Ready Out, On Hold) · By zone · By carrier · By trailer type</p>
+    <div class="mod-impact">
+      <div class="mod-impact-label">How This Module Enables User Action</div>
+      <ul>
+        <li>Dispatchers answer "where is trailer X?" without radio calls</li>
+        <li>Supervisors filter by "On Hold" to see all blocked trailers at a glance</li>
+        <li>Jockeys filter by "Ready to Move" to self-assign the next available task</li>
+        <li>Aged Trailers filter catches dwell-risk situations before detention is triggered</li>
+      </ul>
+    </div>
   </div>
 
   <!-- Yard Map -->
-  <h3>Yard Map — Yard Control Three-Panel View</h3>
-  <div class="screenshot">
-    <img src="screenshots/yard-map.jpg" alt="Yard Map / Yard Control" />
-    <div class="screenshot-caption"><strong>Figure 7.5 — Yard Control</strong> · The three-panel operational map: left queue panel (On Hold, Aging/Detention, Ready for Dock, High Priority), center SVG yard map (pan, zoom, drag-to-move), and right slot detail panel (opens on selection). Zones use realistic DC naming: Inbound Staging, Outbound Ready, Reefer Row, Live Load/Unload, and Insp. Hold. Gate 1 (Entry) and Gate 3 (Exit) are visible at the bottom of the yard. The dock frontage shows RECEIVING and SHIPPING splits across 10 dock doors.</div>
+  <div class="mod-detail">
+    <div class="mod-detail-header">
+      <div class="mod-detail-icon">🗺️</div>
+      <div>
+        <div class="mod-detail-title">Yard Map / Yard Control</div>
+        <div class="mod-detail-purpose">Interactive SVG map of the entire yard. Three-panel layout: Operational Queue (left), Map Canvas (center), Slot Detail (right). Supports zone filtering, drag-to-move, and slot assignment.</div>
+      </div>
+      <span class="badge-std module-badge">All Modes</span>
+    </div>
+    <div class="mod-meta-row">
+      <span class="mod-meta-pill">📍 Route: /yard/map</span>
+      <span class="mod-meta-pill">👥 Yard Manager, Supervisor, Admin, Jockey</span>
+    </div>
+    <div class="mod-section-label">Yard Zones</div>
+    <p style="font-size:13px;color:var(--gray-600)">Inbound Staging · Outbound Ready · Reefer Row · Live Load/Unload · Inspection Hold</p>
+    <div class="mod-section-label">Dock Door Labels</div>
+    <p style="font-size:13px;color:var(--gray-600)">Doors grouped by function: Receiving · Cross-Dock · Shipping — with dock approach lanes and overflow yard indicator.</p>
+    <div class="mod-section-label">Key Actions</div>
+    <div class="mod-actions">
+      <ul>
+        <li><span class="mod-action-icon">🔎</span> Pan and zoom the yard canvas</li>
+        <li><span class="mod-action-icon">🏷️</span> Click any slot to open the Slot Detail panel with trailer info and history</li>
+        <li><span class="mod-action-icon">🔄</span> Drag trailer to new slot or dock to initiate a move</li>
+        <li><span class="mod-action-icon">🎚️</span> Filter by zone to isolate specific yard areas</li>
+      </ul>
+    </div>
+    <div class="mod-impact">
+      <div class="mod-impact-label">How This Module Enables User Action</div>
+      <ul>
+        <li>Supervisors see the full physical yard state without leaving their desk</li>
+        <li>Jockeys confirm slot locations before executing moves</li>
+        <li>Entry Gate 1 indicator shows incoming traffic in real time</li>
+        <li>Zone filtering isolates reefer or live-load areas for specialized dispatching</li>
+      </ul>
+    </div>
   </div>
 
   <!-- Dock Management -->
-  <h3>Dock Management — Door Control</h3>
-  <div class="screenshot">
-    <img src="screenshots/dock-management.jpg" alt="Dock Management" />
-    <div class="screenshot-caption"><strong>Figure 7.6 — Dock Management</strong> · Kanban board across Available, At Dock, Loading, and Unloading columns. Each card shows trailer ID, carrier, movement type (Inbound/Outbound/Live Load/Live Unload), elapsed time, and SLA status (On Time / At Risk / Over SLA). SLA Breach cards display escalation banners. Drag cards between columns to update status or reassign doors.</div>
+  <div class="mod-detail">
+    <div class="mod-detail-header">
+      <div class="mod-detail-icon">🏭</div>
+      <div>
+        <div class="mod-detail-title">Dock Management</div>
+        <div class="mod-detail-purpose">Kanban board showing all dock doors across status columns. SLA breach alerts and drag-to-reassign workflow. Includes a schedule view for planning.</div>
+      </div>
+      <span class="badge-std module-badge">All Modes</span>
+    </div>
+    <div class="mod-meta-row">
+      <span class="mod-meta-pill">📍 Route: /dock</span>
+      <span class="mod-meta-pill">👥 Yard Manager, Supervisor, Dock User, Admin</span>
+    </div>
+    <div class="mod-section-label">Kanban Columns</div>
+    <p style="font-size:13px;color:var(--gray-600)">Available → At Dock → Loading → Unloading → Complete</p>
+    <div class="mod-section-label">SLA Management</div>
+    <p style="font-size:13px;color:var(--gray-600)">SLA timers run per dock door. Over SLA status is flagged visually. Supervisors can drag trailers between columns or reassign doors.</p>
+    <div class="mod-impact">
+      <div class="mod-impact-label">How This Module Enables User Action</div>
+      <ul>
+        <li>Dock supervisors see which doors are idle vs. active without walking the floor</li>
+        <li>SLA breach alerts trigger immediate reassignment decisions</li>
+        <li>In Enhanced mode, AI recommends optimal dock assignment based on trailer type and dock availability</li>
+      </ul>
+    </div>
   </div>
 
   <!-- Yard Moves -->
-  <h3>Yard Moves — Jockey Task Queue</h3>
-  <div class="screenshot">
-    <img src="screenshots/move-tasks.jpg" alt="Yard Moves" />
-    <div class="screenshot-caption"><strong>Figure 7.7 — Yard Moves</strong> · The jockey task management queue shows Unassigned, Assigned, In Progress, and Completed tabs. Summary KPIs at the top: unassigned count, assigned, in-progress, high priority, overdue, and completed today. Moves can be created manually with the Create Move button, or initiated from the Yard Map by dragging a trailer to a new slot or dock door.</div>
+  <div class="mod-detail">
+    <div class="mod-detail-header">
+      <div class="mod-detail-icon">🔄</div>
+      <div>
+        <div class="mod-detail-title">Yard Moves</div>
+        <div class="mod-detail-purpose">Jockey task management queue. Tabbed by status: Unassigned, Assigned, In Progress, Completed. Summary KPIs at the top for at-a-glance dispatch state.</div>
+      </div>
+      <span class="badge-std module-badge">All Modes</span>
+    </div>
+    <div class="mod-meta-row">
+      <span class="mod-meta-pill">📍 Route: /moves</span>
+      <span class="mod-meta-pill">👥 Yard Manager, Supervisor, Jockey, Dock User, Admin</span>
+      <span class="mod-meta-pill">🔴 Badge: pending count</span>
+    </div>
+    <div class="mod-section-label">Move Lifecycle</div>
+    <p style="font-size:13px;color:var(--gray-600)">Created → Unassigned → Assigned (jockey) → In Progress → Completed</p>
+    <div class="mod-section-label">Key Actions</div>
+    <div class="mod-actions">
+      <ul>
+        <li><span class="mod-action-icon">➕</span> Create move with source, destination, trailer, and priority</li>
+        <li><span class="mod-action-icon">👤</span> Assign jockey from available roster</li>
+        <li><span class="mod-action-icon">⚡</span> Set priority (High, Normal, Low)</li>
+        <li><span class="mod-action-icon">🤖</span> <em>(Elevate/Enhanced)</em> AI move priority suggestions ranked by dock dependency and urgency</li>
+        <li><span class="mod-action-icon">📊</span> <em>(Enhanced)</em> AI-ranked move sequence with Next Best Action</li>
+      </ul>
+    </div>
+    <div class="mod-impact">
+      <div class="mod-impact-label">How This Module Enables User Action</div>
+      <ul>
+        <li>Dispatchers see the full unassigned queue and assign all jockeys in one screen</li>
+        <li>Jockeys see only their assigned tasks — no queue noise</li>
+        <li>In Enhanced mode, AI suggests the move that unblocks the most dock capacity first</li>
+      </ul>
+    </div>
   </div>
 
   <!-- Holds & Exceptions -->
-  <h3>Holds &amp; Exceptions — Compliance Management</h3>
-  <div class="screenshot">
-    <img src="screenshots/exceptions.jpg" alt="Holds and Exceptions" />
-    <div class="screenshot-caption"><strong>Figure 7.8 — Holds &amp; Exceptions</strong> · Active holds listed by severity (Critical, High, Medium). Each exception shows the affected trailer, visit reference, hold type (Customs, Security, Documentation, Damage), description, and assigned resolver. Single-click Resolve closes the hold and updates yard visibility immediately. Filter by status, severity, and type.</div>
+  <div class="mod-detail">
+    <div class="mod-detail-header">
+      <div class="mod-detail-icon">⚠️</div>
+      <div>
+        <div class="mod-detail-title">Holds & Exceptions</div>
+        <div class="mod-detail-purpose">Centralized list of all active trailer holds. Severity classification, one-click resolve workflow, and (in Elevate/Enhanced) AI cause analysis with suggested next actions.</div>
+      </div>
+      <span class="badge-std module-badge">All Modes</span>
+    </div>
+    <div class="mod-meta-row">
+      <span class="mod-meta-pill">📍 Route: /exceptions</span>
+      <span class="mod-meta-pill">👥 Admin, Yard Manager, Supervisor</span>
+      <span class="mod-meta-pill">🔴 Badge: open count</span>
+    </div>
+    <div class="mod-section-label">Hold Types</div>
+    <p style="font-size:13px;color:var(--gray-600)">Customs Hold · Security Hold · Documentation Hold · Damage Hold · Quality Hold · Administrative Hold</p>
+    <div class="mod-section-label">Severity Levels</div>
+    <p style="font-size:13px;color:var(--gray-600)">Critical → High → Medium</p>
+    <div class="mod-impact">
+      <div class="mod-impact-label">How This Module Enables User Action</div>
+      <ul>
+        <li>Supervisors see all blocked trailers in one list — no hunting across modules</li>
+        <li>Severity filter prioritizes Critical holds that are blocking dock access</li>
+        <li>In Elevate/Enhanced, AI analyzes the cause of each exception and suggests the fastest resolution path</li>
+      </ul>
+    </div>
   </div>
 
-  <!-- Gate Check-Out -->
-  <h3>Gate Check-Out — Exit Processing</h3>
-  <div class="screenshot">
-    <img src="screenshots/gate-checkout.jpg" alt="Gate Check-Out" />
-    <div class="screenshot-caption"><strong>Figure 7.9 — Gate Check-Out</strong> · The outbound exit process: Find Visit → Verify Unit → Check Clearance → Confirm Exit → Exit Pass. The system verifies no outstanding holds block departure. The right panel lists all trailers currently Ready Out with their slot location and dwell time. QR code scan is supported for faster exit processing.</div>
+  <!-- Inspections -->
+  <div class="mod-detail">
+    <div class="mod-detail-header">
+      <div class="mod-detail-icon">🔍</div>
+      <div>
+        <div class="mod-detail-title">Inspections</div>
+        <div class="mod-detail-purpose">Trailer inspection records linked to gate check-in. Physical condition, seal verification, and documentation review. Creates an auditable inspection history per trailer.</div>
+      </div>
+      <span class="badge-std module-badge">All Modes</span>
+    </div>
+    <div class="mod-meta-row">
+      <span class="mod-meta-pill">📍 Route: /inspections</span>
+      <span class="mod-meta-pill">👥 Gate Guard, Supervisor, Yard Manager, Dock User, Admin</span>
+    </div>
+    <div class="mod-impact">
+      <div class="mod-impact-label">How This Module Enables User Action</div>
+      <ul>
+        <li>Gate guards document trailer condition at arrival — creating a timestamped record for damage disputes</li>
+        <li>Dock users can log condition changes discovered at the door</li>
+        <li>Inspection records link to visit records for full lifecycle traceability</li>
+      </ul>
+    </div>
   </div>
 
-  <!-- Reports -->
-  <h3>Reports &amp; Analytics</h3>
-  <div class="screenshot">
-    <img src="screenshots/reports.jpg" alt="Reports and Analytics" />
-    <div class="screenshot-caption"><strong>Figure 7.10 — Reports &amp; Analytics</strong> · Six headline KPIs at the top: Avg Dwell Time, Yard Occupancy, Dock Utilization, Avg Move Time, On-Time Arrivals, and Hold Rate. Five report tabs — Overview, Carrier, Dock, Move Tasks, Revenue &amp; Billing — with charted trend lines. Filters by date range, carrier, zone, and movement type. Export to CSV or PDF.</div>
+  <!-- Yard Audit -->
+  <div class="mod-detail">
+    <div class="mod-detail-header">
+      <div class="mod-detail-icon">📁</div>
+      <div>
+        <div class="mod-detail-title">Yard Audit</div>
+        <div class="mod-detail-purpose">Physical yard walk record. Periodic slot verification against live system data. Flags discrepancies between physical count and system inventory.</div>
+      </div>
+      <span class="badge-std module-badge">All Modes</span>
+    </div>
+    <div class="mod-meta-row">
+      <span class="mod-meta-pill">📍 Route: /yard/audit</span>
+      <span class="mod-meta-pill">👥 Admin, Yard Manager, Supervisor</span>
+    </div>
+    <div class="mod-impact">
+      <div class="mod-impact-label">How This Module Enables User Action</div>
+      <ul>
+        <li>Supervisors conduct periodic physical checks and record discrepancies directly on a tablet</li>
+        <li>Discrepancy flags update the live inventory to correct ghost trailers or missing records</li>
+        <li>Audit records are stored with timestamps for compliance reporting</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Reports & Analytics -->
+  <div class="mod-detail">
+    <div class="mod-detail-header">
+      <div class="mod-detail-icon">📈</div>
+      <div>
+        <div class="mod-detail-title">Reports & Analytics</div>
+        <div class="mod-detail-purpose">Five-tab analytics suite: Overview, Carrier Performance, Dock Utilization, Move Tasks, and Revenue & Billing. KPI export to CSV and PDF.</div>
+      </div>
+      <span class="badge-std module-badge">All Modes</span>
+    </div>
+    <div class="mod-meta-row">
+      <span class="mod-meta-pill">📍 Route: /reports</span>
+      <span class="mod-meta-pill">👥 Admin, Yard Manager, Supervisor</span>
+    </div>
+    <div class="mod-section-label">Key KPIs</div>
+    <p style="font-size:13px;color:var(--gray-600)">Average dwell time · Yard occupancy % · Dock utilization % · On-time arrival rate · Hold rate · Move completion time · Detention charges accrued</p>
+    <div class="mod-impact">
+      <div class="mod-impact-label">How This Module Enables User Action</div>
+      <ul>
+        <li>Weekly carrier performance reports identify chronic late arrivals and high-detention carriers</li>
+        <li>Dock utilization tab shows underutilized doors for capacity rebalancing</li>
+        <li>Revenue tab provides billing-ready detention summaries for finance teams</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Revenue Intelligence -->
+  <div class="mod-detail">
+    <div class="mod-detail-header">
+      <div class="mod-detail-icon">💰</div>
+      <div>
+        <div class="mod-detail-title">Revenue Intelligence</div>
+        <div class="mod-detail-purpose">Real-time detention billing, carrier charge tracking, and dwell benchmarking. Surfaces accruing charges on the dashboard before detention thresholds are reached.</div>
+      </div>
+      <span class="badge-std module-badge">All Modes</span>
+    </div>
+    <div class="mod-meta-row">
+      <span class="mod-meta-pill">📍 Route: /revenue</span>
+      <span class="mod-meta-pill">👥 Admin, Yard Manager, Supervisor</span>
+    </div>
+    <div class="mod-impact">
+      <div class="mod-impact-label">How This Module Enables User Action</div>
+      <ul>
+        <li>Dispatchers act to move trailers before detention thresholds are hit — saving billing disputes</li>
+        <li>Finance teams get pre-built detention charge records without manual dwell calculation</li>
+        <li>Dwell benchmark comparison shows whether the yard is performing above or below industry average</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Email Intelligence -->
+  <div class="mod-detail">
+    <div class="mod-detail-header">
+      <div class="mod-detail-icon">📧</div>
+      <div>
+        <div class="mod-detail-title">Email Intelligence</div>
+        <div class="mod-detail-purpose">AI parses inbound carrier emails, extracts shipment references, detects conflicts with existing appointments, and surfaces alerts for supervisor review. Carrier contact registry included.</div>
+      </div>
+      <span class="badge-ai module-badge">Elevate + Enhanced</span>
+    </div>
+    <div class="mod-meta-row">
+      <span class="mod-meta-pill">📍 Route: /email-intelligence</span>
+      <span class="mod-meta-pill">👥 Admin, Yard Manager</span>
+    </div>
+    <div class="mod-impact">
+      <div class="mod-impact-label">How This Module Enables User Action</div>
+      <ul>
+        <li>Eliminates manual email triage — dispatchers see parsed alerts instead of reading raw emails</li>
+        <li>Conflict flags (duplicate appointment, wrong time, unknown trailer number) are surfaced before the truck arrives</li>
+        <li>Carrier contact registry links email addresses to SCAC codes for automatic sender identification</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- AI Configuration -->
+  <div class="mod-detail">
+    <div class="mod-detail-header">
+      <div class="mod-detail-icon">🤖</div>
+      <div>
+        <div class="mod-detail-title">AI Configuration</div>
+        <div class="mod-detail-purpose">Governance command center for all AI behavior. Controls AI on/off, automation level, data source permissions, and supervisor approval requirements.</div>
+      </div>
+      <span class="badge-ai module-badge">Elevate + Enhanced</span>
+    </div>
+    <div class="mod-meta-row">
+      <span class="mod-meta-pill">📍 Route: /admin/ai-config</span>
+      <span class="mod-meta-pill">👥 Admin only</span>
+    </div>
+    <div class="mod-section-label">Automation Levels</div>
+    <p style="font-size:13px;color:var(--gray-600)"><strong>Advisory:</strong> Read-only AI advice, no action buttons. <strong>Assistive:</strong> AI recommendations with one-click action buttons. <strong>Automated:</strong> AI can initiate workflow steps based on configured rules.</p>
+    <div class="mod-section-label">Data Source Controls</div>
+    <p style="font-size:13px;color:var(--gray-600)">Per-module read/act flags for 8 operational data sources. Controls whether the AI can read from or act upon each module's data independently.</p>
+    <div class="mod-impact">
+      <div class="mod-impact-label">How This Module Enables User Action</div>
+      <ul>
+        <li>Admins set the AI's maximum authority ceiling — preventing autonomous actions before the team is ready</li>
+        <li>Supervisor approval toggle adds a confirmation layer for all AI-initiated actions</li>
+        <li>Per-module data source controls allow AI to read Dock data but not act on it, for example</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Carrier Management, Yard Setup, Users, Audit Log — brief entries -->
+  <h3>Administration Modules</h3>
+  <table>
+    <tr><th>Module</th><th>Route</th><th>Purpose</th><th>Roles</th></tr>
+    <tr>
+      <td><strong>Carrier Management</strong></td>
+      <td><code>/admin/carriers</code></td>
+      <td>Register and manage carrier records: SCAC code, contact information, registered email addresses for Email Intelligence parsing.</td>
+      <td>Admin, Yard Manager</td>
+    </tr>
+    <tr>
+      <td><strong>Yard Setup</strong></td>
+      <td><code>/admin/yard-setup</code></td>
+      <td>Configure physical yard layout: zones, slot types (standard, reefer, oversized), dock doors, and slot tier classifications.</td>
+      <td>Admin only</td>
+    </tr>
+    <tr>
+      <td><strong>Users</strong></td>
+      <td><code>/admin/users</code></td>
+      <td>Create, edit, and deactivate user accounts. Assign roles. Manage persona configurations for the role switcher.</td>
+      <td>Admin only</td>
+    </tr>
+    <tr>
+      <td><strong>Audit Log</strong></td>
+      <td><code>/admin/audit</code></td>
+      <td>Full platform event log. Every user action, AI recommendation, and system event timestamped with actor identity.</td>
+      <td>Admin, Yard Manager</td>
+    </tr>
+    <tr>
+      <td><strong>Notifications</strong></td>
+      <td><code>/notifications</code></td>
+      <td>Inbox for all system-generated alerts. Badge count in sidebar reflects unread notifications.</td>
+      <td>All roles (role-filtered)</td>
+    </tr>
+  </table>
+</div>
+
+<!-- ══ SECTION 8 — FEATURE AVAILABILITY MATRIX ══ -->
+<div class="section" id="s8">
+  <div class="section-eyebrow"><span class="section-eyebrow-num">08</span> Feature Availability Matrix</div>
+  <h2>What's Available, Where</h2>
+  <p class="section-lead">Grouped feature matrices across all functional categories. Use this section to scope implementation and validate version selection.</p>
+
+  <h3>Operations</h3>
+  <table>
+    <tr><th style="width:46%">Feature</th><th class="td-center">Core</th><th class="td-center">Elevate</th><th class="td-center">Enhanced</th></tr>
+    <tr><td>Appointments (create, edit, view)</td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td>Gate check-in — Standard (4-step)</td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td>Gate check-in — Quick mode</td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td>Gate check-out</td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td>Yard inventory (live tabular view)</td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td>Yard map (interactive SVG, drag-to-move)</td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td>Dock management board (Kanban)</td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td>Dock SLA timers and breach alerts</td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td>Jockey move dispatch (create, assign)</td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td>Move priority (manual)</td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td>Hold placement and resolution</td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td>Tablet view toggle</td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+  </table>
+
+  <h3>Automation & AI</h3>
+  <table>
+    <tr><th style="width:46%">Feature</th><th class="td-center">Core</th><th class="td-center">Elevate</th><th class="td-center">Enhanced</th></tr>
+    <tr><td>AI Copilot — natural language assistant</td><td class="td-center"><span class="cross">—</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td>Congestion risk bar (60s polling)</td><td class="td-center"><span class="cross">—</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td>Email Intelligence (carrier parsing)</td><td class="td-center"><span class="cross">—</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td>AI move priority suggestions</td><td class="td-center"><span class="cross">—</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td>Appointment conflict detection</td><td class="td-center"><span class="cross">—</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td>Exception cause analysis</td><td class="td-center"><span class="cross">—</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td>AI dashboard action banner</td><td class="td-center"><span class="cross">—</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td>Next Best Action widget</td><td class="td-center"><span class="cross">—</span></td><td class="td-center"><span class="cross">—</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td>AI dock assignment optimization</td><td class="td-center"><span class="cross">—</span></td><td class="td-center"><span class="cross">—</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td>AI-ranked move sequencing</td><td class="td-center"><span class="cross">—</span></td><td class="td-center"><span class="cross">—</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td>Detention risk scoring</td><td class="td-center"><span class="cross">—</span></td><td class="td-center"><span class="cross">—</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td>Predictive SLA breach warnings</td><td class="td-center"><span class="cross">—</span></td><td class="td-center"><span class="cross">—</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td>ROI / session impact panel</td><td class="td-center"><span class="cross">—</span></td><td class="td-center"><span class="cross">—</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td>AI Configuration (governance panel)</td><td class="td-center"><span class="cross">—</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+  </table>
+
+  <h3>Visibility & Reporting</h3>
+  <table>
+    <tr><th style="width:46%">Feature</th><th class="td-center">Core</th><th class="td-center">Elevate</th><th class="td-center">Enhanced</th></tr>
+    <tr><td>Dashboard KPI tiles (6)</td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td>Revenue Intelligence (real-time detention)</td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td>Reports & Analytics — 5 tabs</td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td>CSV / PDF export</td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td>Notifications inbox</td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td>Full audit log</td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td>Dwell time benchmarking</td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+  </table>
+
+  <h3>Security & Administration</h3>
+  <table>
+    <tr><th style="width:46%">Feature</th><th class="td-center">Core</th><th class="td-center">Elevate</th><th class="td-center">Enhanced</th></tr>
+    <tr><td>Role-based access control (7 roles)</td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td>Session-based authentication</td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td>Carrier management (SCAC registry)</td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td>Yard physical setup configuration</td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td>User account management</td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td>AI automation level governance</td><td class="td-center"><span class="cross">—</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td>AI data source access controls</td><td class="td-center"><span class="cross">—</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td>Supervisor approval for AI actions</td><td class="td-center"><span class="cross">—</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td></tr>
+  </table>
+</div>
+
+<!-- ══ SECTION 9 — SCREEN-LEVEL USABILITY ══ -->
+<div class="section" id="s9">
+  <div class="section-eyebrow"><span class="section-eyebrow-num">09</span> Screen-Level Usability</div>
+  <h2>What Each Screen Lets You DO</h2>
+  <p class="section-lead">For every key screen: what the user sees on arrival, what actions they can take immediately, and what decisions are enabled. Practical, not descriptive.</p>
+
+  <!-- Dashboard -->
+  <div class="screen-block">
+    <div class="screen-header">
+      <div class="screen-header-icon">📊</div>
+      <div class="screen-header-title">Dashboard — Operations Command Center</div>
+      <div class="screen-header-path">/</div>
+    </div>
+    <div class="screen-body">
+      <div>
+        <div class="screen-col-label">What You See</div>
+        <ul>
+          <li>6 KPI tiles: Inventory, Utilization %, On Hold, Aged Trailers, Overdue Moves, Ready Out</li>
+          <li>Revenue Intelligence — accruing detention charges, dwell savings</li>
+          <li>Action Required panel — all items needing supervisor attention</li>
+          <li><em>(Elevate)</em> AI banner — prioritized list of action items</li>
+          <li><em>(Enhanced)</em> Next Best Action + Optimization panel with bottleneck alerts</li>
+        </ul>
+      </div>
+      <div>
+        <div class="screen-col-label">What You Can Do Immediately</div>
+        <ul class="screen-action-list">
+          <li class="screen-action-item"><span class="screen-action-badge sab-primary">Action</span> Click any KPI tile to drill into the filtered list</li>
+          <li class="screen-action-item"><span class="screen-action-badge sab-alert">Alert</span> See all trailers approaching detention threshold</li>
+          <li class="screen-action-item"><span class="screen-action-badge sab-primary">Action</span> Resolve action items directly from the panel</li>
+          <li class="screen-action-item"><span class="screen-action-badge sab-ai">AI</span> Apply Next Best Action with one click (Enhanced)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gate Check-In -->
+  <div class="screen-block">
+    <div class="screen-header">
+      <div class="screen-header-icon">🚪</div>
+      <div class="screen-header-title">Gate Check-In</div>
+      <div class="screen-header-path">/gate/check-in</div>
+    </div>
+    <div class="screen-body">
+      <div>
+        <div class="screen-col-label">What You See</div>
+        <ul>
+          <li>Pending arrivals list with expected time and appointment status</li>
+          <li>Search bar — find by appointment #, trailer #, or driver name</li>
+          <li>Mode toggle: Standard (4 steps) / Quick (2 fields)</li>
+          <li>Step indicator showing current position in check-in flow</li>
+        </ul>
+      </div>
+      <div>
+        <div class="screen-col-label">What You Can Do Immediately</div>
+        <ul class="screen-action-list">
+          <li class="screen-action-item"><span class="screen-action-badge sab-primary">Action</span> Start check-in for an expected arrival in one click</li>
+          <li class="screen-action-item"><span class="screen-action-badge sab-primary">Action</span> Register a walk-in truck not in the appointment list</li>
+          <li class="screen-action-item"><span class="screen-action-badge sab-primary">Action</span> Switch to Quick mode to process high-volume gates in under 30 seconds</li>
+          <li class="screen-action-item"><span class="screen-action-badge sab-alert">Alert</span> Place trailer on hold at step 4 if inspection reveals a problem</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Yard Moves -->
+  <div class="screen-block">
+    <div class="screen-header">
+      <div class="screen-header-icon">🔄</div>
+      <div class="screen-header-title">Yard Moves</div>
+      <div class="screen-header-path">/moves</div>
+    </div>
+    <div class="screen-body">
+      <div>
+        <div class="screen-col-label">What You See</div>
+        <ul>
+          <li>KPI strip: Unassigned, Assigned, In Progress, High Priority, Overdue, Completed Today</li>
+          <li>4 tabs: Unassigned / Assigned / In Progress / Completed</li>
+          <li>Each move card: trailer #, from → to, priority badge, jockey assigned</li>
+          <li><em>(Elevate/Enhanced)</em> AI priority suggestions panel above the queue</li>
+        </ul>
+      </div>
+      <div>
+        <div class="screen-col-label">What You Can Do Immediately</div>
+        <ul class="screen-action-list">
+          <li class="screen-action-item"><span class="screen-action-badge sab-primary">Action</span> Create a move task with source, destination, and priority</li>
+          <li class="screen-action-item"><span class="screen-action-badge sab-primary">Action</span> Assign any unassigned move to an available jockey</li>
+          <li class="screen-action-item"><span class="screen-action-badge sab-alert">Alert</span> Spot overdue moves that haven't started</li>
+          <li class="screen-action-item"><span class="screen-action-badge sab-ai">AI</span> Accept AI move prioritization to sequence the full queue (Elevate/Enhanced)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dock Management -->
+  <div class="screen-block">
+    <div class="screen-header">
+      <div class="screen-header-icon">🏭</div>
+      <div class="screen-header-title">Dock Management</div>
+      <div class="screen-header-path">/dock</div>
+    </div>
+    <div class="screen-body">
+      <div>
+        <div class="screen-col-label">What You See</div>
+        <ul>
+          <li>Kanban board: Available → At Dock → Loading → Unloading → Complete</li>
+          <li>Each dock card: trailer #, carrier, SLA timer, status color</li>
+          <li>Over SLA cards highlighted in red</li>
+          <li>Schedule view tab for planning upcoming dock activity</li>
+        </ul>
+      </div>
+      <div>
+        <div class="screen-col-label">What You Can Do Immediately</div>
+        <ul class="screen-action-list">
+          <li class="screen-action-item"><span class="screen-action-badge sab-primary">Action</span> Assign a trailer to an available dock door</li>
+          <li class="screen-action-item"><span class="screen-action-badge sab-primary">Action</span> Drag a dock card to move it between status columns</li>
+          <li class="screen-action-item"><span class="screen-action-badge sab-alert">Alert</span> Immediately see which doors have exceeded SLA</li>
+          <li class="screen-action-item"><span class="screen-action-badge sab-ai">AI</span> Accept AI dock assignment recommendation (Enhanced)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Holds & Exceptions -->
+  <div class="screen-block">
+    <div class="screen-header">
+      <div class="screen-header-icon">⚠️</div>
+      <div class="screen-header-title">Holds & Exceptions</div>
+      <div class="screen-header-path">/exceptions</div>
+    </div>
+    <div class="screen-body">
+      <div>
+        <div class="screen-col-label">What You See</div>
+        <ul>
+          <li>List of all active holds: type, trailer, carrier, severity, time open</li>
+          <li>Severity filter: Critical, High, Medium</li>
+          <li>Hold type filter: Customs, Security, Documentation, Damage</li>
+          <li><em>(Elevate/Enhanced)</em> AI insight panel with cause analysis per exception</li>
+        </ul>
+      </div>
+      <div>
+        <div class="screen-col-label">What You Can Do Immediately</div>
+        <ul class="screen-action-list">
+          <li class="screen-action-item"><span class="screen-action-badge sab-alert">Alert</span> Filter to Critical holds and resolve the most urgent first</li>
+          <li class="screen-action-item"><span class="screen-action-badge sab-primary">Action</span> One-click resolve — adds resolution note and closes the hold</li>
+          <li class="screen-action-item"><span class="screen-action-badge sab-primary">Action</span> Escalate a hold to Yard Manager directly from the list</li>
+          <li class="screen-action-item"><span class="screen-action-badge sab-ai">AI</span> Read AI cause analysis and apply suggested resolution (Elevate/Enhanced)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Email Intelligence -->
+  <div class="screen-block">
+    <div class="screen-header">
+      <div class="screen-header-icon">📧</div>
+      <div class="screen-header-title">Email Intelligence</div>
+      <div class="screen-header-path">/email-intelligence</div>
+    </div>
+    <div class="screen-body">
+      <div>
+        <div class="screen-col-label">What You See</div>
+        <ul>
+          <li>Parsed email alerts with extracted shipment references and conflict flags</li>
+          <li>Carrier contact registry with SCAC-to-email mappings</li>
+          <li>Alert types: Conflict, Unknown Trailer, Duplicate Appointment, Time Mismatch</li>
+        </ul>
+      </div>
+      <div>
+        <div class="screen-col-label">What You Can Do Immediately</div>
+        <ul class="screen-action-list">
+          <li class="screen-action-item"><span class="screen-action-badge sab-ai">AI</span> Review AI-parsed email summary instead of reading raw emails</li>
+          <li class="screen-action-item"><span class="screen-action-badge sab-alert">Alert</span> Act on conflict flags before the truck arrives at the gate</li>
+          <li class="screen-action-item"><span class="screen-action-badge sab-primary">Action</span> Register new carrier email addresses to the SCAC registry</li>
+        </ul>
+      </div>
+    </div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════
-     SECTION 8 — OPERATIONAL JOURNEY
-══════════════════════════════════════════ -->
-<div class="section" id="journey">
-  <div class="section-eyebrow"><span class="section-eyebrow-num">08</span> Operational Journey</div>
-  <h2>From Appointment to Exit</h2>
-  <p class="section-lead">A step-by-step example of how a single inbound trailer moves through the YMSNOW platform — from appointment creation to gate exit — showing which screen handles each stage and where AI adds value in Elevate and Enhanced modes.</p>
+<!-- ══ SECTION 10 — WORKFLOWS ══ -->
+<div class="section" id="s10">
+  <div class="section-eyebrow"><span class="section-eyebrow-num">10</span> Workflows & Business Processes</div>
+  <h2>Step-by-Step Operational Workflows</h2>
+  <p class="section-lead">Complete workflow documentation for the five core business processes in YMSNOW. Each workflow shows actors, system actions, decision points, and outcomes.</p>
 
-  <div class="screenshot-row">
-    <div>
-      <div class="screenshot">
-        <img src="screenshots/appointments.jpg" alt="Appointments" />
-        <div class="screenshot-caption"><strong>Step 1</strong> · Appointment confirmed in the calendar</div>
+  <h3>Workflow 1 — Gate-to-Gate Trailer Lifecycle</h3>
+  <p><strong>Actors:</strong> Carrier · Gate Guard · Dispatcher · Jockey · Dock User · Gate Guard (exit)</p>
+
+  <table>
+    <tr><th>#</th><th>Step</th><th>Actor</th><th>System Action</th><th class="td-ai">AI (Elevate/Enhanced)</th></tr>
+    <tr><td class="td-step">1</td><td>Carrier creates appointment</td><td class="td-who">Carrier / Dispatcher</td><td>Appointment record created; calendar updated</td><td class="td-ai">Conflict detection flags overlapping bookings</td></tr>
+    <tr><td class="td-step">2</td><td>Carrier email received</td><td class="td-who">System</td><td>Email logged</td><td class="td-ai">AI parses email, extracts PO/trailer reference, surfaces alert</td></tr>
+    <tr><td class="td-step">3</td><td>Truck arrives at gate</td><td class="td-who">Gate Guard</td><td>Appointment matched; check-in flow initiated</td><td class="td-ai">—</td></tr>
+    <tr><td class="td-step">4</td><td>Driver verified, trailer documented</td><td class="td-who">Gate Guard</td><td>License, photos, seal number recorded</td><td class="td-ai">—</td></tr>
+    <tr><td class="td-step">5</td><td>Slot assigned or hold placed</td><td class="td-who">Gate Guard / Dispatcher</td><td>Yard Inventory and Yard Map updated instantly</td><td class="td-ai">—</td></tr>
+    <tr><td class="td-step">6</td><td>Move task created to dock</td><td class="td-who">Dispatcher</td><td>Move appears in Unassigned queue</td><td class="td-ai">AI ranks move by dock urgency and dwell risk</td></tr>
+    <tr><td class="td-step">7</td><td>Jockey assigned and executes move</td><td class="td-who">Jockey</td><td>Move status: Assigned → In Progress → Completed</td><td class="td-ai">AI suggests optimal sequence if multiple moves pending</td></tr>
+    <tr><td class="td-step">8</td><td>Dock door assigned</td><td class="td-who">Dock User / Supervisor</td><td>Dock card moves to At Dock; SLA timer starts</td><td class="td-ai">AI recommends door based on type/availability (Enhanced)</td></tr>
+    <tr><td class="td-step">9</td><td>Loading / Unloading complete</td><td class="td-who">Dock User</td><td>Dock card advanced to Complete; trailer status → Ready Out</td><td class="td-ai">SLA breach warning if loading exceeds threshold</td></tr>
+    <tr><td class="td-step">10</td><td>Gate check-out processed</td><td class="td-who">Gate Guard</td><td>Visit record closed; trailer removed from inventory</td><td class="td-ai">Detention charge calculated if dwell exceeded threshold</td></tr>
+  </table>
+
+  <h3>Workflow 2 — Exception Handling</h3>
+  <p><strong>Actors:</strong> Gate Guard / Dock User (initiates) · Supervisor (reviews) · Yard Manager / Admin (resolves)</p>
+
+  <div class="wf-steps">
+    <div class="wf-step">
+      <div class="wf-step-num"></div>
+      <div class="wf-step-body">
+        <div class="wf-step-actor">Gate Guard or Dock User</div>
+        <div class="wf-step-title">Hold Initiated</div>
+        <div class="wf-step-detail">During check-in or dock inspection, a condition is identified (damage, missing seal, customs flag). Guard selects hold type and places trailer in Inspection Hold zone.</div>
       </div>
     </div>
-    <div>
-      <div class="screenshot">
-        <img src="screenshots/gate-checkin.jpg" alt="Gate Check-In" />
-        <div class="screenshot-caption"><strong>Step 2</strong> · Trailer arrives — Gate Check-In workflow</div>
+    <div class="wf-step">
+      <div class="wf-step-num"></div>
+      <div class="wf-step-body">
+        <div class="wf-step-actor">System</div>
+        <div class="wf-step-title">Exception Created</div>
+        <div class="wf-step-detail">Hold appears in Holds & Exceptions with severity classification. Notification sent to Supervisor. Badge count on sidebar updates immediately.</div>
       </div>
+    </div>
+    <div class="wf-step">
+      <div class="wf-step-num"></div>
+      <div class="wf-step-body">
+        <div class="wf-step-actor">AI (Elevate / Enhanced)</div>
+        <div class="wf-step-title">Cause Analysis Surfaced</div>
+        <div class="wf-step-detail">AI analyzes the hold type, carrier history, and trailer data to generate a probable cause and suggested resolution path (e.g., "Request updated seal documentation from carrier before releasing").</div>
+        <div class="wf-step-decision">⚠ Decision Point: Supervisor reviews AI recommendation and chooses to apply, modify, or override.</div>
+      </div>
+    </div>
+    <div class="wf-step">
+      <div class="wf-step-num"></div>
+      <div class="wf-step-body">
+        <div class="wf-step-actor">Supervisor / Yard Manager</div>
+        <div class="wf-step-title">Resolution Action Taken</div>
+        <div class="wf-step-detail">Supervisor adds resolution note and clicks Resolve. Hold is closed with a timestamp. Trailer status updates from On Hold to Staged or moves to next step in the workflow.</div>
+      </div>
+    </div>
+    <div class="wf-step">
+      <div class="wf-step-num"></div>
+      <div class="wf-step-body">
+        <div class="wf-step-actor">System</div>
+        <div class="wf-step-title">Audit Record Written</div>
+        <div class="wf-step-detail">Full resolution event logged in Audit Log with actor identity, timestamp, resolution note, and duration. Available in Reports & Analytics under compliance reporting.</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Workflow 3 — Move Task Lifecycle</h3>
+  <p><strong>Actors:</strong> Dispatcher (creates) · Jockey (executes) · System (tracks)</p>
+
+  <div class="flow">
+    <div class="flow-step">
+      <div class="flow-node flow-node-blue">➕</div>
+      <div class="flow-label">Created</div>
+      <div class="flow-sub">Dispatcher</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">
+      <div class="flow-node flow-node-amber">📋</div>
+      <div class="flow-label">Unassigned</div>
+      <div class="flow-sub">Queue</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">
+      <div class="flow-node flow-node-violet">👤</div>
+      <div class="flow-label">Assigned</div>
+      <div class="flow-sub">Jockey</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">
+      <div class="flow-node flow-node-amber">🚜</div>
+      <div class="flow-label">In Progress</div>
+      <div class="flow-sub">Jockey</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">
+      <div class="flow-node flow-node-green">✅</div>
+      <div class="flow-label">Completed</div>
+      <div class="flow-sub">System</div>
+    </div>
+  </div>
+
+  <p>When a move is created, it enters the Unassigned queue with the specified priority. Dispatchers assign jockeys from the available roster. Jockeys accept the task on their tablet, update status to In Progress, and mark Complete on arrival. Yard Map and Yard Inventory update automatically at each status change.</p>
+
+  <h3>Workflow 4 — AI Copilot Query (Elevate / Enhanced)</h3>
+  <p><strong>Actors:</strong> Any role with module access · AI backend (streaming)</p>
+
+  <div class="wf-steps">
+    <div class="wf-step">
+      <div class="wf-step-num"></div>
+      <div class="wf-step-body">
+        <div class="wf-step-title">User opens AI Copilot panel</div>
+        <div class="wf-step-detail">Floating action button (bottom-right) opens the Copilot panel. Current screen name and active role are injected automatically into the AI context.</div>
+      </div>
+    </div>
+    <div class="wf-step">
+      <div class="wf-step-num"></div>
+      <div class="wf-step-body">
+        <div class="wf-step-title">User submits natural language query</div>
+        <div class="wf-step-detail">Example: "Which trailers are approaching detention?" or "What should I move to Dock 7 next?"</div>
+      </div>
+    </div>
+    <div class="wf-step">
+      <div class="wf-step-num"></div>
+      <div class="wf-step-body">
+        <div class="wf-step-title">Backend compiles live yard context</div>
+        <div class="wf-step-detail">API reads all active database tables (visits, moves, holds, dock assignments, appointments) and constructs a real-time context object. Role and screen name are included in the system prompt.</div>
+      </div>
+    </div>
+    <div class="wf-step">
+      <div class="wf-step-num"></div>
+      <div class="wf-step-body">
+        <div class="wf-step-title">AI response streamed token-by-token</div>
+        <div class="wf-step-detail">Response renders in real time via SSE (Server-Sent Events). Navigation action buttons are parsed from the response tail and rendered as clickable links to relevant modules.</div>
+      </div>
+    </div>
+    <div class="wf-step">
+      <div class="wf-step-num"></div>
+      <div class="wf-step-body">
+        <div class="wf-step-title">User acts on response</div>
+        <div class="wf-step-detail">User reads the answer or clicks a navigation action button (e.g., "Go to Dock Management") to jump directly to the relevant screen. Conversation context is maintained within the session.</div>
+        <div class="wf-step-decision">⚠ Decision Point: All AI answers are informational. No action is taken automatically.</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Workflow 5 — Carrier Appointment Conflict Resolution</h3>
+  <p><strong>Actors:</strong> AI system · Dispatcher · Carrier</p>
+
+  <div class="wf-steps">
+    <div class="wf-step">
+      <div class="wf-step-num"></div>
+      <div class="wf-step-body">
+        <div class="wf-step-title">Carrier email received</div>
+        <div class="wf-step-detail">Inbound email from a registered carrier address triggers automatic AI parsing in the Email Intelligence module.</div>
+      </div>
+    </div>
+    <div class="wf-step">
+      <div class="wf-step-num"></div>
+      <div class="wf-step-body">
+        <div class="wf-step-title">AI extracts shipment data</div>
+        <div class="wf-step-detail">Trailer number, PO reference, requested arrival time, and carrier SCAC are extracted from the email body.</div>
+      </div>
+    </div>
+    <div class="wf-step">
+      <div class="wf-step-num"></div>
+      <div class="wf-step-body">
+        <div class="wf-step-title">Conflict check run against appointments</div>
+        <div class="wf-step-detail">AI compares extracted data against existing appointment schedule. Flags: duplicate trailer, time overlap, dock unavailability, or unknown carrier.</div>
+        <div class="wf-step-decision">⚠ Decision Point: Conflict found → Alert surfaced in Email Intelligence. No conflict → Email archived.</div>
+      </div>
+    </div>
+    <div class="wf-step">
+      <div class="wf-step-num"></div>
+      <div class="wf-step-body">
+        <div class="wf-step-title">Dispatcher reviews and resolves</div>
+        <div class="wf-step-detail">Dispatcher reads AI alert summary, contacts carrier, and either adjusts the appointment time or creates a new appointment from the parsed data.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SECTION 11 — NOTIFICATIONS ══ -->
+<div class="section" id="s11">
+  <div class="section-eyebrow"><span class="section-eyebrow-num">11</span> Notifications & Alerts</div>
+  <h2>Triggers, Recipients & Actions</h2>
+  <p class="section-lead">YMSNOW generates alerts at key operational events. Alerts appear in the Notifications inbox (with badge count in the sidebar) and are role-filtered by recipient.</p>
+
+  <h3>Alert Priority Levels</h3>
+  <div class="notif-grid">
+    <div class="notif-card notif-card-critical">
+      <div class="notif-level">Critical</div>
+      <ul>
+        <li>Dock SLA breached</li>
+        <li>Security hold placed</li>
+        <li>Customs hold flagged</li>
+        <li>Trailer dwell exceeds detention threshold</li>
+        <li>AI congestion risk — High level</li>
+      </ul>
+    </div>
+    <div class="notif-card notif-card-warn">
+      <div class="notif-level">Warning</div>
+      <ul>
+        <li>Appointment No Show (15 min past slot)</li>
+        <li>Dock SLA approaching breach (80%)</li>
+        <li>Move task overdue (unstarted)</li>
+        <li>Trailer approaching dwell threshold</li>
+        <li>Email Intelligence conflict detected</li>
+      </ul>
+    </div>
+    <div class="notif-card notif-card-info">
+      <div class="notif-level">Informational</div>
+      <ul>
+        <li>Gate check-in completed</li>
+        <li>Move task completed</li>
+        <li>Appointment confirmed by carrier</li>
+        <li>Hold resolved</li>
+        <li>AI Copilot configuration change</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Notification Routing by Role</h3>
+  <table>
+    <tr><th>Event</th><th>Admin</th><th>Yard Manager</th><th>Supervisor</th><th>Gate Guard</th><th>Jockey</th><th>Dock User</th></tr>
+    <tr><td>Dock SLA breached</td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center">—</td><td class="td-center">—</td><td class="td-center"><span class="check">✓</span></td></tr>
+    <tr><td>Hold placed (Critical)</td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center">—</td><td class="td-center">—</td><td class="td-center">—</td></tr>
+    <tr><td>Move assigned to jockey</td><td class="td-center">—</td><td class="td-center">—</td><td class="td-center">—</td><td class="td-center">—</td><td class="td-center"><span class="check">✓</span></td><td class="td-center">—</td></tr>
+    <tr><td>Move task overdue</td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center">—</td><td class="td-center"><span class="check">✓</span></td><td class="td-center">—</td></tr>
+    <tr><td>Appointment No Show</td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center">—</td><td class="td-center">—</td></tr>
+    <tr><td>Email conflict detected (AI)</td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center">—</td><td class="td-center">—</td><td class="td-center">—</td><td class="td-center">—</td></tr>
+    <tr><td>Detention threshold breached</td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center"><span class="check">✓</span></td><td class="td-center">—</td><td class="td-center">—</td><td class="td-center">—</td></tr>
+    <tr><td>AI config changed</td><td class="td-center"><span class="check">✓</span></td><td class="td-center">—</td><td class="td-center">—</td><td class="td-center">—</td><td class="td-center">—</td><td class="td-center">—</td></tr>
+  </table>
+
+  <div class="callout callout-info">
+    <strong>Notification persistence.</strong> All notifications are stored in the Notifications module with timestamps. The sidebar badge count reflects unread items. Notifications are role-filtered — each user sees only events relevant to their operational scope.
+  </div>
+
+  <h3>Actions Enabled by Alerts</h3>
+  <table>
+    <tr><th>Alert Type</th><th>Immediate Action Available</th><th>Module</th></tr>
+    <tr><td>Dock SLA breached</td><td>Reassign dock door, dispatch jockey to accelerate unload</td><td>Dock Management</td></tr>
+    <tr><td>Security hold placed</td><td>Review hold, contact carrier, escalate to supervisor</td><td>Holds & Exceptions</td></tr>
+    <tr><td>Move task overdue</td><td>Reassign jockey, escalate priority</td><td>Yard Moves</td></tr>
+    <tr><td>No Show appointment</td><td>Cancel appointment, release slot, notify carrier</td><td>Appointments</td></tr>
+    <tr><td>Email conflict detected</td><td>Adjust appointment, contact carrier, or reject booking</td><td>Email Intelligence</td></tr>
+    <tr><td>Detention threshold approaching</td><td>Dispatch jockey move to initiate check-out process</td><td>Dashboard / Yard Inventory</td></tr>
+    <tr><td>AI congestion risk — High</td><td>Review AI recommended action in Copilot or Enhanced dashboard</td><td>AI Copilot / Dashboard</td></tr>
+  </table>
+</div>
+
+<!-- ══ SECTION 12 — DATA, REPORTING & GLOSSARY ══ -->
+<div class="section" id="s12">
+  <div class="section-eyebrow"><span class="section-eyebrow-num">12</span> Data, Reporting & Glossary</div>
+  <h2>Data Model, KPIs & Terminology</h2>
+  <p class="section-lead">Core data entities, key operational metrics, and a complete logistics and platform glossary.</p>
+
+  <h3>A. Key Data Entities</h3>
+  <table>
+    <tr><th>Entity</th><th>Key Fields</th><th>Relationships</th></tr>
+    <tr>
+      <td><strong>Appointment</strong></td>
+      <td>carrier, trailer #, type, scheduled time, status, PO reference</td>
+      <td>One appointment → one Visit on check-in</td>
+    </tr>
+    <tr>
+      <td><strong>Visit</strong></td>
+      <td>visit ID, trailer #, carrier, gate-in time, slot assigned, status, driver info, seal #</td>
+      <td>Created at check-in; closes at check-out. Links to Appointment, Moves, Inspections, Holds</td>
+    </tr>
+    <tr>
+      <td><strong>Yard Slot</strong></td>
+      <td>slot ID, zone, type (standard/reefer/oversized), tier, current occupant</td>
+      <td>Assigned to Visit; referenced by Yard Map and Inventory</td>
+    </tr>
+    <tr>
+      <td><strong>Dock Door</strong></td>
+      <td>door ID, label, function group (Receiving/Shipping/Cross-Dock), current trailer, SLA start, status</td>
+      <td>Referenced by Visit and Move task when trailer reaches dock</td>
+    </tr>
+    <tr>
+      <td><strong>Move Task</strong></td>
+      <td>move ID, visit ID, from slot, to slot/dock, priority, assigned jockey, status, timestamps</td>
+      <td>Belongs to Visit; assigned to User (Jockey role)</td>
+    </tr>
+    <tr>
+      <td><strong>Hold / Exception</strong></td>
+      <td>hold ID, visit ID, hold type, severity, notes, created by, resolved by, timestamps</td>
+      <td>Linked to Visit; audited in Audit Log</td>
+    </tr>
+    <tr>
+      <td><strong>Carrier</strong></td>
+      <td>SCAC code, name, contact info, registered email addresses</td>
+      <td>Referenced by Appointment, Visit, Email Intelligence</td>
+    </tr>
+    <tr>
+      <td><strong>User / Persona</strong></td>
+      <td>user ID, name, role, carrier association (if applicable)</td>
+      <td>Assigned to Move tasks; referenced in Audit Log and Hold resolution</td>
+    </tr>
+    <tr>
+      <td><strong>AI Config</strong></td>
+      <td>copilotEnabled, automationLevel, dataSources (per module), chatAssistantEnabled, predictiveOpsEnabled</td>
+      <td>Governs all AI behavior platform-wide</td>
+    </tr>
+  </table>
+
+  <h3>B. Key Operational Metrics</h3>
+  <div class="kpi-row">
+    <div class="kpi-box">
+      <div class="kpi-num">Dwell</div>
+      <div class="kpi-label">Average Time on Yard</div>
+    </div>
+    <div class="kpi-box">
+      <div class="kpi-num">Util%</div>
+      <div class="kpi-label">Yard Occupancy Rate</div>
+    </div>
+    <div class="kpi-box">
+      <div class="kpi-num">SLA%</div>
+      <div class="kpi-label">Dock On-Time Rate</div>
+    </div>
+    <div class="kpi-box">
+      <div class="kpi-num">OTA%</div>
+      <div class="kpi-label">On-Time Arrival Rate</div>
     </div>
   </div>
 
   <table>
-    <thead>
-      <tr>
-        <th>Step</th>
-        <th>Action</th>
-        <th>Who</th>
-        <th>Screen</th>
-        <th>AI in Elevate/Enhanced</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td class="td-step">1. Pre-Arrival</td>
-        <td>Carrier books appointment for inbound load. Appointment confirmed with time window, trailer number, and PO reference.</td>
-        <td class="td-who">Carrier / Dispatcher</td>
-        <td class="td-screen">Appointments</td>
-        <td class="td-ai">✦ Email Intelligence parses carrier confirmation emails and flags conflicts automatically</td>
-      </tr>
-      <tr>
-        <td class="td-step">2. Gate Arrival</td>
-        <td>Truck arrives at Gate 1. Guard searches by appointment number or trailer ID. Driver verified, photos taken, seal recorded.</td>
-        <td class="td-who">Gate Guard</td>
-        <td class="td-screen">Gate Check-In</td>
-        <td class="td-ai">✦ AI checks for documentation holds and prior visit history; flags discrepancies before slot assignment</td>
-      </tr>
-      <tr>
-        <td class="td-step">3. Slot Assignment</td>
-        <td>Guard assigns the trailer to a yard slot in the Inbound Staging zone. Trailer appears instantly on the Yard Map and in Yard Inventory.</td>
-        <td class="td-who">Gate Guard</td>
-        <td class="td-screen">Gate Check-In → Yard Map</td>
-        <td class="td-ai">✦ AI recommends the optimal slot based on load type, planned dock door, and current yard congestion</td>
-      </tr>
-      <tr>
-        <td class="td-step">4. Yard Staging</td>
-        <td>Trailer parks in the Inbound Staging zone. Dwell clock starts. Slot status shows "In Yard — Awaiting Dock Move". Dispatcher monitors via Yard Inventory.</td>
-        <td class="td-who">Yard Jockey</td>
-        <td class="td-screen">Yard Inventory / Yard Map</td>
-        <td class="td-ai">✦ AI monitors dwell time and surfaces the trailer in the Aging/Detention queue when approaching the SLA threshold</td>
-      </tr>
-      <tr>
-        <td class="td-step">5. Dock Assignment</td>
-        <td>Dispatcher assigns a dock door and creates a move task. The jockey is dispatched to move the trailer from its slot to the assigned dock door.</td>
-        <td class="td-who">Dispatcher</td>
-        <td class="td-screen">Dock Management / Yard Moves</td>
-        <td class="td-ai">✦ AI suggests the optimal dock door based on load type (Receiving vs Shipping), current door utilization, and appointment window</td>
-      </tr>
-      <tr>
-        <td class="td-step">6. Move Execution</td>
-        <td>The jockey picks up the move task from the Yard Moves queue, executes the move, and marks it complete. The dock door status updates to "At Dock".</td>
-        <td class="td-who">Yard Jockey</td>
-        <td class="td-screen">Yard Moves</td>
-        <td class="td-ai">✦ AI prioritizes the move queue automatically when multiple moves are pending, based on dock SLA risk and appointment time</td>
-      </tr>
-      <tr>
-        <td class="td-step">7. Dock Activity</td>
-        <td>Trailer transitions to Loading or Unloading status on the dock kanban. SLA timer runs. Dock staff monitor progress and update status as work progresses.</td>
-        <td class="td-who">Dock Staff</td>
-        <td class="td-screen">Dock Management</td>
-        <td class="td-ai">✦ AI flags predictive SLA breaches before they occur, allowing proactive reallocation</td>
-      </tr>
-      <tr>
-        <td class="td-step">8. Exception (if any)</td>
-        <td>If a hold is triggered (customs, damage, documentation), the trailer is flagged in Holds &amp; Exceptions. The hold blocks gate exit until resolved by an authorized user.</td>
-        <td class="td-who">Supervisor / Guard</td>
-        <td class="td-screen">Holds &amp; Exceptions</td>
-        <td class="td-ai">✦ AI identifies potential holds from email content before the trailer arrives at the gate</td>
-      </tr>
-      <tr>
-        <td class="td-step">9. Ready Out</td>
-        <td>When dock activity completes, trailer status changes to Ready Out. It appears in Gate Check-Out's expected list. Dispatcher may move it to Outbound Ready staging if dock-to-gate sequencing is needed.</td>
-        <td class="td-who">Dispatcher / Dock Staff</td>
-        <td class="td-screen">Yard Inventory / Yard Map</td>
-        <td class="td-ai">Standard flagging; AI in Enhanced can sequence outbound departures to reduce yard congestion</td>
-      </tr>
-      <tr>
-        <td class="td-step">10. Gate Exit</td>
-        <td>Truck arrives at Gate 3. Guard verifies trailer, checks for clearance (no outstanding holds), confirms exit, and issues the exit pass. Visit is closed. Slot is freed.</td>
-        <td class="td-who">Gate Guard</td>
-        <td class="td-screen">Gate Check-Out</td>
-        <td class="td-ai">✦ AI verifies all holds are resolved before allowing clearance confirmation</td>
-      </tr>
-    </tbody>
+    <tr><th>KPI</th><th>Definition</th><th>Where Reported</th><th>Benchmark</th></tr>
+    <tr><td>Average Dwell Time</td><td>Mean time between gate-in and gate-out across all visits</td><td>Dashboard, Reports</td><td>&lt; 6 hours (inbound standard load)</td></tr>
+    <tr><td>Yard Utilization %</td><td>Occupied slots / total slots × 100</td><td>Dashboard tile</td><td>70–85% optimal</td></tr>
+    <tr><td>Dock Utilization %</td><td>Active dock hours / total available dock hours</td><td>Reports — Dock tab</td><td>&gt; 80% target</td></tr>
+    <tr><td>On-Time Arrival Rate</td><td>Appointments checked in within ±15 min of scheduled time</td><td>Reports — Carrier tab</td><td>&gt; 85% target</td></tr>
+    <tr><td>Hold Rate</td><td>Visits placed on hold / total visits × 100</td><td>Reports — Overview tab</td><td>&lt; 5% target</td></tr>
+    <tr><td>Move Completion Time</td><td>Average time from move creation to completion</td><td>Reports — Moves tab</td><td>&lt; 20 min target</td></tr>
+    <tr><td>Detention Charges Accrued</td><td>Sum of billable dwell overage charges in period</td><td>Revenue module, Dashboard</td><td>$0 target (billing opportunity)</td></tr>
+    <tr><td>Exception Resolution Time</td><td>Average time from hold creation to resolution</td><td>Reports — Compliance</td><td>&lt; 2 hours for High severity</td></tr>
   </table>
 
-  <div class="screenshot-row">
-    <div>
-      <div class="screenshot">
-        <img src="screenshots/yard-map.jpg" alt="Yard Map" />
-        <div class="screenshot-caption"><strong>Steps 3–4</strong> · Yard Control — trailer visible in slot, dwell tracking active, operational queue on left</div>
-      </div>
+  <h3>C. Glossary</h3>
+  <div class="glossary-grid">
+    <div class="glossary-item">
+      <div class="glossary-term">Appointment</div>
+      <div class="glossary-def">Pre-scheduled trailer arrival or departure. Created by carrier or dispatcher before the truck arrives.</div>
     </div>
-    <div>
-      <div class="screenshot">
-        <img src="screenshots/dock-management.jpg" alt="Dock Management" />
-        <div class="screenshot-caption"><strong>Steps 5–7</strong> · Dock Management — trailer at dock, SLA status, loading/unloading progress</div>
-      </div>
+    <div class="glossary-item">
+      <div class="glossary-term">At Dock</div>
+      <div class="glossary-def">Trailer status when physically positioned at a dock door but loading/unloading has not yet started.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Congestion Risk</div>
+      <div class="glossary-def">AI-calculated yard-wide pressure score. Displayed as a bar in Elevate/Enhanced. Polled every 60 seconds.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Core Mode</div>
+      <div class="glossary-def">YMSNOW product tier providing full operational YMS functionality with no AI features. All workflows are manual.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Detention</div>
+      <div class="glossary-def">Billable charge accrued when a carrier's trailer remains on-site beyond the contractually agreed free time window.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Dock Door</div>
+      <div class="glossary-def">Physical loading/unloading position at the warehouse building. Grouped by function: Receiving, Shipping, Cross-Dock.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Dwell Time</div>
+      <div class="glossary-def">Total time a trailer spends on-site from gate-in to gate-out. Key input for detention calculation.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Elevate Mode</div>
+      <div class="glossary-def">YMSNOW product tier adding AI recommendations, Email Intelligence, and the AI Copilot to the Core platform.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Email Intelligence</div>
+      <div class="glossary-def">AI module that parses inbound carrier emails to extract shipment data and detect appointment conflicts automatically.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Enhanced Mode</div>
+      <div class="glossary-def">YMSNOW product tier providing full AI optimization: dock sequencing, move prioritization, detention risk scoring.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Exception / Hold</div>
+      <div class="glossary-def">Operational block placed on a trailer preventing it from advancing in the workflow. Types: Customs, Security, Documentation, Damage.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Gate Guard</div>
+      <div class="glossary-def">User role responsible for processing truck arrivals and departures at the facility gate.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Gate Pass</div>
+      <div class="glossary-def">Document issued at check-in or check-out confirming the trailer has been processed and is authorized to enter or exit.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Inspection</div>
+      <div class="glossary-def">Formal trailer condition check performed at gate arrival or dock. Documents physical condition and seal status.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Jockey</div>
+      <div class="glossary-def">Yard driver who moves trailers between slots and dock doors. Assigned move tasks from the Yard Moves module.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Live Load / Live Unload</div>
+      <div class="glossary-def">Appointment type where loading or unloading occurs while the driver waits — as opposed to drop-and-hook operations.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Move Task</div>
+      <div class="glossary-def">Dispatched instruction for a jockey to move a specific trailer from one location to another. Lifecycle: Unassigned → Assigned → In Progress → Completed.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Next Best Action</div>
+      <div class="glossary-def">Enhanced Mode AI widget showing the single highest-impact operational action based on current yard state. Updates in real time.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">No Show</div>
+      <div class="glossary-def">Appointment status set automatically when a carrier fails to arrive within the configured window past their scheduled time.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Persona</div>
+      <div class="glossary-def">Pre-configured user profile in the YMSNOW role switcher. Allows administrators and demos to simulate different user roles without re-authenticating.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Quick Check-In</div>
+      <div class="glossary-def">Abbreviated gate check-in mode requiring only trailer number and carrier. Designed for high-volume gates where speed is prioritized over documentation depth.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Ready Out</div>
+      <div class="glossary-def">Trailer status indicating dock activity is complete and the trailer is ready to be positioned for gate check-out.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">SCAC Code</div>
+      <div class="glossary-def">Standard Carrier Alpha Code. 4-letter industry identifier for trucking carriers. Used in YMSNOW for carrier matching and Email Intelligence parsing.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">SLA (Service Level Agreement)</div>
+      <div class="glossary-def">Time limit for completing a dock activity. YMSNOW tracks SLA timers per door and flags breaches in Dock Management.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Slot</div>
+      <div class="glossary-def">Physical parking position in the yard. Each slot has a zone, type (standard/reefer/oversized), and tier classification.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Visit</div>
+      <div class="glossary-def">The master record of a trailer's time on-site. Created at gate check-in. Contains all moves, holds, inspections, and dock assignments linked to that arrival.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Walk-In</div>
+      <div class="glossary-def">Truck arriving without a pre-scheduled appointment. Processed through Gate Check-In with a manual visit record created on arrival.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Yard Audit</div>
+      <div class="glossary-def">Physical walk of the yard to verify actual trailer positions against the system inventory. Discrepancies are flagged and corrected.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Yard Jockey</div>
+      <div class="glossary-def">See Jockey. Role name used in YMSNOW role-based access control.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Zone</div>
+      <div class="glossary-def">Designated section of the yard with a functional purpose. YMSNOW zones: Inbound Staging, Outbound Ready, Reefer Row, Live Load/Unload, Inspection Hold.</div>
     </div>
   </div>
 
-  <div class="screenshot-row">
-    <div>
-      <div class="screenshot">
-        <img src="screenshots/exceptions.jpg" alt="Exceptions" />
-        <div class="screenshot-caption"><strong>Step 8 (if applicable)</strong> · Holds &amp; Exceptions — active holds with severity, type, and resolution action</div>
-      </div>
-    </div>
-    <div>
-      <div class="screenshot">
-        <img src="screenshots/gate-checkout.jpg" alt="Gate Check-Out" />
-        <div class="screenshot-caption"><strong>Step 10</strong> · Gate Check-Out — exit clearance check and exit pass issuance</div>
-      </div>
-    </div>
+  <div class="callout callout-tip" style="margin-top:32px">
+    <strong>Implementation note.</strong> YMSNOW recommends a Core Mode baseline period of 4–8 weeks before upgrading to Elevate. This allows the system to accumulate operational data that improves AI recommendation accuracy in Elevate and prediction confidence in Enhanced.
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════
-     SECTION 9 — BUSINESS VALUE
-══════════════════════════════════════════ -->
-<div class="section" id="value">
-  <div class="section-eyebrow"><span class="section-eyebrow-num">09</span> Business Value</div>
-  <h2>Why YMSNOW</h2>
-  <p class="section-lead">YMSNOW delivers measurable operational improvements across dwell time, dock utilization, exception resolution speed, and carrier accountability — from day one in Core Mode, with compounding returns as AI capabilities are unlocked.</p>
-
-  <div class="value-grid">
-    <div class="value-card">
-      <div class="value-num">↓ 30%</div>
-      <div class="value-label">Average Dwell Time Reduction</div>
-      <p class="value-desc">Real-time slot tracking, dock sequencing, and proactive aging alerts prevent trailers from sitting unmanaged in the yard.</p>
-    </div>
-    <div class="value-card">
-      <div class="value-num">↑ 40%</div>
-      <div class="value-label">Dock Utilization Improvement</div>
-      <p class="value-desc">Coordinated dock assignment, SLA enforcement, and move task dispatch eliminate idle door time caused by coordination gaps.</p>
-    </div>
-    <div class="value-card">
-      <div class="value-num">↓ 80%</div>
-      <div class="value-label">Exception Resolution Time</div>
-      <p class="value-desc">Holds surface immediately with full context, assigned resolver, and one-click resolution — replacing radio calls and paper logs.</p>
-    </div>
-    <div class="value-card">
-      <div class="value-num">100%</div>
-      <div class="value-label">Gate-to-Gate Traceability</div>
-      <p class="value-desc">Every trailer action, hold, move, and gate event is logged with a timestamped audit trail — supporting compliance, disputes, and carrier SLAs.</p>
-    </div>
-  </div>
-
-  <h3>Key Differentiators</h3>
-
-  <div class="card">
-    <div class="card-title">Three-Mode Product Architecture</div>
-    <p>YMSNOW is the only YMS with a structured Core / Elevate / Enhanced tier system, allowing facilities to adopt AI at their own pace without switching platforms. The mode selector is live, instant, and non-disruptive.</p>
-  </div>
-
-  <div class="card">
-    <div class="card-title">Realistic Yard Map — Not a Generic Asset Tracker</div>
-    <p>The Yard Control map renders a true DC yard environment — Gate 1 Entry, Gate 3 Exit, Dock Approach Lane, Inbound Staging, Outbound Ready, Reefer Row, Live Load/Unload zones, and RECEIVING/SHIPPING dock splits. Users recognize it as their yard, not a generic placeholder.</p>
-  </div>
-
-  <div class="card">
-    <div class="card-title">AI That Augments, Never Replaces</div>
-    <p>Every AI recommendation in Elevate and Enhanced modes requires human confirmation. The AI never makes irreversible changes unilaterally. This maintains compliance, accountability, and operator trust — a critical requirement in regulated or carrier-facing environments.</p>
-  </div>
-
-  <div class="card">
-    <div class="card-title">Tablet-First for Operational Staff</div>
-    <p>Every major operational page — Dashboard, Appointments, Gate Operations, Yard Map, Dock Management, Yard Moves, and Exceptions — has a dedicated 10-inch tablet layout. The Desktop / Tablet toggle in the header switches all adapted pages simultaneously, with no per-page configuration required.</p>
-  </div>
-
-  <div class="card">
-    <div class="card-title">Revenue Intelligence Built In</div>
-    <p>YMSNOW tracks detention time from the moment a trailer enters the yard. Detention billing signals surface on the dashboard in real time — helping facilities capture revenue that is often lost due to poor tracking and late documentation.</p>
-  </div>
-
-  <div class="card">
-    <div class="card-title">Zero External Dependencies for Core Operations</div>
-    <p>Core Mode operates fully offline from any AI or external service. All core gate, dock, inventory, and move workflows are self-contained. AI features in Elevate and Enhanced require API connectivity but never block the core operational platform.</p>
-  </div>
-
-  <h3>Deployment Readiness</h3>
-  <p>YMSNOW is production-ready and deployable as a web application accessible from any modern browser — on desktop workstations at gate booths, wall-mounted displays for dock supervisors, and 10-inch tablets for yard jockeys and gate guards. No native mobile installation is required.</p>
-
-  <div class="callout callout-tip">
-    <strong>Ready to evaluate?</strong> YMSNOW ships with a complete demo environment pre-seeded with realistic multi-carrier, multi-zone yard data. All demo accounts share credential <code>12345</code>. The system can be reset to demo state at any time using the Reset button in the header.
-  </div>
-
-  <h3>Supported Roles</h3>
-  <table>
-    <thead>
-      <tr><th>Role</th><th>Primary Modules</th><th>Mode Recommendation</th></tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td class="td-step">Yard Manager / Admin</td>
-        <td>Dashboard, all modules, Reports, AI Config</td>
-        <td>Enhanced (or Elevate during transition)</td>
-      </tr>
-      <tr>
-        <td class="td-step">Gate Guard</td>
-        <td>Gate Check-In, Gate Check-Out, Inspections</td>
-        <td>Core (Guard Mode available)</td>
-      </tr>
-      <tr>
-        <td class="td-step">Dock Supervisor</td>
-        <td>Dock Management, Yard Inventory, Yard Moves</td>
-        <td>Elevate or Enhanced</td>
-      </tr>
-      <tr>
-        <td class="td-step">Yard Jockey</td>
-        <td>Yard Moves (tablet view)</td>
-        <td>Core (tablet layout)</td>
-      </tr>
-      <tr>
-        <td class="td-step">Operations Analyst</td>
-        <td>Reports &amp; Analytics, Revenue, Audit Log</td>
-        <td>Any mode (read-only analytics)</td>
-      </tr>
-      <tr>
-        <td class="td-step">Carrier Representative</td>
-        <td>Carrier Portal (separate login)</td>
-        <td>Read-only — appointment and visit visibility only</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-
-<!-- ══════════════════════════════════════════
-     FOOTER
-══════════════════════════════════════════ -->
+<!-- FOOTER -->
 <div class="doc-footer">
   <strong>YMSNOW — Yard Management Intelligence Platform</strong><br>
-  Product Manual · Version 1.0 · March 2026<br>
-  This document is confidential and intended for authorized personnel and prospective clients only.<br>
-  All screenshots reflect a live demo environment with synthetic operational data.
+  Product Manual · Version 2.0 · April 2026<br>
+  Confidential — For authorized personnel only. Not for distribution.
 </div>
 
 </body>
