@@ -10,7 +10,7 @@ import { useQuery } from "@tanstack/react-query";
 
   const DEMO_USER: MockUser = {
     id: "demo-user",
-    email: "demo@ymsnow.com",
+    email: "demo@yardnow.com",
     firstName: "Demo",
     lastName: "User",
   };

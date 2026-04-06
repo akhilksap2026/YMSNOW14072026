@@ -78,7 +78,7 @@ export default function TruckLifecycleVideo() {
           <div className="w-7 h-7 bg-[#2563EB] rounded-md flex items-center justify-center">
             <Factory className="w-3.5 h-3.5 text-white" />
           </div>
-          <span className="text-sm font-bold text-white">YMSNOW</span>
+          <span className="text-sm font-bold text-white">YardNow</span>
           <span className="text-[10px] text-white/25 uppercase tracking-widest ml-1 hidden sm:block">Yard Management System</span>
         </div>
 
@@ -269,7 +269,7 @@ function ScreenSlide({ screenshot, tag, title, caption, insight, accent }: Scree
             <div className="flex-1 flex justify-center">
               <div className="px-4 py-0.5 bg-[#0d1929] rounded text-[10px] text-white/30 flex items-center gap-1.5">
                 <div className="w-1.5 h-1.5 rounded-full bg-[#2563EB]" />
-                ymsnow.app
+                yardnow.app
               </div>
             </div>
           </div>
@@ -298,7 +298,7 @@ function HeroSlide() {
         </div>
         <div className="text-[10px] font-bold tracking-[0.25em] uppercase text-[#2563EB] mb-3">Enterprise Yard Management</div>
         <h1 className="text-[3.5vw] font-black text-white leading-[1.05] mb-4">
-          YMSNOW<br />
+          YardNow<br />
           <span className="text-transparent bg-clip-text" style={{ backgroundImage: 'linear-gradient(135deg, #2563EB, #10B981)' }}>
             Platform
           </span>
@@ -330,7 +330,7 @@ function HeroSlide() {
               <div className="w-2.5 h-2.5 rounded-full bg-[#27C93F]" />
             </div>
             <div className="flex-1 flex justify-center">
-              <div className="px-4 py-0.5 bg-[#0d1929] rounded text-[10px] text-white/30">ymsnow.app</div>
+              <div className="px-4 py-0.5 bg-[#0d1929] rounded text-[10px] text-white/30">yardnow.app</div>
             </div>
           </div>
           <img src={SS('dashboard.png')} alt="Dashboard" className="w-full h-full object-contain object-top" />
@@ -498,7 +498,7 @@ function InspectionsSlide() {
               <div className="w-2.5 h-2.5 rounded-full bg-[#27C93F]" />
             </div>
             <div className="flex-1 flex justify-center">
-              <div className="px-4 py-0.5 bg-[#0d1929] rounded text-[10px] text-white/30">ymsnow.app/inspections</div>
+              <div className="px-4 py-0.5 bg-[#0d1929] rounded text-[10px] text-white/30">yardnow.app/inspections</div>
             </div>
           </div>
           <img src={SS('inspections-visual.png')} alt="Inspections" className="w-full h-full object-contain object-top" />
@@ -798,7 +798,7 @@ function AllRolesSlide() {
     <div className="w-full h-full flex flex-col px-10 pt-5 pb-8">
       <div className="mb-4 flex-shrink-0">
         <div className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#2563EB] mb-1">ROLE PROFILES</div>
-        <h1 className="text-2xl font-black text-white">Who Uses YMSNOW</h1>
+        <h1 className="text-2xl font-black text-white">Who Uses YardNow</h1>
         <p className="text-[12px] text-white/35 mt-0.5">Four distinct roles — each with a focused, purpose-built experience</p>
       </div>
 
@@ -961,7 +961,7 @@ function YardSetupSlide() {
               <div className="w-2.5 h-2.5 rounded-full bg-[#27C93F]" />
             </div>
             <div className="flex-1 flex justify-center">
-              <div className="px-4 py-0.5 bg-[#0d1929] rounded text-[10px] text-white/30">ymsnow.app/admin/yard-setup</div>
+              <div className="px-4 py-0.5 bg-[#0d1929] rounded text-[10px] text-white/30">yardnow.app/admin/yard-setup</div>
             </div>
           </div>
           <img src={SS('yard-setup.png')} alt="Yard Setup" className="w-full h-full object-contain object-top" />
@@ -1024,7 +1024,7 @@ function BeforeAfterSlide() {
     <div className="w-full h-full flex flex-col px-12 pt-5 pb-10">
       <div className="mb-5 flex-shrink-0">
         <div className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#2563EB] mb-1">THE TRANSFORMATION</div>
-        <h1 className="text-2xl font-black text-white">Before vs After YMSNOW</h1>
+        <h1 className="text-2xl font-black text-white">Before vs After YardNow</h1>
       </div>
       <div className="flex-1 grid grid-cols-2 gap-5">
         {/* Before */}
@@ -1032,7 +1032,7 @@ function BeforeAfterSlide() {
           <div className="px-5 py-3 bg-[#DC2626]/10 border-b border-[#DC2626]/15">
             <div className="flex items-center gap-2">
               <X className="w-4 h-4 text-[#DC2626]" />
-              <span className="text-sm font-black text-white">Without YMSNOW</span>
+              <span className="text-sm font-black text-white">Without YardNow</span>
               <span className="text-[10px] text-[#DC2626] ml-auto uppercase font-bold">Manual / Siloed</span>
             </div>
           </div>
@@ -1056,7 +1056,7 @@ function BeforeAfterSlide() {
           <div className="px-5 py-3 bg-[#10B981]/10 border-b border-[#10B981]/15">
             <div className="flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 text-[#10B981]" />
-              <span className="text-sm font-black text-white">With YMSNOW</span>
+              <span className="text-sm font-black text-white">With YardNow</span>
               <span className="text-[10px] text-[#10B981] ml-auto uppercase font-bold">Automated / Unified</span>
             </div>
           </div>
@@ -1102,13 +1102,13 @@ function AiOverviewSlide() {
       <div className="w-[40%] flex flex-col justify-center flex-shrink-0">
         <div className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#7C3AED] mb-2">AI LAYER</div>
         <h1 className="text-2xl font-black text-white leading-tight mb-3">
-          Enhanced YMSNOW<br />
+          Enhanced YardNow<br />
           <span className="text-transparent bg-clip-text" style={{ backgroundImage: 'linear-gradient(135deg, #7C3AED, #10B981)' }}>
             AI-Powered Operations
           </span>
         </h1>
         <p className="text-[12px] text-white/40 leading-relaxed mb-5">
-          AI sits as an assistive intelligence layer on top of YMSNOW — amplifying every workflow without replacing human judgment.
+          AI sits as an assistive intelligence layer on top of YardNow — amplifying every workflow without replacing human judgment.
         </p>
         <div className="space-y-2.5">
           {benefits.map((b, i) => (
@@ -1230,7 +1230,7 @@ function AiFeaturesSlide() {
               <div className="w-2 h-2 rounded-full bg-[#27C93F]" />
             </div>
             <div className="flex-1 flex justify-center">
-              <div className="px-3 py-0.5 bg-[#0d1929] rounded text-[9px] text-white/30">ymsnow.app/ai-copilot — Enablement</div>
+              <div className="px-3 py-0.5 bg-[#0d1929] rounded text-[9px] text-white/30">yardnow.app/ai-copilot — Enablement</div>
             </div>
           </div>
           <img src={SS('ai-console-enablement.png')} alt="AI Console Enablement" className="w-full h-full object-contain object-top bg-white" />
@@ -1476,7 +1476,7 @@ function OutroSlide({ onNext: _ }: { onNext: () => void }) {
           </span>
         </h1>
         <p className="text-[14px] text-white/45 leading-relaxed mb-8 max-w-xs">
-          YMSNOW is production-ready — connect your yard data and go live in days, not months.
+          YardNow is production-ready — connect your yard data and go live in days, not months.
         </p>
         <div className="space-y-3">
           {[

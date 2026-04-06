@@ -563,7 +563,7 @@ export function AIAssistant({ currentPath, userRole }: AIAssistantProps) {
     staleTime: 30_000,
   });
 
-  const screenName = SCREEN_NAMES[currentPath || "/"] || "YMSNOW";
+  const screenName = SCREEN_NAMES[currentPath || "/"] || "YardNow";
   const safeRole = userRole || "admin";
   const suggestions = getSuggestions(currentPath || "/", safeRole);
 

@@ -228,7 +228,7 @@ export default function GateCheckOutPage() {
           <div class="header">
             <div>
               <div class="header-title">Gate Exit Pass</div>
-              <div class="subtitle">YMSNOW Yard Management System</div>
+              <div class="subtitle">YardNow Yard Management System</div>
             </div>
             <div class="header-meta">
               <div>Visit #: <strong>${visit.visitNumber}</strong></div>

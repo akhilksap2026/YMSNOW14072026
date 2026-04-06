@@ -405,7 +405,7 @@ export default function GateCheckInPage() {
       @media print{body{margin:0}}
     </style></head><body>
       <div class="header">
-        <div class="logo">YMSNOW</div>
+        <div class="logo">YardNow</div>
         <div class="sub">Yard Management System — Official Gate Pass</div>
         <div class="badge">${createdVisitNumber}</div>
       </div>

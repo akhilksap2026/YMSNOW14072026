@@ -283,7 +283,7 @@ export function RevenueTabContent() {
               <div>
                 <p className="text-xs font-semibold text-emerald-600 uppercase tracking-wider mb-1">Total Operational Cost Savings</p>
                 <p className="text-4xl font-bold text-emerald-700 dark:text-emerald-400">{savings ? formatCurrency(savings.total, true) : "—"}</p>
-                <p className="text-sm text-muted-foreground mt-1">Estimated value generated through YMSNOW operational efficiency</p>
+                <p className="text-sm text-muted-foreground mt-1">Estimated value generated through YardNow operational efficiency</p>
               </div>
               <div className="hidden md:grid grid-cols-2 gap-3">
                 {[
@@ -360,7 +360,7 @@ export function RevenueTabContent() {
                   <div className="bg-amber-400 h-3 rounded-full absolute" style={{ width: `${Math.min((savings?.avgDwellHours ?? 0) / 60 * 100, 100)}%` }} />
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  {savings?.dwellSavingHours > 0 ? `YMSNOW is saving ${savings.dwellSavingHours}h per visit vs. the industry average — reducing labor idle time, detention risk, and slot congestion.` : "Dwell time is above benchmark. Optimize dock assignments and jockey moves to reduce."}
+                  {savings?.dwellSavingHours > 0 ? `YardNow is saving ${savings.dwellSavingHours}h per visit vs. the industry average — reducing labor idle time, detention risk, and slot congestion.` : "Dwell time is above benchmark. Optimize dock assignments and jockey moves to reduce."}
                 </p>
                 <div className="bg-amber-50 dark:bg-amber-900/20 rounded-lg p-3 border border-amber-200">
                   <p className="text-xs text-muted-foreground">Savings from faster turnaround</p>
@@ -383,7 +383,7 @@ export function RevenueTabContent() {
                   <p className="text-xs text-muted-foreground">Estimated resolution savings</p>
                   <p className="text-xl font-bold text-green-700 dark:text-green-400">{savings ? formatCurrency(savings.exceptionResolution, true) : "—"}</p>
                 </div>
-                <p className="text-xs text-muted-foreground">Value based on number of resolved holds × $250 average cost-per-incident avoided through YMSNOW structured workflows.</p>
+                <p className="text-xs text-muted-foreground">Value based on number of resolved holds × $250 average cost-per-incident avoided through YardNow structured workflows.</p>
               </CardContent>
             </Card>
 
@@ -409,7 +409,7 @@ export function RevenueTabContent() {
           {/* Value Summary Card */}
           <Card className="bg-gradient-to-r from-slate-50 to-slate-100/50 dark:from-slate-900/30 dark:to-slate-800/20">
             <CardContent className="p-5">
-              <p className="text-sm font-semibold mb-3">Financial Impact Summary — How YMSNOW Pays for Itself</p>
+              <p className="text-sm font-semibold mb-3">Financial Impact Summary — How YardNow Pays for Itself</p>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {[
                   { label: "Revenue Generated", value: summary ? formatCurrency(summary.totalRevenue, true) : "—", desc: "Through billable yard services", color: "text-blue-700" },
