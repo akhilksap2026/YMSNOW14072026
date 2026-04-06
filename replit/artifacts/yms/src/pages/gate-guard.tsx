@@ -82,7 +82,7 @@ function GatePassPrint({ visit, onClose, onNewCheckIn }: {
 
         <div ref={printRef} className="border-2 border-foreground rounded-lg p-6 bg-background text-foreground">
           <div className="text-center border-b-2 border-foreground pb-4 mb-5">
-            <img src="/ksap-logo.png" alt="KSAP OTM Now" className="h-10 w-auto object-contain mx-auto mb-1" />
+            <img src="/ksap-logo.png" alt="KSAP" className="h-10 w-auto object-contain mx-auto mb-1" />
             <div className="text-xs text-muted-foreground mt-1">Yard Management System — Gate Pass</div>
             <div className="inline-block bg-foreground text-background px-6 py-2 rounded text-2xl font-bold tracking-widest mt-3">
               {visit.visitNumber}
@@ -215,7 +215,7 @@ export default function GateGuardPage() {
         <div className="flex items-center gap-3">
           <Shield className="h-6 w-6" />
           <div>
-            <img src="/ksap-logo.png" alt="KSAP OTM Now" className="h-6 w-auto object-contain brightness-0 invert" />
+            <img src="/ksap-logo.png" alt="KSAP" className="h-6 w-auto object-contain brightness-0 invert" />
             <div className="text-[10px] opacity-60 tracking-widest mt-0.5">GATE GUARD MODE</div>
           </div>
         </div>

@@ -307,8 +307,8 @@ export function AppSidebar({
         <div className="flex items-center justify-center">
           <img
             src="/ksap-logo.png"
-            alt="KSAP OTM Now"
-            className="h-12 w-auto object-contain"
+            alt="KSAP"
+            className="h-10 w-auto object-contain"
           />
         </div>
       </SidebarHeader>

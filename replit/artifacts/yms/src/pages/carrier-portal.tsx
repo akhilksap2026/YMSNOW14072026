@@ -111,7 +111,7 @@ export default function CarrierPortalPage() {
             <Truck className="h-5 w-5 text-primary-foreground" />
           </div>
           <div>
-            <img src="/ksap-logo.png" alt="KSAP OTM Now" className="h-7 w-auto object-contain" />
+            <img src="/ksap-logo.png" alt="KSAP" className="h-7 w-auto object-contain" />
             <div className="text-[10px] text-muted-foreground tracking-widest uppercase mt-0.5">Carrier Appointment Portal</div>
           </div>
         </div>
