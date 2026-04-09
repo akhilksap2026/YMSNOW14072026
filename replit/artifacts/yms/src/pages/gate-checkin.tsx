@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { useTabletView } from "@/lib/tablet-view";
 import { SearchAutocomplete } from "@/components/enterprise/search-autocomplete";
 import { useQuery, useMutation } from "@tanstack/react-query";
@@ -32,10 +32,9 @@ import {
   CheckCircle2,
   Truck,
   UserCheck,
-  Camera,
+  Thermometer,
   MapPin,
   FileCheck,
-  QrCode,
   UserPlus,
   Clock,
   AlertTriangle,
@@ -48,6 +47,11 @@ import {
   LogOut,
   Zap,
   PackagePlus,
+  Building2,
+  FileUp,
+  ClipboardCheck,
+  Snowflake,
+  X,
 } from "lucide-react";
 import { useLocation } from "wouter";
 import { playCheckIn } from "@/lib/audio-feedback";
@@ -97,14 +101,13 @@ function isAppointmentLate(apt: Appointment | null): boolean {
 }
 
 const PROCESS_STEPS = [
-  { icon: Search,    label: "Find Visit",       short: "Search",  tip: "Search for an appointment by reference #, trailer #, or driver name" },
-  { icon: UserCheck, label: "Verify Driver",     short: "Verify",  tip: "Confirm driver identity and vehicle details against the appointment" },
-  { icon: Camera,    label: "Photos / Seal",     short: "Capture", tip: "Record seal number, load type, and hazmat status" },
-  { icon: MapPin,    label: "Assign or Hold",    short: "Assign",  tip: "Assign the trailer to a yard slot or place a hold" },
-  { icon: FileCheck, label: "Gate Pass",         short: "Pass",    tip: "Check-in is complete — print gate pass and dispatch move tasks" },
+  { icon: Search,       label: "Find Visit",      short: "Search", tip: "Search for an appointment by reference #, trailer #, or driver name" },
+  { icon: UserCheck,    label: "Verify Identity",  short: "Verify", tip: "Confirm driver CDL, USDOT/SCAC, and vehicle details against the appointment" },
+  { icon: ClipboardCheck, label: "Load Details",  short: "Load",   tip: "Record seal, movement type, hazmat, reefer temp, condition, and documents" },
+  { icon: MapPin,       label: "Assign or Hold",   short: "Assign", tip: "Assign the trailer to a yard slot or place a hold" },
+  { icon: FileCheck,    label: "Gate Pass",        short: "Pass",   tip: "Check-in is complete — print gate pass and dispatch move tasks" },
 ];
 
-// ─── Tooltip wrapper helper ───────────────────────────────────────────────────
 function Tip({ text, children }: { text: string; children: React.ReactElement }) {
   return (
     <Tooltip>
@@ -114,11 +117,24 @@ function Tip({ text, children }: { text: string; children: React.ReactElement })
   );
 }
 
+function SectionHeader({ icon: Icon, label }: { icon: React.ElementType; label: string }) {
+  return (
+    <div className="flex items-center gap-2 mb-3">
+      <div className="h-5 w-5 rounded bg-muted flex items-center justify-center">
+        <Icon className="h-3 w-3 text-muted-foreground" />
+      </div>
+      <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">{label}</span>
+      <div className="flex-1 h-px bg-border" />
+    </div>
+  );
+}
+
 export default function GateCheckInPage() {
   const { toast } = useToast();
   const { tabletMode } = useTabletView();
   const [location, setLocation] = useLocation();
   const [fastLane, setFastLane] = useState(false);
+  const bolInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const role = getCurrentRole();
@@ -151,6 +167,17 @@ export default function GateCheckInPage() {
   const [verifiedTruckNumber, setVerifiedTruckNumber] = useState("");
   const [verifiedTrailerNumber, setVerifiedTrailerNumber] = useState("");
   const [discrepancies, setDiscrepancies] = useState<Array<{ field: string; expected: string; actual: string }>>([]);
+
+  // ── New identity & carrier fields ──────────────────────────────────────────
+  const [verifiedUsdot, setVerifiedUsdot] = useState("");
+  const [verifiedScac, setVerifiedScac] = useState("");
+
+  // ── New load detail fields ─────────────────────────────────────────────────
+  const [reeferEnabled, setReeferEnabled] = useState(false);
+  const [reeferTemp, setReeferTemp] = useState("");
+  const [trailerCondition, setTrailerCondition] = useState<"good" | "damaged" | "needs_inspection">("good");
+  const [trailerConditionNotes, setTrailerConditionNotes] = useState("");
+  const [bolFileName, setBolFileName] = useState("");
 
   const checkDuplicateMutation = useMutation({
     mutationFn: async (trailerNumber: string) => {
@@ -338,6 +365,8 @@ export default function GateCheckInPage() {
     setVerifiedDriverLicense("");
     setVerifiedTruckNumber("");
     setVerifiedTrailerNumber("");
+    setVerifiedUsdot("");
+    setVerifiedScac("");
     setDiscrepancies([]);
     setStep("verify");
     setActiveProcessStep(1);
@@ -348,6 +377,8 @@ export default function GateCheckInPage() {
     setVerifiedDriverLicense("");
     setVerifiedTruckNumber(selectedAppointment?.truckNumber || "");
     setVerifiedTrailerNumber(selectedAppointment?.trailerNumber || "");
+    setVerifiedUsdot("");
+    setVerifiedScac("");
     setDiscrepancies([]);
     setStep("verify");
     setActiveProcessStep(2);
@@ -372,33 +403,56 @@ export default function GateCheckInPage() {
   const handleCheckIn = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
+
+    // Compose enriched notes from all supplemental fields
+    const noteParts: string[] = [];
+    const rawNotes = (fd.get("notes") as string || "").trim();
+    if (rawNotes) noteParts.push(rawNotes);
+    if (verifiedUsdot.trim()) noteParts.push(`USDOT: ${verifiedUsdot.trim()}`);
+    if (verifiedScac.trim()) noteParts.push(`SCAC: ${verifiedScac.trim()}`);
+    if (reeferEnabled && reeferTemp.trim()) noteParts.push(`Reefer Temp: ${reeferTemp.trim()}°F`);
+    if (trailerCondition !== "good") {
+      const condLabel = trailerCondition === "damaged" ? "Damaged" : "Needs Inspection";
+      noteParts.push(`Trailer Condition: ${condLabel}${trailerConditionNotes.trim() ? ` — ${trailerConditionNotes.trim()}` : ""}`);
+    }
+    if (bolFileName) noteParts.push(`BOL Attached: ${bolFileName}`);
+
     checkInMutation.mutate({
       appointmentId: selectedAppointment?.id || null,
       carrierId: fd.get("carrierId") ? Number(fd.get("carrierId")) : selectedAppointment?.carrierId || null,
-      driverName: fd.get("driverName"),
-      driverLicense: fd.get("driverLicense"),
-      truckNumber: fd.get("truckNumber"),
-      trailerNumber: fd.get("trailerNumber"),
+      driverName: verifiedDriverName || fd.get("driverName"),
+      driverLicense: verifiedDriverLicense || null,
+      truckNumber: verifiedTruckNumber || fd.get("truckNumber"),
+      trailerNumber: verifiedTrailerNumber || fd.get("trailerNumber"),
       sealNumber: fd.get("sealNumber") || null,
       movementType: fd.get("movementType"),
       hazmat,
-      notes: fd.get("notes") || null,
+      notes: noteParts.join(" | ") || null,
     });
   };
 
   const handlePrintGatePass = () => {
     const movLabel = (createdMovementType || "inbound").replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
-    const win = window.open("", "_blank", "width=700,height=520");
+    const win = window.open("", "_blank", "width=700,height=580");
     if (!win) return;
+    const extraRows = [
+      verifiedUsdot ? `<div class="field"><label>USDOT</label><span>${verifiedUsdot}</span></div>` : "",
+      verifiedScac ? `<div class="field"><label>SCAC Code</label><span>${verifiedScac}</span></div>` : "",
+      reeferEnabled && reeferTemp ? `<div class="field"><label>Reefer Temp</label><span>${reeferTemp}°F</span></div>` : "",
+      trailerCondition !== "good" ? `<div class="field"><label>Trailer Condition</label><span style="color:#c00">${trailerCondition === "damaged" ? "Damaged" : "Needs Inspection"}</span></div>` : "",
+      bolFileName ? `<div class="field"><label>BOL</label><span>${bolFileName}</span></div>` : "",
+    ].filter(Boolean).join("");
+
     win.document.write(`<html><head><title>Gate Pass — ${createdVisitNumber}</title><style>
-      body{font-family:Arial,sans-serif;padding:32px;color:#111;max-width:580px;margin:0 auto}
+      body{font-family:Arial,sans-serif;padding:32px;color:#111;max-width:600px;margin:0 auto}
       .header{text-align:center;border-bottom:3px solid #111;padding-bottom:16px;margin-bottom:24px}
       .logo{font-size:28px;font-weight:900;letter-spacing:2px}
       .sub{font-size:12px;color:#777;margin-top:4px}
       .badge{display:inline-block;background:#111;color:#fff;padding:6px 20px;border-radius:4px;font-size:24px;font-weight:bold;letter-spacing:3px;margin:14px 0}
-      .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 32px;margin:20px 0}
+      .section-label{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#999;border-bottom:1px solid #eee;padding-bottom:4px;margin:16px 0 10px}
+      .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 32px;margin:0 0 4px}
       .field label{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#999;display:block}
-      .field span{font-size:15px;font-weight:600}
+      .field span{font-size:14px;font-weight:600}
       .footer{border-top:1px solid #ccc;margin-top:24px;padding-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:32px}
       .sig-line{border-top:1px solid #555;margin-top:32px;padding-top:4px;font-size:10px;color:#999}
       .notice{text-align:center;font-size:10px;color:#aaa;margin-top:20px;border-top:1px dotted #ddd;padding-top:10px}
@@ -409,9 +463,15 @@ export default function GateCheckInPage() {
         <div class="sub">Yard Management System — Official Gate Pass</div>
         <div class="badge">${createdVisitNumber}</div>
       </div>
+      <div class="section-label">Driver & Carrier</div>
       <div class="grid">
         <div class="field"><label>Carrier</label><span>${createdVisitCarrier}</span></div>
         <div class="field"><label>Driver Name</label><span>${createdDriverName || "—"}</span></div>
+        ${verifiedDriverLicense ? `<div class="field"><label>CDL Last 4</label><span>${verifiedDriverLicense}</span></div>` : ""}
+        ${extraRows}
+      </div>
+      <div class="section-label">Vehicle</div>
+      <div class="grid">
         <div class="field"><label>Trailer Number</label><span>${createdVisitTrailer || "—"}</span></div>
         <div class="field"><label>Truck / Tractor</label><span>${createdTruckNumber || "—"}</span></div>
         <div class="field"><label>Movement Type</label><span>${movLabel}</span></div>
@@ -448,8 +508,15 @@ export default function GateCheckInPage() {
     setVerifiedDriverLicense("");
     setVerifiedTruckNumber("");
     setVerifiedTrailerNumber("");
+    setVerifiedUsdot("");
+    setVerifiedScac("");
     setDiscrepancies([]);
     setHazmat(false);
+    setReeferEnabled(false);
+    setReeferTemp("");
+    setTrailerCondition("good");
+    setTrailerConditionNotes("");
+    setBolFileName("");
     searchMutation.reset();
   };
 
@@ -469,7 +536,6 @@ export default function GateCheckInPage() {
 
       {/* ── Page header ──────────────────────────────────────────────────────── */}
       <div className="px-6 pt-6 pb-4 border-b bg-background">
-        {/* Title row */}
         <div className="flex items-start justify-between gap-4 mb-5">
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-xl bg-primary flex items-center justify-center shrink-0">
@@ -481,7 +547,6 @@ export default function GateCheckInPage() {
             </div>
           </div>
 
-          {/* Secondary controls — right side */}
           <div className="flex items-center gap-2 shrink-0">
             <Tip text="Fast Lane skips verification steps — select from expected arrivals for instant check-in">
               <Button
@@ -518,19 +583,13 @@ export default function GateCheckInPage() {
         {/* KPI strip */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <Tip text="Total appointments scheduled for arrival today">
-            <div>
-              <KPICard label="Expected Today" value={stats.expectedToday} icon={<Clock className="h-4 w-4 text-blue-500" />} data-testid="kpi-expected-today" />
-            </div>
+            <div><KPICard label="Expected Today" value={stats.expectedToday} icon={<Clock className="h-4 w-4 text-blue-500" />} data-testid="kpi-expected-today" /></div>
           </Tip>
           <Tip text="Appointments that have successfully completed check-in today">
-            <div>
-              <KPICard label="Checked In" value={stats.checkedInToday} icon={<CheckCircle2 className="h-4 w-4 text-green-500" />} data-testid="kpi-checked-in-today" />
-            </div>
+            <div><KPICard label="Checked In" value={stats.checkedInToday} icon={<CheckCircle2 className="h-4 w-4 text-green-500" />} data-testid="kpi-checked-in-today" /></div>
           </Tip>
           <Tip text="Unscheduled arrivals processed as walk-ins today">
-            <div>
-              <KPICard label="Walk-Ins" value={stats.walkInsToday} icon={<UserPlus className="h-4 w-4 text-amber-500" />} data-testid="kpi-walk-ins-today" />
-            </div>
+            <div><KPICard label="Walk-Ins" value={stats.walkInsToday} icon={<UserPlus className="h-4 w-4 text-amber-500" />} data-testid="kpi-walk-ins-today" /></div>
           </Tip>
           <Tip text="Exceptions raised today (late arrivals, discrepancies, holds)">
             <div>
@@ -632,8 +691,6 @@ export default function GateCheckInPage() {
                   <Card className="shadow-sm">
                     <CardContent className="p-5">
                       <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">Search for an appointment</p>
-
-                      {/* Primary search row */}
                       <div className="flex gap-3 mb-4">
                         <Tip text="Search by appointment reference number, trailer number, truck number, or driver name">
                           <div className="flex-1">
@@ -661,15 +718,11 @@ export default function GateCheckInPage() {
                           </Button>
                         </Tip>
                       </div>
-
-                      {/* Divider */}
                       <div className="relative flex items-center gap-3 mb-4">
                         <div className="flex-1 h-px bg-border" />
                         <span className="text-xs text-muted-foreground font-medium">OR</span>
                         <div className="flex-1 h-px bg-border" />
                       </div>
-
-                      {/* Walk-in primary action */}
                       <Tip text="Create a walk-in check-in for a truck that does not have a scheduled appointment">
                         <Button
                           variant="outline"
@@ -809,7 +862,7 @@ export default function GateCheckInPage() {
                       <div className="flex items-center gap-2">
                         <Shield className="h-5 w-5 text-primary" />
                         <div>
-                          <CardTitle className="text-base font-bold">Driver & Vehicle Verification</CardTitle>
+                          <CardTitle className="text-base font-bold">Identity & Vehicle Verification</CardTitle>
                           <p className="text-xs text-muted-foreground mt-0.5">Confirm all details match what the driver presents at the gate</p>
                         </div>
                       </div>
@@ -825,7 +878,7 @@ export default function GateCheckInPage() {
                       </div>
                     </div>
                   </CardHeader>
-                  <CardContent className="p-5 space-y-4">
+                  <CardContent className="p-5 space-y-6">
                     {duplicateCheck?.exists && (
                       <div className="p-4 rounded-xl bg-red-50 border-2 border-red-200 dark:bg-red-950/30 dark:border-red-800 flex gap-3 items-start">
                         <AlertTriangle className="h-5 w-5 text-red-600 shrink-0 mt-0.5" />
@@ -838,145 +891,196 @@ export default function GateCheckInPage() {
                       </div>
                     )}
 
-                    <div className={`grid gap-4 ${tabletMode ? "grid-cols-1" : "grid-cols-2"}`}>
-                      {/* Driver Name */}
-                      <div className="space-y-1.5">
-                        <Tip text="Enter the driver's full name exactly as shown on their ID. A mismatch will create an exception for supervisor review.">
-                          <Label className="text-xs font-semibold cursor-help">
-                            Driver Name *
-                            {selectedAppointment?.driverName && verifiedDriverName.trim() && verifiedDriverName.trim() !== selectedAppointment.driverName.trim() && (
-                              <span className="ml-1.5 text-amber-600 dark:text-amber-400">(Modified)</span>
-                            )}
-                          </Label>
-                        </Tip>
-                        <div className="relative">
-                          <Input
-                            value={verifiedDriverName}
-                            onChange={(e) => setVerifiedDriverName(e.target.value)}
-                            placeholder="Full name"
-                            data-testid="input-verify-driver-name"
-                            className={`pr-9 h-10 ${selectedAppointment?.driverName && verifiedDriverName.trim() && verifiedDriverName.trim() !== selectedAppointment.driverName.trim() ? "border-amber-500" : ""}`}
-                          />
-                          {selectedAppointment?.driverName && verifiedDriverName.trim() && verifiedDriverName.trim() !== selectedAppointment.driverName.trim() ? (
-                            <AlertTriangle className="h-4 w-4 text-amber-500 absolute right-2.5 top-1/2 -translate-y-1/2" />
-                          ) : selectedAppointment?.driverName && verifiedDriverName.trim() ? (
-                            <CheckCircle2 className="h-4 w-4 text-green-500 absolute right-2.5 top-1/2 -translate-y-1/2" />
-                          ) : null}
+                    {/* ── Section 1: Driver Identity ── */}
+                    <div>
+                      <SectionHeader icon={UserCheck} label="Driver Identity" />
+                      <div className={`grid gap-4 ${tabletMode ? "grid-cols-1" : "grid-cols-2"}`}>
+                        {/* Driver Name */}
+                        <div className="space-y-1.5">
+                          <Tip text="Enter the driver's full name exactly as shown on their ID. A mismatch will create an exception for supervisor review.">
+                            <Label className="text-xs font-semibold cursor-help">
+                              Driver Name *
+                              {selectedAppointment?.driverName && verifiedDriverName.trim() && verifiedDriverName.trim() !== selectedAppointment.driverName.trim() && (
+                                <span className="ml-1.5 text-amber-600 dark:text-amber-400">(Modified)</span>
+                              )}
+                            </Label>
+                          </Tip>
+                          <div className="relative">
+                            <Input
+                              value={verifiedDriverName}
+                              onChange={(e) => setVerifiedDriverName(e.target.value)}
+                              placeholder="Full name"
+                              data-testid="input-verify-driver-name"
+                              className={`pr-9 h-10 ${selectedAppointment?.driverName && verifiedDriverName.trim() && verifiedDriverName.trim() !== selectedAppointment.driverName.trim() ? "border-amber-500" : ""}`}
+                            />
+                            {selectedAppointment?.driverName && verifiedDriverName.trim() && verifiedDriverName.trim() !== selectedAppointment.driverName.trim() ? (
+                              <AlertTriangle className="h-4 w-4 text-amber-500 absolute right-2.5 top-1/2 -translate-y-1/2" />
+                            ) : selectedAppointment?.driverName && verifiedDriverName.trim() ? (
+                              <CheckCircle2 className="h-4 w-4 text-green-500 absolute right-2.5 top-1/2 -translate-y-1/2" />
+                            ) : null}
+                          </div>
+                          {selectedAppointment?.driverName && verifiedDriverName.trim() && verifiedDriverName.trim() !== selectedAppointment.driverName.trim() && (
+                            <p className="text-[10px] text-amber-600">Expected: {selectedAppointment.driverName}</p>
+                          )}
                         </div>
-                        {selectedAppointment?.driverName && verifiedDriverName.trim() && verifiedDriverName.trim() !== selectedAppointment.driverName.trim() && (
-                          <p className="text-[10px] text-amber-600">Expected: {selectedAppointment.driverName}</p>
-                        )}
-                      </div>
 
-                      {/* Driver License */}
-                      <div className="space-y-1.5">
-                        <Tip text="Scan or manually enter the driver's commercial license number for identity verification">
-                          <Label className="text-xs font-semibold cursor-help">Driver License / ID</Label>
-                        </Tip>
-                        <Input
-                          value={verifiedDriverLicense}
-                          onChange={(e) => setVerifiedDriverLicense(e.target.value)}
-                          placeholder="License number"
-                          data-testid="input-verify-driver-license"
-                          className="h-10"
-                        />
-                      </div>
-
-                      {/* Truck Number */}
-                      <div className="space-y-1.5">
-                        <Tip text="Enter the tractor/truck unit number visible on the vehicle. Mismatches flag a discrepancy for supervisor review.">
-                          <Label className="text-xs font-semibold cursor-help">
-                            Truck Number *
-                            {selectedAppointment?.truckNumber && verifiedTruckNumber.trim() && verifiedTruckNumber.trim() !== selectedAppointment.truckNumber.trim() && (
-                              <span className="ml-1.5 text-amber-600">(Modified)</span>
-                            )}
-                          </Label>
-                        </Tip>
-                        <div className="relative">
+                        {/* CDL Last 4 */}
+                        <div className="space-y-1.5">
+                          <Tip text="Enter only the last 4 digits of the driver's Commercial Driver License (CDL) for identity verification">
+                            <Label className="text-xs font-semibold cursor-help">CDL Last 4 Digits</Label>
+                          </Tip>
                           <Input
-                            value={verifiedTruckNumber}
-                            onChange={(e) => setVerifiedTruckNumber(e.target.value)}
-                            placeholder="Truck #"
-                            data-testid="input-verify-truck"
-                            className={`pr-9 h-10 ${selectedAppointment?.truckNumber && verifiedTruckNumber.trim() && verifiedTruckNumber.trim() !== selectedAppointment.truckNumber.trim() ? "border-amber-500" : ""}`}
+                            value={verifiedDriverLicense}
+                            onChange={(e) => setVerifiedDriverLicense(e.target.value.replace(/\D/g, "").slice(0, 4))}
+                            placeholder="e.g. 4821"
+                            maxLength={4}
+                            data-testid="input-verify-driver-license"
+                            className="h-10 font-mono tracking-widest"
                           />
-                          {selectedAppointment?.truckNumber && verifiedTruckNumber.trim() && verifiedTruckNumber.trim() !== selectedAppointment.truckNumber.trim() ? (
-                            <AlertTriangle className="h-4 w-4 text-amber-500 absolute right-2.5 top-1/2 -translate-y-1/2" />
-                          ) : selectedAppointment?.truckNumber && verifiedTruckNumber.trim() ? (
-                            <CheckCircle2 className="h-4 w-4 text-green-500 absolute right-2.5 top-1/2 -translate-y-1/2" />
-                          ) : null}
+                          <p className="text-[10px] text-muted-foreground">Last 4 digits only — do not collect full CDL number</p>
                         </div>
-                        {selectedAppointment?.truckNumber && verifiedTruckNumber.trim() && verifiedTruckNumber.trim() !== selectedAppointment.truckNumber.trim() && (
-                          <p className="text-[10px] text-amber-600">Expected: {selectedAppointment.truckNumber}</p>
-                        )}
                       </div>
+                    </div>
 
-                      {/* Trailer Number */}
-                      <div className="space-y-1.5">
-                        <Tip text="Enter the trailer number. This is automatically checked against active visits — a duplicate will block check-in.">
-                          <Label className="text-xs font-semibold cursor-help">
-                            Trailer Number *
-                            {selectedAppointment?.trailerNumber && verifiedTrailerNumber.trim() && verifiedTrailerNumber.trim() !== selectedAppointment.trailerNumber.trim() && (
-                              <span className="ml-1.5 text-amber-600">(Modified)</span>
-                            )}
-                          </Label>
-                        </Tip>
-                        <div className="relative">
+                    {/* ── Section 2: Carrier Credentials ── */}
+                    <div>
+                      <SectionHeader icon={Building2} label="Carrier Credentials" />
+                      <div className={`grid gap-4 ${tabletMode ? "grid-cols-1" : "grid-cols-2"}`}>
+                        {/* USDOT */}
+                        <div className="space-y-1.5">
+                          <Tip text="Enter the carrier's USDOT number from the truck door placard or driver paperwork for carrier identity verification">
+                            <Label className="text-xs font-semibold cursor-help">USDOT Number</Label>
+                          </Tip>
                           <Input
-                            value={verifiedTrailerNumber}
-                            onChange={(e) => setVerifiedTrailerNumber(e.target.value)}
-                            placeholder="Trailer #"
-                            data-testid="input-verify-trailer"
-                            onBlur={(e) => { if (e.target.value.trim()) checkDuplicateMutation.mutate(e.target.value.trim()); }}
-                            className={`pr-9 h-10 ${duplicateCheck?.exists ? "border-red-500 ring-1 ring-red-500" : selectedAppointment?.trailerNumber && verifiedTrailerNumber.trim() && verifiedTrailerNumber.trim() !== selectedAppointment.trailerNumber.trim() ? "border-amber-500" : ""}`}
+                            value={verifiedUsdot}
+                            onChange={(e) => setVerifiedUsdot(e.target.value)}
+                            placeholder="e.g. 1234567"
+                            data-testid="input-verify-usdot"
+                            className="h-10 font-mono"
                           />
-                          {checkDuplicateMutation.isPending ? (
-                            <div className="absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-                          ) : duplicateCheck?.exists ? (
-                            <AlertTriangle className="h-4 w-4 text-red-600 absolute right-2.5 top-1/2 -translate-y-1/2" />
-                          ) : selectedAppointment?.trailerNumber && verifiedTrailerNumber.trim() && verifiedTrailerNumber.trim() !== selectedAppointment.trailerNumber.trim() ? (
-                            <AlertTriangle className="h-4 w-4 text-amber-500 absolute right-2.5 top-1/2 -translate-y-1/2" />
-                          ) : duplicateCheck?.exists === false ? (
-                            <CheckCircle2 className="h-4 w-4 text-green-500 absolute right-2.5 top-1/2 -translate-y-1/2" />
-                          ) : null}
                         </div>
-                        {selectedAppointment?.trailerNumber && verifiedTrailerNumber.trim() && verifiedTrailerNumber.trim() !== selectedAppointment.trailerNumber.trim() && (
-                          <p className="text-[10px] text-amber-600">Expected: {selectedAppointment.trailerNumber}</p>
-                        )}
+
+                        {/* SCAC */}
+                        <div className="space-y-1.5">
+                          <Tip text="Enter the carrier's Standard Carrier Alpha Code (SCAC) — typically 2–4 letters found on shipment paperwork">
+                            <Label className="text-xs font-semibold cursor-help">SCAC Code</Label>
+                          </Tip>
+                          <Input
+                            value={verifiedScac}
+                            onChange={(e) => setVerifiedScac(e.target.value.toUpperCase())}
+                            placeholder="e.g. ODFL"
+                            maxLength={4}
+                            data-testid="input-verify-scac"
+                            className="h-10 font-mono tracking-widest"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* ── Section 3: Vehicle ── */}
+                    <div>
+                      <SectionHeader icon={Truck} label="Vehicle" />
+                      <div className={`grid gap-4 ${tabletMode ? "grid-cols-1" : "grid-cols-2"}`}>
+                        {/* Truck Number */}
+                        <div className="space-y-1.5">
+                          <Tip text="Enter the tractor/truck unit number visible on the vehicle. Mismatches flag a discrepancy for supervisor review.">
+                            <Label className="text-xs font-semibold cursor-help">
+                              Truck / Tractor Number *
+                              {selectedAppointment?.truckNumber && verifiedTruckNumber.trim() && verifiedTruckNumber.trim() !== selectedAppointment.truckNumber.trim() && (
+                                <span className="ml-1.5 text-amber-600">(Modified)</span>
+                              )}
+                            </Label>
+                          </Tip>
+                          <div className="relative">
+                            <Input
+                              value={verifiedTruckNumber}
+                              onChange={(e) => {
+                                setVerifiedTruckNumber(e.target.value);
+                                if (e.target.value.length >= 3 && e.target.value !== selectedAppointment?.truckNumber)
+                                  checkDuplicateMutation.mutate(e.target.value);
+                              }}
+                              placeholder="Tractor unit #"
+                              data-testid="input-verify-truck-number"
+                              className={`pr-9 h-10 ${selectedAppointment?.truckNumber && verifiedTruckNumber.trim() && verifiedTruckNumber.trim() !== selectedAppointment.truckNumber.trim() ? "border-amber-500" : ""}`}
+                            />
+                            {selectedAppointment?.truckNumber && verifiedTruckNumber.trim() && verifiedTruckNumber.trim() !== selectedAppointment.truckNumber.trim() ? (
+                              <AlertTriangle className="h-4 w-4 text-amber-500 absolute right-2.5 top-1/2 -translate-y-1/2" />
+                            ) : selectedAppointment?.truckNumber && verifiedTruckNumber.trim() ? (
+                              <CheckCircle2 className="h-4 w-4 text-green-500 absolute right-2.5 top-1/2 -translate-y-1/2" />
+                            ) : null}
+                          </div>
+                          {selectedAppointment?.truckNumber && verifiedTruckNumber.trim() && verifiedTruckNumber.trim() !== selectedAppointment.truckNumber.trim() && (
+                            <p className="text-[10px] text-amber-600">Expected: {selectedAppointment.truckNumber}</p>
+                          )}
+                        </div>
+
+                        {/* Trailer Number */}
+                        <div className="space-y-1.5">
+                          <Tip text="Enter the trailer number from the trailer placard. Mismatches flag a discrepancy for supervisor review.">
+                            <Label className="text-xs font-semibold cursor-help">
+                              Trailer Number *
+                              {selectedAppointment?.trailerNumber && verifiedTrailerNumber.trim() && verifiedTrailerNumber.trim() !== selectedAppointment.trailerNumber.trim() && (
+                                <span className="ml-1.5 text-amber-600">(Modified)</span>
+                              )}
+                            </Label>
+                          </Tip>
+                          <div className="relative">
+                            <Input
+                              value={verifiedTrailerNumber}
+                              onChange={(e) => {
+                                setVerifiedTrailerNumber(e.target.value);
+                                if (e.target.value.length >= 3) checkDuplicateMutation.mutate(e.target.value);
+                              }}
+                              placeholder="Trailer #"
+                              data-testid="input-verify-trailer-number"
+                              className={`pr-9 h-10 ${
+                                duplicateCheck?.exists ? "border-red-500" :
+                                selectedAppointment?.trailerNumber && verifiedTrailerNumber.trim() && verifiedTrailerNumber.trim() !== selectedAppointment.trailerNumber.trim() ? "border-amber-500" : ""
+                              }`}
+                            />
+                            {duplicateCheck?.exists ? (
+                              <AlertTriangle className="h-4 w-4 text-red-500 absolute right-2.5 top-1/2 -translate-y-1/2" />
+                            ) : selectedAppointment?.trailerNumber && verifiedTrailerNumber.trim() && verifiedTrailerNumber.trim() !== selectedAppointment.trailerNumber.trim() ? (
+                              <AlertTriangle className="h-4 w-4 text-amber-500 absolute right-2.5 top-1/2 -translate-y-1/2" />
+                            ) : selectedAppointment?.trailerNumber && verifiedTrailerNumber.trim() ? (
+                              <CheckCircle2 className="h-4 w-4 text-green-500 absolute right-2.5 top-1/2 -translate-y-1/2" />
+                            ) : null}
+                          </div>
+                          {selectedAppointment?.trailerNumber && verifiedTrailerNumber.trim() && verifiedTrailerNumber.trim() !== selectedAppointment.trailerNumber.trim() && (
+                            <p className="text-[10px] text-amber-600">Expected: {selectedAppointment.trailerNumber}</p>
+                          )}
+                          {duplicateCheck?.exists && (
+                            <p className="text-[10px] text-red-600 font-semibold">This trailer is already checked in</p>
+                          )}
+                        </div>
                       </div>
                     </div>
 
                     <div className="flex gap-3 pt-2 border-t">
-                      <Tip text="Go back to the previous step">
-                        <Button variant="outline" className="px-8" onClick={() => { setStep(selectedAppointment ? "confirm" : "search"); setActiveProcessStep(selectedAppointment ? 1 : 0); }}>
-                          Back
-                        </Button>
+                      <Tip text="Go back to appointment confirmation">
+                        <Button variant="outline" className="px-8" onClick={() => {
+                          if (selectedAppointment) { setStep("confirm"); setActiveProcessStep(1); }
+                          else handleReset();
+                        }} data-testid="button-back-verify">Back</Button>
                       </Tip>
-                      <Tip text="All details verified — proceed to record seal number, load type, and submit check-in">
-                        <Button
-                          onClick={handleVerifyProceed}
-                          className="flex-1 h-12 text-base font-semibold gap-2"
-                          data-testid="button-proceed-capture"
-                          disabled={duplicateCheck?.exists}
-                        >
-                          <Camera className="h-5 w-5" /> Continue to Capture & Assign
-                        </Button>
-                      </Tip>
+                      <Button onClick={handleVerifyProceed} className="flex-1 h-12 text-base font-semibold gap-2" data-testid="button-proceed-form">
+                        <ClipboardCheck className="h-5 w-5" /> Continue to Load Details
+                      </Button>
                     </div>
                   </CardContent>
                 </Card>
               )}
 
-              {/* ── STEP: form ───────────────────────────────────────────── */}
+              {/* ── STEP: form (Load Details) ─────────────────────────────── */}
               {step === "form" && (
                 <Card className="shadow-sm">
                   <CardHeader className="px-5 py-4 border-b">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <MapPin className="h-5 w-5 text-primary" />
+                        <ClipboardCheck className="h-5 w-5 text-primary" />
                         <div>
-                          <CardTitle className="text-base font-bold">Capture & Assign</CardTitle>
-                          <p className="text-xs text-muted-foreground mt-0.5">Record seal, load type, and finalize check-in</p>
+                          <CardTitle className="text-base font-bold">Load Details</CardTitle>
+                          <p className="text-xs text-muted-foreground mt-0.5">Record seal, conditions, and any supporting documents</p>
                         </div>
                       </div>
                       {selectedAppointment ? (
@@ -987,96 +1091,227 @@ export default function GateCheckInPage() {
                     </div>
                   </CardHeader>
                   <CardContent className="p-5">
-                    <form onSubmit={handleCheckIn} className="space-y-4">
-                      <input type="hidden" name="driverName" value={verifiedDriverName || selectedAppointment?.driverName || ""} />
-                      <input type="hidden" name="driverLicense" value={verifiedDriverLicense} />
-                      <input type="hidden" name="truckNumber" value={verifiedTruckNumber || selectedAppointment?.truckNumber || ""} />
-                      <input type="hidden" name="trailerNumber" value={verifiedTrailerNumber || selectedAppointment?.trailerNumber || ""} />
-
+                    <form onSubmit={handleCheckIn} className="space-y-6">
+                      {/* Discrepancy warning */}
                       {discrepancies.length > 0 && (
-                        <div className="rounded-xl border-2 border-amber-300 bg-amber-50 dark:bg-amber-950/40 p-4 space-y-2">
-                          <div className="flex items-center gap-2">
-                            <AlertTriangle className="h-4 w-4 text-amber-600 shrink-0" />
+                        <div className="flex items-start gap-3 rounded-xl border-2 border-amber-300 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-700 p-4" data-testid="banner-discrepancies">
+                          <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+                          <div className="space-y-1.5">
                             <p className="text-xs font-bold text-amber-800 dark:text-amber-300">
                               {discrepancies.length} discrepanc{discrepancies.length === 1 ? "y" : "ies"} detected — will be sent to supervisor for approval
                             </p>
+                            <ul className="space-y-1 pl-1">
+                              {discrepancies.map((d) => (
+                                <li key={d.field} className="text-xs text-amber-700 dark:text-amber-400">
+                                  <span className="font-semibold">{d.field}:</span>{" "}
+                                  <span className="line-through opacity-70">{d.expected}</span>
+                                  {" → "}
+                                  <span className="font-bold">{d.actual}</span>
+                                </li>
+                              ))}
+                            </ul>
                           </div>
-                          <ul className="space-y-1 pl-6">
-                            {discrepancies.map((d) => (
-                              <li key={d.field} className="text-xs text-amber-700 dark:text-amber-400">
-                                <span className="font-semibold">{d.field}:</span>{" "}
-                                <span className="line-through opacity-70">{d.expected}</span>
-                                {" → "}
-                                <span className="font-bold">{d.actual}</span>
-                              </li>
-                            ))}
-                          </ul>
                         </div>
                       )}
 
-                      {/* Seal number — highlighted */}
-                      <Tip text="Enter the physical seal number from the trailer door. This is required for chain-of-custody documentation.">
-                        <div className="rounded-xl border-2 border-primary/30 bg-primary/5 dark:bg-primary/10 p-4 space-y-2 cursor-help">
-                          <Label className="text-sm font-bold flex items-center gap-2">
-                            <Lock className="h-4 w-4 text-primary" />
-                            Seal Number
-                          </Label>
-                          <Input
-                            name="sealNumber"
-                            defaultValue={selectedAppointment?.sealNumber || ""}
-                            placeholder="Enter seal number..."
-                            className="bg-background h-10 text-base"
-                            data-testid="input-ci-seal"
-                            onClick={(e) => e.stopPropagation()}
-                          />
-                        </div>
-                      </Tip>
-
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-1.5">
-                          <Tip text="Select the type of load or movement this truck is performing at the yard">
-                            <Label className="text-xs font-semibold cursor-help">Load Type</Label>
+                      {/* ── Section 1: Seal & Movement ── */}
+                      <div>
+                        <SectionHeader icon={Lock} label="Seal & Movement" />
+                        <div className="space-y-4">
+                          {/* Seal number — highlighted */}
+                          <Tip text="Enter the physical seal number from the trailer door. Required for chain-of-custody documentation.">
+                            <div className="rounded-xl border-2 border-primary/30 bg-primary/5 dark:bg-primary/10 p-4 space-y-2 cursor-help">
+                              <Label className="text-sm font-bold flex items-center gap-2">
+                                <Lock className="h-4 w-4 text-primary" />
+                                Seal Number
+                              </Label>
+                              <Input
+                                name="sealNumber"
+                                defaultValue={selectedAppointment?.sealNumber || ""}
+                                placeholder="Enter seal number..."
+                                className="bg-background h-10 text-base font-mono"
+                                data-testid="input-ci-seal"
+                                onClick={(e) => e.stopPropagation()}
+                              />
+                            </div>
                           </Tip>
-                          <Select name="movementType" defaultValue={selectedAppointment?.movementType || "inbound"}>
-                            <SelectTrigger className="h-10" data-testid="select-ci-movement"><SelectValue /></SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="inbound">Inbound</SelectItem>
-                              <SelectItem value="outbound">Outbound</SelectItem>
-                              <SelectItem value="empty_drop">Empty Drop</SelectItem>
-                              <SelectItem value="loaded_arrival">Loaded Arrival</SelectItem>
-                              <SelectItem value="live_load">Live Load</SelectItem>
-                              <SelectItem value="live_unload">Live Unload</SelectItem>
-                            </SelectContent>
-                          </Select>
+
+                          {/* Movement type */}
+                          <div className="space-y-1.5">
+                            <Tip text="Select the type of load or movement this truck is performing at the yard">
+                              <Label className="text-xs font-semibold cursor-help">Load / Movement Type</Label>
+                            </Tip>
+                            <Select name="movementType" defaultValue={selectedAppointment?.movementType || "inbound"}>
+                              <SelectTrigger className="h-10" data-testid="select-ci-movement"><SelectValue /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="inbound">Inbound</SelectItem>
+                                <SelectItem value="outbound">Outbound</SelectItem>
+                                <SelectItem value="empty_drop">Empty Drop</SelectItem>
+                                <SelectItem value="loaded_arrival">Loaded Arrival</SelectItem>
+                                <SelectItem value="live_load">Live Load</SelectItem>
+                                <SelectItem value="live_unload">Live Unload</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
                         </div>
-                        <div className="space-y-1.5 flex flex-col justify-end">
+                      </div>
+
+                      {/* ── Section 2: Special Conditions ── */}
+                      <div>
+                        <SectionHeader icon={AlertOctagon} label="Special Conditions" />
+                        <div className="grid grid-cols-2 gap-3">
+                          {/* Hazmat toggle */}
                           <Tip text="Toggle if this trailer carries hazardous materials — triggers special handling and documentation requirements">
-                            <div className="flex items-center justify-between rounded-lg border-2 p-3 cursor-help hover:border-primary/30 transition-colors">
-                              <Label className="text-sm font-semibold flex items-center gap-2 cursor-pointer" htmlFor="hazmat-toggle">
+                            <div className={`flex items-center justify-between rounded-xl border-2 p-3.5 cursor-help transition-colors ${hazmat ? "border-red-400 bg-red-50 dark:bg-red-950/20 dark:border-red-800" : "hover:border-primary/30"}`}>
+                              <Label className="flex items-center gap-2 cursor-pointer font-semibold text-sm" htmlFor="hazmat-toggle">
                                 <AlertOctagon className={`h-4 w-4 ${hazmat ? "text-red-600" : "text-muted-foreground"}`} />
-                                Hazmat
+                                Hazmat Load
                               </Label>
                               <Switch id="hazmat-toggle" checked={hazmat} onCheckedChange={setHazmat} data-testid="switch-hazmat" />
                             </div>
                           </Tip>
+
+                          {/* Reefer toggle */}
+                          <Tip text="Toggle if this trailer is a refrigerated (reefer) unit — you will be prompted to record the set temperature">
+                            <div className={`flex items-center justify-between rounded-xl border-2 p-3.5 cursor-help transition-colors ${reeferEnabled ? "border-blue-400 bg-blue-50 dark:bg-blue-950/20 dark:border-blue-800" : "hover:border-primary/30"}`}>
+                              <Label className="flex items-center gap-2 cursor-pointer font-semibold text-sm" htmlFor="reefer-toggle">
+                                <Snowflake className={`h-4 w-4 ${reeferEnabled ? "text-blue-600" : "text-muted-foreground"}`} />
+                                Reefer Load
+                              </Label>
+                              <Switch id="reefer-toggle" checked={reeferEnabled} onCheckedChange={setReeferEnabled} data-testid="switch-reefer" />
+                            </div>
+                          </Tip>
+                        </div>
+
+                        {/* Hazmat notice */}
+                        {hazmat && (
+                          <div className="mt-3 flex items-start gap-3 rounded-xl border-2 border-red-300 bg-red-50 dark:bg-red-950/30 dark:border-red-700 p-4" data-testid="banner-hazmat-warning">
+                            <AlertOctagon className="h-5 w-5 text-red-600 dark:text-red-400 shrink-0 mt-0.5" />
+                            <p className="text-xs font-medium text-red-700 dark:text-red-300">
+                              <span className="font-bold block mb-0.5">Hazardous Materials Notice</span>
+                              This trailer will be flagged for hazmat handling. Ensure the driver has proper hazmat documentation and designated hazmat parking rules are followed.
+                            </p>
+                          </div>
+                        )}
+
+                        {/* Reefer temperature input */}
+                        {reeferEnabled && (
+                          <div className="mt-3 rounded-xl border-2 border-blue-300 bg-blue-50 dark:bg-blue-950/30 dark:border-blue-700 p-4 space-y-3" data-testid="section-reefer-temp">
+                            <div className="flex items-center gap-2">
+                              <Thermometer className="h-4 w-4 text-blue-600" />
+                              <span className="text-sm font-bold text-blue-800 dark:text-blue-300">Reefer Set Temperature</span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <Input
+                                value={reeferTemp}
+                                onChange={(e) => setReeferTemp(e.target.value)}
+                                placeholder="e.g. 34"
+                                className="bg-background h-10 w-32 font-mono text-center"
+                                data-testid="input-reefer-temp"
+                              />
+                              <span className="text-sm font-semibold text-muted-foreground">°F</span>
+                              <p className="text-xs text-blue-700 dark:text-blue-400">Verify against driver's pre-trip reefer log</p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* ── Section 3: Trailer Condition ── */}
+                      <div>
+                        <SectionHeader icon={Truck} label="Trailer Condition" />
+                        <div className="space-y-3">
+                          <div className="grid grid-cols-3 gap-2">
+                            {([
+                              { id: "good", label: "Good", color: "border-green-300 bg-green-50 text-green-800 dark:bg-green-950/20 dark:border-green-800 dark:text-green-300", activeColor: "border-green-500" },
+                              { id: "damaged", label: "Damaged", color: "border-red-300 bg-red-50 text-red-800 dark:bg-red-950/20 dark:border-red-800 dark:text-red-300", activeColor: "border-red-500" },
+                              { id: "needs_inspection", label: "Needs Inspection", color: "border-amber-300 bg-amber-50 text-amber-800 dark:bg-amber-950/20 dark:border-amber-800 dark:text-amber-300", activeColor: "border-amber-500" },
+                            ] as const).map((opt) => (
+                              <button
+                                key={opt.id}
+                                type="button"
+                                onClick={() => setTrailerCondition(opt.id)}
+                                className={`rounded-lg border-2 p-3 text-center text-xs font-semibold transition-all ${
+                                  trailerCondition === opt.id
+                                    ? `${opt.color} ${opt.activeColor} shadow-sm ring-1 ring-current`
+                                    : "border-border hover:border-muted-foreground/40 text-muted-foreground"
+                                }`}
+                                data-testid={`button-condition-${opt.id}`}
+                              >
+                                {trailerCondition === opt.id && <CheckCircle2 className="h-3.5 w-3.5 mx-auto mb-1" />}
+                                {opt.label}
+                              </button>
+                            ))}
+                          </div>
+                          {trailerCondition !== "good" && (
+                            <div className="space-y-1.5">
+                              <Label className="text-xs font-semibold">
+                                {trailerCondition === "damaged" ? "Damage Description" : "Inspection Notes"}
+                              </Label>
+                              <Input
+                                value={trailerConditionNotes}
+                                onChange={(e) => setTrailerConditionNotes(e.target.value)}
+                                placeholder={trailerCondition === "damaged" ? "Describe visible damage..." : "Describe what needs inspection..."}
+                                className="h-10"
+                                data-testid="input-condition-notes"
+                              />
+                            </div>
+                          )}
                         </div>
                       </div>
 
-                      {hazmat && (
-                        <div className="flex items-start gap-3 rounded-xl border-2 border-red-300 bg-red-50 dark:bg-red-950/30 dark:border-red-700 p-4" data-testid="banner-hazmat-warning">
-                          <AlertOctagon className="h-5 w-5 text-red-600 dark:text-red-400 shrink-0 mt-0.5" />
-                          <p className="text-xs font-medium text-red-700 dark:text-red-300">
-                            <span className="font-bold block mb-0.5">Hazardous Materials Notice</span>
-                            This trailer will be flagged for hazmat handling. Ensure the driver has proper hazmat documentation and that designated hazmat parking rules are followed.
-                          </p>
-                        </div>
-                      )}
+                      {/* ── Section 4: Documents ── */}
+                      <div>
+                        <SectionHeader icon={FileUp} label="Documents" />
+                        <input
+                          ref={bolInputRef}
+                          type="file"
+                          accept=".pdf,.jpg,.jpeg,.png"
+                          className="hidden"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) setBolFileName(file.name);
+                          }}
+                          data-testid="input-bol-file"
+                        />
+                        {bolFileName ? (
+                          <div className="flex items-center gap-3 rounded-xl border-2 border-green-300 bg-green-50 dark:bg-green-950/20 dark:border-green-800 px-4 py-3">
+                            <CheckCircle2 className="h-5 w-5 text-green-600 shrink-0" />
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-semibold text-green-800 dark:text-green-300">BOL Attached</p>
+                              <p className="text-xs text-green-700 dark:text-green-400 truncate">{bolFileName}</p>
+                            </div>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 w-8 p-0 text-green-700 hover:text-red-600"
+                              onClick={() => { setBolFileName(""); if (bolInputRef.current) bolInputRef.current.value = ""; }}
+                              data-testid="button-bol-remove"
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        ) : (
+                          <Button
+                            type="button"
+                            variant="outline"
+                            className="w-full h-12 gap-2.5 border-2 border-dashed hover:border-primary/50 hover:bg-primary/5 text-muted-foreground hover:text-foreground"
+                            onClick={() => bolInputRef.current?.click()}
+                            data-testid="button-bol-upload"
+                          >
+                            <FileUp className="h-5 w-5" />
+                            <span className="text-sm font-medium">Attach Bill of Lading (BOL)</span>
+                            <span className="text-xs opacity-60">PDF, JPG, or PNG</span>
+                          </Button>
+                        )}
+                      </div>
 
+                      {/* ── Section 5: Notes ── */}
                       <div className="space-y-1.5">
                         <Tip text="Add any gate notes, special instructions, or observations about this check-in">
-                          <Label className="text-xs font-semibold cursor-help">Notes (optional)</Label>
+                          <Label className="text-xs font-semibold cursor-help">Gate Notes (optional)</Label>
                         </Tip>
-                        <Textarea name="notes" className="resize-none h-16" placeholder="Optional notes..." data-testid="input-ci-notes" />
+                        <Textarea name="notes" className="resize-none h-16" placeholder="Optional notes for this check-in..." data-testid="input-ci-notes" />
                       </div>
 
                       <div className="flex gap-3 pt-2 border-t">
@@ -1116,6 +1351,20 @@ export default function GateCheckInPage() {
                         </div>
                         <p className="text-sm text-muted-foreground mt-2">{createdVisitCarrier} · Trailer {createdVisitTrailer}</p>
                       </div>
+
+                      {/* Quick summary badges */}
+                      <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
+                        {verifiedUsdot && <Badge variant="secondary" className="font-mono text-xs">USDOT {verifiedUsdot}</Badge>}
+                        {verifiedScac && <Badge variant="secondary" className="font-mono text-xs">SCAC {verifiedScac}</Badge>}
+                        {hazmat && <Badge variant="destructive" className="text-xs gap-1"><AlertOctagon className="h-3 w-3" /> Hazmat</Badge>}
+                        {reeferEnabled && reeferTemp && <Badge className="text-xs gap-1 bg-blue-600"><Snowflake className="h-3 w-3" /> {reeferTemp}°F</Badge>}
+                        {trailerCondition !== "good" && (
+                          <Badge variant="outline" className="text-xs border-amber-400 text-amber-700">
+                            {trailerCondition === "damaged" ? "Damaged" : "Needs Inspection"}
+                          </Badge>
+                        )}
+                        {bolFileName && <Badge variant="outline" className="text-xs gap-1"><FileUp className="h-3 w-3" /> BOL attached</Badge>}
+                      </div>
                     </div>
 
                     <div className="space-y-5">
@@ -1133,9 +1382,7 @@ export default function GateCheckInPage() {
                         }`} data-testid="workflow-step-slot">
                           <div className="flex items-center gap-3 min-w-0">
                             <div className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 text-sm font-bold ${
-                              assignedSlotInfo
-                                ? "bg-green-200 dark:bg-green-900"
-                                : "bg-blue-200 dark:bg-blue-900 text-blue-800 dark:text-blue-200"
+                              assignedSlotInfo ? "bg-green-200 dark:bg-green-900" : "bg-blue-200 dark:bg-blue-900 text-blue-800 dark:text-blue-200"
                             }`}>
                               {assignedSlotInfo ? <CheckCircle2 className="h-4 w-4 text-green-700 dark:text-green-400" /> : "1"}
                             </div>
@@ -1144,9 +1391,7 @@ export default function GateCheckInPage() {
                                 {assignedSlotInfo ? `Slot ${assignedSlotInfo.number} Assigned` : "Assign to Yard Slot"}
                               </p>
                               <p className="text-xs text-muted-foreground">
-                                {assignedSlotInfo
-                                  ? "Trailer is parked and awaiting dock assignment"
-                                  : "Park this trailer in an available yard slot"}
+                                {assignedSlotInfo ? "Trailer is parked and awaiting dock assignment" : "Park this trailer in an available yard slot"}
                               </p>
                             </div>
                           </div>
@@ -1176,9 +1421,7 @@ export default function GateCheckInPage() {
                         }`} data-testid="workflow-step-dock-move">
                           <div className="flex items-center gap-3 min-w-0">
                             <div className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 text-sm font-bold ${
-                              assignedSlotInfo
-                                ? "bg-blue-200 dark:bg-blue-900 text-blue-800 dark:text-blue-200"
-                                : "bg-muted text-muted-foreground"
+                              assignedSlotInfo ? "bg-blue-200 dark:bg-blue-900 text-blue-800 dark:text-blue-200" : "bg-muted text-muted-foreground"
                             }`}>
                               2
                             </div>
@@ -1362,79 +1605,62 @@ export default function GateCheckInPage() {
 
                 {/* List */}
                 <div className="divide-y max-h-[560px] overflow-y-auto">
-                {filteredTrucks.length === 0 ? (
-                  <div className="p-8 text-center">
-                    <Clock className="h-8 w-8 mx-auto text-muted-foreground/40 mb-2" />
-                    <p className="text-sm font-medium text-muted-foreground">No trucks match this filter</p>
-                    <button onClick={() => setListFilter("all")} className="text-xs text-primary mt-1 hover:underline">Show all</button>
-                  </div>
-                ) : (
-                  filteredTrucks.map((truck) => {
-                    const statusColors: Record<string, string> = {
-                      "Checked In":    "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300",
-                      "Arriving Soon": "bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300",
-                      "Late":          "bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300",
-                      "Cancelled":     "bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400",
-                    };
-                    const statusColor = statusColors[truck.gateStatus] ?? "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300";
-                    const isCheckedIn = truck.gateStatus === "Checked In";
-                    const isSelected = selectedTruckId === truck.id;
-
-                    return (
-                      <Tip key={truck.id} text={isCheckedIn ? "This truck is already checked in" : `Click to begin check-in for ${truck.referenceNumber} (${truck.carrierName})`}>
+                  {filteredTrucks.length === 0 ? (
+                    <div className="p-8 text-center">
+                      <Clock className="h-8 w-8 mx-auto text-muted-foreground/40 mb-2" />
+                      <p className="text-sm font-medium text-muted-foreground">No trucks match this filter</p>
+                      <button onClick={() => setListFilter("all")} className="text-xs text-primary mt-1 hover:underline">Show all</button>
+                    </div>
+                  ) : (
+                    filteredTrucks.map((truck) => {
+                      const statusColors: Record<string, string> = {
+                        "Checked In":    "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300",
+                        "Arriving Soon": "bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300",
+                        "Late":          "bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300",
+                        "Cancelled":     "bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400",
+                      };
+                      const isSelected = truck.id === selectedTruckId;
+                      const isLate = truck.gateStatus === "Late";
+                      const isCheckedIn = truck.gateStatus === "Checked In";
+                      return (
                         <div
-                          className={`group flex flex-col gap-2 px-4 py-3 transition-all ${
+                          key={truck.id}
+                          className={`px-4 py-3 transition-all cursor-pointer ${
                             isSelected
-                              ? "bg-primary/10 border-l-4 border-l-primary"
+                              ? "bg-primary/5 border-l-2 border-l-primary"
                               : isCheckedIn
-                                ? "bg-emerald-50/50 dark:bg-emerald-950/10 cursor-default opacity-70"
-                                : "bg-card hover:bg-primary/5 cursor-pointer border-l-4 border-l-transparent hover:border-l-primary/40"
+                                ? "opacity-50"
+                                : "hover:bg-muted/40"
                           }`}
                           onClick={() => !isCheckedIn && handleSelectExpected(truck)}
-                          data-testid={`card-expected-truck-${truck.id}`}
+                          data-testid={`row-expected-truck-${truck.id}`}
                         >
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                              {isSelected && <span className="h-1.5 w-1.5 rounded-full bg-primary shrink-0" />}
-                              <span className={`font-bold text-sm tracking-tight font-mono ${isSelected ? "text-primary" : ""}`}>{truck.referenceNumber}</span>
-                            </div>
-                            <div className="flex items-center gap-1.5">
-                              <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded uppercase ${
-                                truck.movementType === "outbound"
-                                  ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
-                                  : "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
-                              }`}>
-                                {truck.movementType === "outbound" ? "OUT" : "IN"}
-                              </span>
-                              <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${statusColor}`}>
-                                {truck.gateStatus}
-                              </span>
-                            </div>
+                          <div className="flex items-start justify-between gap-2 mb-1">
+                            <span className="text-sm font-bold font-mono leading-tight">{truck.referenceNumber}</span>
+                            <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded whitespace-nowrap ${statusColors[truck.gateStatus] || "bg-gray-100 text-gray-600"}`}>
+                              {truck.gateStatus}
+                            </span>
                           </div>
-                          <div className="flex items-center justify-between">
-                            <div className="min-w-0">
-                              <span className="text-xs font-medium text-foreground">{truck.carrierName}</span>
-                              {truck.trailerNumber && (
-                                <span className="text-[10px] text-muted-foreground ml-2 font-mono">#{truck.trailerNumber}</span>
-                              )}
-                            </div>
-                            <div className="flex items-center gap-1 text-[11px] text-muted-foreground shrink-0">
-                              <Clock className="h-3 w-3" />
-                              {truck.timeWindowStart}
-                            </div>
+                          <p className="text-xs text-muted-foreground truncate">{truck.carrierName}</p>
+                          <div className="flex items-center gap-2 mt-1.5">
+                            <span className="text-[11px] text-muted-foreground font-mono">{truck.trailerNumber || "—"}</span>
+                            <span className="text-muted-foreground/40">·</span>
+                            <span className={`text-[10px] font-semibold ${isLate ? "text-red-600" : "text-muted-foreground"}`}>
+                              {truck.timeWindowStart}–{truck.timeWindowEnd}
+                            </span>
+                            {truck.movementType && (
+                              <>
+                                <span className="text-muted-foreground/40">·</span>
+                                <span className={`text-[10px] font-bold px-1 rounded ${truck.movementType === "outbound" ? "bg-green-100 text-green-700" : "bg-blue-100 text-blue-700"}`}>
+                                  {truck.movementType === "outbound" ? "OUT" : "IN"}
+                                </span>
+                              </>
+                            )}
                           </div>
-                          {!isCheckedIn && (
-                            <div className="flex items-center justify-end">
-                              <span className="text-[11px] font-semibold text-primary flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                                Select to check in <ArrowRight className="h-3 w-3" />
-                              </span>
-                            </div>
-                          )}
                         </div>
-                      </Tip>
-                    );
-                  })
-                )}
+                      );
+                    })
+                  )}
                 </div>
               </Card>
             </div>
