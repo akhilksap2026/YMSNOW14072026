@@ -1,0 +1,532 @@
+1) Core business capabilities you need
+A. Appointment ingestion and normalization
+
+Vector’s facility side starts by ingesting appointments from WMS/TMS/scheduling systems so gate and driver flows are pre-populated. Their docs show CSV/SFTP ingestion every ~15 minutes, with update/cancel semantics keyed by appointment identifier.
+
+What to build in your YMS
+
+Appointment Intake Service
+Canonical Appointment Model
+Mapping/Transformation Layer from ERP/TMS/WMS formats
+Upsert + cancel processing
+Facility-specific rules engine
+
+Canonical objects
+
+Appointment
+Load / Shipment
+Facility
+Gate
+Carrier
+Driver
+Tractor
+Trailer
+Visit / Check-in session
+
+Recommended event flow
+
+AppointmentCreated
+AppointmentUpdated
+AppointmentCancelled
+ArrivalETAUpdated
+
+This becomes the source for prefilled check-in forms and assignment logic.
+
+B. Driver pre-arrival / PreCheck
+
+Vector’s PreCheck sends an SMS link before arrival, lets the driver complete check-in ahead of time, and validates driver identity using submitted driver name, CDL last 4, DOT, and carrier details. It also supports GPS ETA and temperature input for reefer loads.
+
+What to build
+
+Driver Engagement Service
+SMS / WhatsApp / mobile web flow
+Pre-arrival task completion engine
+Driver identity verification service
+Carrier trust / fraud checks
+
+Functional subfeatures
+
+Driver gets secure tokenized link
+Pre-fill appointment details
+Collect required fields:
+appointment number
+driver name
+phone
+CDL last 4
+carrier USDOT / SCAC
+tractor/trailer number
+seal number
+reefer temp, when applicable
+Track ETA and geofence arrival
+Mark status: PreChecked, Arriving, AtGate
+
+Architecture note
+Use a short-lived signed check-in token rather than login-required flow for drivers. Drivers are external users; friction kills adoption.
+
+C. Multi-mode check-in UX
+
+Vector supports guard-initiated, driver-initiated, and kiosk-initiated check-ins, all backed by mobile, SMS/mobile web, or desktop flows.
+
+What to build
+One orchestration backend, three presentation channels:
+
+Driver-initiated
+SMS link / QR code
+Mobile web app
+Optional native app
+Guard-initiated
+Guard tablet/desktop UI
+Search appointment / scan QR / lookup phone
+Assisted completion for walk-ins or exceptions
+Kiosk-initiated
+Touch UI at gate
+Multi-language workflow
+OCR/scanner/camera integrations where needed
+
+Key principle
+Do not build separate workflows per channel. Build:
+
+a shared CheckIn Workflow Engine
+a shared Task Definition Engine
+channel-specific UIs only
+
+That prevents rule duplication.
+
+D. Rules-based required task collection
+
+The Vector flow includes required tasks, optional tasks, check-in details, and gate pass issuance. Yard assignment is sent later when the facility is ready.
+
+What to build
+
+Task Orchestration Engine
+
+Examples of tasks
+
+confirm appointment
+confirm driver identity
+capture trailer number
+capture seal number
+upload BOL / POD / packing list
+temperature capture
+safety acknowledgment
+hazmat declaration
+photo capture
+trailer condition check
+customs/security questions
+
+Task engine inputs
+
+facility
+appointment type (inbound/outbound)
+load type (live/drop)
+carrier type
+commodity
+refrigerated flag
+customer-specific compliance config
+
+Task engine output
+A dynamic checklist for that visit.
+
+This is one of the most important pieces. It is what makes your check-in configurable by site instead of hardcoded.
+
+E. Facility security and fraud prevention
+
+Vector highlights FMCSA-based carrier safety/authority verification, approved-driver validation, and anti-double-brokering controls.
+
+What to build
+
+Carrier Verification Service
+Driver Identity Match Service
+Exception Review Queue
+
+Checks to support
+
+driver name vs planned driver
+phone number match
+CDL last 4 match
+carrier USDOT / SCAC match
+trailer / tractor match
+load-to-carrier authorization match
+duplicate or suspicious reassignment detection
+
+Decisioning
+
+ALLOW
+ALLOW_WITH_REVIEW
+HOLD_AT_GATE
+DENY
+F. Gate pass and access control integration
+
+Vector states it can integrate with existing gate arms through a controller, without major reconstruction.
+
+What to build
+
+Gate Control Adapter Layer
+
+Integrations
+
+gate arm controller
+intercom
+QR / barcode scanner
+ANPR / LPR camera
+badge reader / RFID
+kiosk printer
+traffic lights
+
+Architecture pattern
+Use site adapters:
+
+GateAdapterInterface
+LenelAdapter
+HIDAdapter
+PLCAdapter
+ANPRAdapter
+
+Event flow
+
+check-in approved
+gate pass generated
+gate entry authorized
+entry scan validated
+gate open command issued
+entry audit event stored
+
+Keep hardware control asynchronous and idempotent. Gate systems fail often at the edges.
+
+G. Yard assignment and movement orchestration
+
+Vector’s support docs show that after check-in, the driver can receive yard assignment and instructions; their broader yard product also emphasizes real-time dock/parking status and automated trailer assignments.
+
+What to build
+
+Door / Spot Assignment Service
+Yard State Service
+Move Instruction Service
+
+Capabilities
+
+assign staging spot / dock door
+waitlist if no door available
+live/drop routing
+dynamic reassignment
+notify driver when door becomes available
+notify spotter / yard jockey
+enforce yard rules
+
+Core data model
+
+YardSpot
+DockDoor
+ParkingZone
+MoveOrder
+TrailerPosition
+VisitState
+
+Visit states
+
+PreChecked
+GatePending
+CheckedIn
+WaitingAssignment
+AssignedToSpot
+AssignedToDoor
+Loading
+Unloading
+Completed
+CheckedOut
+H. Messaging and multilingual communication
+
+Vector’s product explicitly supports SMS-based communication and language translation between drivers and office staff.
+
+What to build
+
+Conversation Service
+Notification Service
+Translation Layer
+
+Channels
+
+SMS
+voice fallback
+WhatsApp if relevant
+email for office users
+in-app notification
+
+Use cases
+
+“Proceed to Gate B”
+“Door not ready, wait in staging”
+“Seal mismatch; report to office”
+“Exit pass ready”
+“Yard assignment changed to Door 14”
+
+This materially improves driver experience and reduces guard shack congestion.
+
+I. Digital document intake
+
+Vector supports BOL submission through SFTP/email ingestion and packaged shipment documents with JSON metadata; their mobile and deep-link flows also support document capture/prefill use cases.
+
+What to build
+
+Document Ingestion Service
+Document Store
+Document Index / Metadata Service
+OCR / extraction pipeline if needed
+
+Document sources
+
+driver mobile upload
+kiosk scanner
+guard desktop upload
+SFTP batch feeds
+email ingestion
+API ingestion
+
+Document types
+
+BOL
+POD
+packing list
+seal record
+reefer temp proof
+customs docs
+access permit
+
+Linking
+Documents should attach to:
+
+appointment
+visit
+load/shipment
+trailer
+carrier
+J. Office user authentication and RBAC
+
+Vector exposes SAML 2.0 SSO for internal users with role and location mapping.
+
+What to build
+
+Identity Federation Layer
+SAML / OIDC
+RBAC / ABAC
+site-level access partitioning
+
+Roles
+
+guard
+gate supervisor
+yard manager
+warehouse clerk
+dock coordinator
+admin
+carrier support
+security auditor
+
+Drivers should usually remain passwordless/tokenized; internal users should use enterprise SSO.
+
+K. Analytics, detention, and auditability
+
+Vector markets detention reduction, dwell-time visibility, and verifiable arrival/departure timestamps.
+
+What to build
+
+Operational Event Store
+Dwell/Detention Metrics Service
+Audit Trail Service
+
+Events to capture
+
+precheck started/completed
+geofence arrival
+at gate
+gate open
+check-in approved
+yard assignment sent
+dock arrived
+loading/unloading start/end
+checkout completed
+gate exit
+
+KPIs
+
+gate cycle time
+average check-in duration
+queue length
+dwell by carrier/facility
+detention exposure
+% prechecked
+fraud holds
+no-show / missed appointment rate
+
+Event sourcing or at least immutable operational audit logs are strongly recommended.
+
+2) Recommended target architecture for your YMS
+Logical architecture
+
+Channels
+
+Driver mobile web / SMS
+Guard desktop/tablet
+Kiosk UI
+Admin/Yard console
+Hardware devices
+
+Core application services
+
+Appointment Service
+Visit / Check-In Orchestrator
+Task Rules Engine
+Driver Engagement Service
+Carrier/Driver Verification Service
+Gate Pass Service
+Yard Assignment Service
+Messaging Service
+Document Service
+Identity/RBAC Service
+Reporting/Event Service
+
+Integration layer
+
+API Gateway
+Webhook processor
+SFTP/file ingestion
+ERP/TMS/WMS adapters
+Gate hardware adapters
+ANPR/camera adapters
+SMS provider adapter
+Translation provider adapter
+
+Storage
+
+Operational DB (Postgres/MySQL)
+Event store / append log
+Object storage for documents/images
+Cache (Redis)
+Search index for visits/docs if needed
+3) Suggested domain model
+
+Minimum entities:
+
+Facility
+Gate
+DockDoor
+YardSpot
+Appointment
+Shipment
+Load
+Visit
+Driver
+Carrier
+Tractor
+Trailer
+CheckInTask
+GatePass
+Document
+MessageThread
+VerificationResult
+MoveOrder
+
+Most YMS implementations fail here by conflating appointment, load, and visit. Keep them separate:
+
+Appointment = planned time window
+Load/Shipment = business movement
+Visit = physical trip instance at the facility
+
+That separation is essential for reschedules, walk-ins, drops, swaps, and re-check-ins.
+
+4) API contracts you should expose
+Inbound APIs
+POST /appointments
+PUT /appointments/{id}
+POST /visits/precheck
+POST /visits/{id}/tasks/{taskId}/complete
+POST /visits/{id}/documents
+POST /visits/{id}/verify
+POST /visits/{id}/assign-door
+POST /visits/{id}/issue-gate-pass
+POST /visits/{id}/checkout
+Outbound integrations
+webhooks to TMS/WMS:
+visit.checked_in
+visit.assigned
+visit.at_dock
+visit.checked_out
+visit.exception_raised
+File-based integrations
+
+Vector still leans heavily on CSV/SFTP for appointment feeds and SFTP/zip+JSON for shipment docs, so if you want enterprise adoption, support both API and file integration from day one.
+
+5) Featurewise build plan for your YMS
+Phase 1: Fastest path to parity
+Appointment ingestion
+Driver SMS/mobile web check-in
+Guard-assisted UI
+Required task engine
+Gate pass generation
+Dwell timestamping
+Basic door/spot assignment
+Audit trail
+Phase 2: Operational maturity
+Kiosk mode
+Geofence arrival
+Carrier/driver verification
+Multilingual messaging
+Document upload/capture
+Exception queue
+basic gate hardware integration
+Phase 3: Premium capability
+ANPR/LPR camera integration
+auto-open gate rules
+fraud scoring
+reefer temp compliance workflows
+advanced dock optimization
+deep-link/app integrations
+detention dispute workflow
+predictive ETA and congestion control
+6) Non-obvious design decisions
+Use workflow state machines, not just CRUD
+
+Digital check-in is a process, not a form. Use a finite-state machine or workflow engine for visit lifecycle.
+
+Make everything facility-configurable
+
+Different sites will require different tasks, identity checks, gates, and dock assignment rules.
+
+Prefer event-driven integration over synchronous coupling
+
+Gate operations, messages, dock assignment, and external system updates should be decoupled by events.
+
+External-user UX matters more than internal elegance
+
+Drivers should be able to complete most flows with:
+
+SMS
+browser
+no password
+minimal typing
+multilingual prompts
+Support both appointment-backed and walk-in visits
+
+Not every visit will have clean upstream planning data.
+
+7) My recommendation for your YMS architecture
+
+If your goal is “Vector-like digital check-in inside YMS,” I would structure it as four bounded modules:
+
+Arrival Experience
+SMS/mobile/kiosk/guard flows
+task engine
+gate pass
+Trust & Access
+driver/carrier verification
+fraud checks
+gate hardware control
+Yard Orchestration
+spot/door assignment
+movement instructions
+visit state tracking
+Integration & Visibility
+appointment ingestion
+document ingestion
+events/webhooks
+dwell/detention analytics
