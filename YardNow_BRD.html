@@ -1,0 +1,1352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>YardNow YMS — Business Requirements Document v2.0</title>
+<style>
+  :root {
+    --primary: #1d4ed8;
+    --primary-light: #dbeafe;
+    --accent: #0ea5e9;
+    --dark: #0f172a;
+    --mid: #334155;
+    --muted: #64748b;
+    --border: #e2e8f0;
+    --bg: #f8fafc;
+    --white: #ffffff;
+    --green: #16a34a;
+    --amber: #d97706;
+    --red: #dc2626;
+    --purple: #7c3aed;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    color: var(--dark);
+    background: var(--white);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* ── Cover ── */
+  .cover {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 60%, #1d4ed8 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 60px 40px;
+    page-break-after: always;
+  }
+  .cover-logo {
+    font-size: 52px;
+    font-weight: 900;
+    letter-spacing: 6px;
+    color: #fff;
+    margin-bottom: 8px;
+  }
+  .cover-logo span { color: #60a5fa; }
+  .cover-tagline {
+    font-size: 16px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: #94a3b8;
+    margin-bottom: 60px;
+  }
+  .cover-title {
+    font-size: 36px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 12px;
+    max-width: 720px;
+  }
+  .cover-subtitle {
+    font-size: 18px;
+    color: #93c5fd;
+    margin-bottom: 60px;
+  }
+  .cover-meta {
+    display: flex;
+    gap: 48px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .cover-meta-item { text-align: center; }
+  .cover-meta-item .label { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: #64748b; }
+  .cover-meta-item .value { font-size: 15px; color: #e2e8f0; font-weight: 600; margin-top: 4px; }
+  .cover-badges {
+    display: flex;
+    gap: 12px;
+    margin-top: 40px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .cover-badge {
+    padding: 6px 16px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #cbd5e1;
+  }
+
+  /* ── Page Layout ── */
+  .page { max-width: 1100px; margin: 0 auto; padding: 48px 40px; }
+  .page-break { page-break-before: always; padding-top: 48px; }
+
+  /* ── TOC ── */
+  .toc { background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 32px 40px; margin-bottom: 48px; }
+  .toc h2 { font-size: 22px; font-weight: 700; color: var(--dark); margin-bottom: 24px; padding-bottom: 12px; border-bottom: 2px solid var(--border); }
+  .toc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 48px; }
+  .toc-item { display: flex; align-items: baseline; gap: 8px; padding: 6px 0; border-bottom: 1px dotted var(--border); }
+  .toc-num { font-size: 11px; font-weight: 700; color: var(--primary); min-width: 24px; }
+  .toc-label { font-size: 13px; color: var(--mid); }
+  .toc-page { font-size: 11px; color: var(--muted); margin-left: auto; }
+
+  /* ── Section Headers ── */
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 28px;
+    padding-bottom: 14px;
+    border-bottom: 3px solid var(--primary);
+  }
+  .section-num {
+    background: var(--primary);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 800;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .section-title { font-size: 26px; font-weight: 700; color: var(--dark); }
+  .section-subtitle { font-size: 13px; color: var(--muted); margin-top: 2px; }
+
+  /* ── Sub-section ── */
+  h3 { font-size: 18px; font-weight: 700; color: var(--dark); margin: 32px 0 12px; }
+  h4 { font-size: 14px; font-weight: 700; color: var(--mid); margin: 20px 0 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+  p { margin-bottom: 12px; color: var(--mid); }
+
+  /* ── Screenshots ── */
+  .screenshot-block {
+    margin: 24px 0;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  }
+  .screenshot-block img {
+    width: 100%;
+    display: block;
+  }
+  .screenshot-caption {
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+    padding: 10px 16px;
+    font-size: 12px;
+    color: var(--muted);
+    font-style: italic;
+  }
+  .screenshot-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin: 20px 0;
+  }
+  .screenshot-grid .screenshot-block { margin: 0; }
+
+  /* ── Tables ── */
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 28px; font-size: 13px; }
+  th { background: var(--dark); color: #fff; padding: 10px 14px; text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  td { padding: 9px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr:nth-child(even) td { background: var(--bg); }
+  tr:hover td { background: var(--primary-light); }
+
+  /* Permission matrix cells */
+  .perm-yes { text-align: center; color: var(--green); font-size: 16px; font-weight: 700; }
+  .perm-no { text-align: center; color: #cbd5e1; font-size: 16px; }
+  .perm-ro { text-align: center; color: var(--amber); font-size: 12px; font-weight: 700; }
+  .perm-header { font-size: 11px; text-align: center; background: var(--primary); color: #fff; writing-mode: horizontal-tb; white-space: nowrap; padding: 10px 6px; }
+
+  /* ── Cards ── */
+  .card-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 20px 0; }
+  .card-grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin: 20px 0; }
+  .card {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px;
+    background: var(--white);
+  }
+  .card-icon { font-size: 22px; margin-bottom: 10px; }
+  .card-title { font-size: 14px; font-weight: 700; color: var(--dark); margin-bottom: 6px; }
+  .card-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+  .card-route { font-size: 11px; font-family: monospace; color: var(--primary); margin-top: 8px; background: var(--primary-light); padding: 2px 6px; border-radius: 4px; display: inline-block; }
+
+  /* ── Role Chips ── */
+  .role-chip { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; margin: 2px; }
+  .role-admin { background: #fef3c7; color: #92400e; }
+  .role-manager { background: #dbeafe; color: #1e40af; }
+  .role-guard { background: #dcfce7; color: #166534; }
+  .role-jockey { background: #f3e8ff; color: #6b21a8; }
+  .role-dock { background: #fee2e2; color: #991b1b; }
+  .role-carrier { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+
+  /* ── Badges ── */
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+  .badge-core { background: #f1f5f9; color: var(--mid); }
+  .badge-elevate { background: #dbeafe; color: #1e40af; }
+  .badge-enhanced { background: #f3e8ff; color: #6b21a8; }
+  .badge-ai { background: #ecfdf5; color: #065f46; }
+
+  /* ── User Stories ── */
+  .story {
+    border-left: 4px solid var(--primary);
+    background: var(--bg);
+    border-radius: 0 8px 8px 0;
+    padding: 14px 16px;
+    margin: 12px 0;
+  }
+  .story-id { font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .story-text { font-size: 13px; color: var(--dark); font-weight: 500; margin-bottom: 6px; }
+  .story-ac { font-size: 12px; color: var(--mid); }
+  .story-ac strong { color: var(--dark); }
+
+  /* ── Workflow Steps ── */
+  .workflow {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 16px 0 28px;
+    position: relative;
+  }
+  .workflow::before {
+    content: '';
+    position: absolute;
+    left: 19px;
+    top: 24px;
+    bottom: 24px;
+    width: 2px;
+    background: var(--border);
+  }
+  .wf-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 12px 0;
+    position: relative;
+    z-index: 1;
+  }
+  .wf-num {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .wf-num.done { background: var(--green); }
+  .wf-num.warn { background: var(--amber); }
+  .wf-num.branch { background: var(--purple); }
+  .wf-content { flex: 1; padding-top: 6px; }
+  .wf-label { font-size: 14px; font-weight: 700; color: var(--dark); }
+  .wf-desc { font-size: 12px; color: var(--muted); margin-top: 3px; }
+  .wf-roles { margin-top: 6px; }
+
+  /* ── Sitemap ── */
+  .sitemap-group { margin-bottom: 28px; }
+  .sitemap-group-title {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+    margin-bottom: 10px;
+    padding-left: 8px;
+    border-left: 3px solid var(--primary);
+  }
+  .sitemap-nodes { display: flex; flex-wrap: wrap; gap: 8px; }
+  .sitemap-node {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    background: var(--white);
+    font-size: 12px;
+  }
+  .sitemap-node-name { font-weight: 700; color: var(--dark); }
+  .sitemap-node-route { font-family: monospace; color: var(--primary); font-size: 11px; }
+  .sitemap-node-roles { margin-top: 4px; }
+
+  /* ── Info boxes ── */
+  .infobox { border-radius: 8px; padding: 14px 18px; margin: 16px 0; font-size: 13px; }
+  .infobox-blue { background: #eff6ff; border-left: 4px solid #2563eb; color: #1e40af; }
+  .infobox-green { background: #f0fdf4; border-left: 4px solid #16a34a; color: #166534; }
+  .infobox-amber { background: #fffbeb; border-left: 4px solid #d97706; color: #92400e; }
+
+  ul, ol { padding-left: 20px; margin-bottom: 12px; color: var(--mid); }
+  li { margin-bottom: 5px; }
+  code { font-family: monospace; background: var(--bg); border: 1px solid var(--border); padding: 1px 5px; border-radius: 3px; font-size: 12px; color: var(--primary); }
+
+  .divider { height: 1px; background: var(--border); margin: 32px 0; }
+
+  @media print {
+    .cover { min-height: 100vh; }
+    .page-break { page-break-before: always; }
+    body { font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<!--  COVER PAGE                                                               -->
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<div class="cover">
+  <div class="cover-logo">YARD<span>NOW</span></div>
+  <div class="cover-tagline">Yard Intelligence Platform</div>
+  <div class="cover-title">Business Requirements Document</div>
+  <div class="cover-subtitle">System Documentation, User Stories, Workflows &amp; Permission Matrix</div>
+  <div class="cover-meta">
+    <div class="cover-meta-item"><div class="label">Document Version</div><div class="value">v2.0</div></div>
+    <div class="cover-meta-item"><div class="label">Date</div><div class="value">May 2026</div></div>
+    <div class="cover-meta-item"><div class="label">Status</div><div class="value">Production Release</div></div>
+    <div class="cover-meta-item"><div class="label">Modules</div><div class="value">18 Operational</div></div>
+    <div class="cover-meta-item"><div class="label">Roles</div><div class="value">6 User Types</div></div>
+  </div>
+  <div class="cover-badges">
+    <div class="cover-badge">React + TypeScript</div>
+    <div class="cover-badge">Node.js / Express API</div>
+    <div class="cover-badge">PostgreSQL (Neon)</div>
+    <div class="cover-badge">Drizzle ORM</div>
+    <div class="cover-badge">OpenAI GPT-5.1</div>
+    <div class="cover-badge">Real-Time Operations</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<!--  PAGE 1 — TABLE OF CONTENTS                                               -->
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="toc">
+    <h2>Table of Contents</h2>
+    <div class="toc-grid">
+      <div class="toc-item"><span class="toc-num">1</span><span class="toc-label">Executive Summary</span></div>
+      <div class="toc-item"><span class="toc-num">10</span><span class="toc-label">Compliance Modules</span></div>
+      <div class="toc-item"><span class="toc-num">2</span><span class="toc-label">Product Overview &amp; Modes</span></div>
+      <div class="toc-item"><span class="toc-num">11</span><span class="toc-label">Analytics &amp; Revenue</span></div>
+      <div class="toc-item"><span class="toc-num">3</span><span class="toc-label">System Architecture</span></div>
+      <div class="toc-item"><span class="toc-num">12</span><span class="toc-label">Administration Modules</span></div>
+      <div class="toc-item"><span class="toc-num">4</span><span class="toc-label">Sitemap &amp; Navigation</span></div>
+      <div class="toc-item"><span class="toc-num">13</span><span class="toc-label">AI &amp; Email Intelligence</span></div>
+      <div class="toc-item"><span class="toc-num">5</span><span class="toc-label">User Roles &amp; Personas</span></div>
+      <div class="toc-item"><span class="toc-num">14</span><span class="toc-label">User Stories by Role</span></div>
+      <div class="toc-item"><span class="toc-num">6</span><span class="toc-label">Dashboard</span></div>
+      <div class="toc-item"><span class="toc-num">15</span><span class="toc-label">Core Operational Workflows</span></div>
+      <div class="toc-item"><span class="toc-num">7</span><span class="toc-label">Appointments Module</span></div>
+      <div class="toc-item"><span class="toc-num">16</span><span class="toc-label">Permission Matrix</span></div>
+      <div class="toc-item"><span class="toc-num">8</span><span class="toc-label">Gate Operations</span></div>
+      <div class="toc-item"><span class="toc-num">17</span><span class="toc-label">Product Mode Feature Matrix</span></div>
+      <div class="toc-item"><span class="toc-num">9</span><span class="toc-label">Yard Operations</span></div>
+      <div class="toc-item"><span class="toc-num">18</span><span class="toc-label">Glossary</span></div>
+    </div>
+  </div>
+
+  <!-- ── 1. Executive Summary ── -->
+  <div class="section-header">
+    <div class="section-num">1</div>
+    <div>
+      <div class="section-title">Executive Summary</div>
+      <div class="section-subtitle">Business context, objectives, and scope</div>
+    </div>
+  </div>
+
+  <p>YardNow is a production-grade <strong>Yard Management System (YMS)</strong> built for distribution centres, warehouses, and logistics hubs that need real-time control over inbound and outbound trailer movements. It replaces paper-based gate logs, whiteboards, and spreadsheets with a unified digital platform covering every stage of a trailer's lifecycle — from scheduled appointment through gate check-in, yard storage, dock assignment, unloading/loading, and final gate check-out.</p>
+
+  <p>The platform ships as a three-tier product (Core / Elevate / Enhanced) so customers can start with essential yard operations and progressively unlock AI-powered automation without re-implementing their workflows.</p>
+
+  <h4>Business Objectives</h4>
+  <ul>
+    <li>Reduce trailer dwell time by providing real-time slot and dock visibility</li>
+    <li>Eliminate manual gate paperwork with structured digital check-in and printed gate passes</li>
+    <li>Improve carrier compliance and on-time rates through appointment scheduling and late-arrival tracking</li>
+    <li>Prevent costly demurrage charges with detention tracking and billing events</li>
+    <li>Give management immediate operational visibility via a live dashboard and exportable reports</li>
+    <li>Enable AI-assisted dispatch, email parsing, and predictive alerts for mature deployments</li>
+  </ul>
+
+  <h4>Scope</h4>
+  <div class="card-grid">
+    <div class="card"><div class="card-icon">🚪</div><div class="card-title">Gate Operations</div><div class="card-desc">Full inbound/outbound processing: multi-step check-in, identity verification, CDL/USDOT/SCAC capture, seal logging, reefer, BOL, trailer condition, and gate-pass printing.</div></div>
+    <div class="card"><div class="card-icon">🗺️</div><div class="card-title">Yard Control</div><div class="card-desc">Interactive yard map, slot management across zones, live trailer inventory, aged-trailer alerts, and jockey move task orchestration.</div></div>
+    <div class="card"><div class="card-icon">🏭</div><div class="card-title">Dock Management</div><div class="card-desc">Kanban dock board with SLA timers, drag-and-drop status updates, and scheduling calendar for all 10 dock doors.</div></div>
+    <div class="card"><div class="card-icon">📅</div><div class="card-title">Appointments</div><div class="card-desc">Calendar and list views for scheduling inbound/outbound trailers, slot-conflict detection, and carrier notifications.</div></div>
+    <div class="card"><div class="card-icon">⚠️</div><div class="card-title">Compliance</div><div class="card-desc">Hold and exception lifecycle management, structured inspection checklists with photo evidence, and periodic yard audits.</div></div>
+    <div class="card"><div class="card-icon">🤖</div><div class="card-title">AI Intelligence</div><div class="card-desc">Streaming GPT-5.1 chat assistant, predictive congestion alerts, carrier email parsing, and automated exception flagging.</div></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<!--  PAGE 2 — PRODUCT OVERVIEW & MODES                                        -->
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<div class="page page-break">
+  <div class="section-header">
+    <div class="section-num">2</div>
+    <div>
+      <div class="section-title">Product Overview &amp; Modes</div>
+      <div class="section-subtitle">Three-tier offering — Core, Elevate, Enhanced</div>
+    </div>
+  </div>
+
+  <p>YardNow ships as a single codebase with three selectable product modes stored in <code>localStorage</code> (key: <code>ymsnow_product_mode</code>). The active mode is displayed in the top navigation bar and can be switched at any time by an Admin. Feature flags gate AI-only capabilities so that Core customers never see unactivated surfaces.</p>
+
+  <table>
+    <tr>
+      <th style="width:16%">Mode</th>
+      <th>Description</th>
+      <th style="width:28%">Key Differentiators</th>
+      <th style="width:18%">Target Customer</th>
+    </tr>
+    <tr>
+      <td><span class="badge badge-core">Core</span></td>
+      <td>Full manual yard operations. Every workflow is explicit and human-driven. No AI involvement in any decision.</td>
+      <td>Gate ops, yard map, dock kanban, appointments, inspections, reports, audit log</td>
+      <td>Small–mid DCs, compliance-sensitive facilities</td>
+    </tr>
+    <tr>
+      <td><span class="badge badge-elevate">Elevate</span></td>
+      <td>Core operations plus AI copilot assist surfaces embedded in the key screens.</td>
+      <td>Dashboard AI brief, dock/appointment assist panels, smart suggestions inline, AI chat</td>
+      <td>Growing DCs wanting AI guidance without full automation</td>
+    </tr>
+    <tr>
+      <td><span class="badge badge-enhanced">Enhanced</span></td>
+      <td>Full AI orchestration layer — proactive alerts, email intelligence, predictive congestion, and revenue intelligence.</td>
+      <td>All Elevate features + email parsing, ROI panel, automated exception creation, lifecycle video</td>
+      <td>Enterprise DCs, 3PLs, high-volume cross-dock facilities</td>
+    </tr>
+  </table>
+
+  <div class="infobox infobox-blue">
+    <strong>Tablet Mode:</strong> All major pages support a 10-inch tablet layout activated by the <strong>Tablet</strong> button in the top bar or via URL parameter <code>?tablet=1</code>. This optimises form grids, font sizes, and hit targets for handheld use at the gate or dock.
+  </div>
+
+  <!-- ── 3. Architecture ── -->
+  <div class="section-header" style="margin-top:48px">
+    <div class="section-num">3</div>
+    <div>
+      <div class="section-title">System Architecture</div>
+      <div class="section-subtitle">Technology stack, data flow, and deployment topology</div>
+    </div>
+  </div>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-title">Frontend (Port 5000)</div>
+      <div class="card-desc">React 18 + TypeScript, Vite build, TailwindCSS + shadcn/ui components, TanStack Query for server state, Wouter for routing, Recharts for analytics visualisations, dnd-kit for drag-and-drop dock management.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">API Server (Port 8080)</div>
+      <div class="card-desc">Node.js + Express, fully TypeScript. Drizzle ORM over PostgreSQL. All CRUD via REST endpoints under <code>/api/*</code>. Vite proxies frontend <code>/api</code> calls to port 8080. SSE streaming endpoint for AI chat at <code>/api/assistant/chat</code>.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Database (Neon PostgreSQL)</div>
+      <div class="card-desc">Serverless Neon PostgreSQL with auto-suspend. Production and development share the same schema (Drizzle migrations). 18 core tables. Connection pool configured with 15s timeout and 60s idle keepalive to handle endpoint wake-up.</div>
+    </div>
+  </div>
+
+  <table>
+    <tr><th>Layer</th><th>Technology</th><th>Key Libraries</th></tr>
+    <tr><td>Frontend UI</td><td>React 18, TypeScript, Vite 7</td><td>shadcn/ui, TailwindCSS, Lucide Icons, Recharts, dnd-kit</td></tr>
+    <tr><td>State / Data</td><td>TanStack Query v5</td><td>React Query, Axios-free (native fetch via <code>apiRequest</code>)</td></tr>
+    <tr><td>Routing</td><td>Wouter (lightweight React router)</td><td>RoleGuard HOC for per-route access control</td></tr>
+    <tr><td>Backend</td><td>Express 4, Node.js 20, tsx</td><td>cors, compression, zod validation</td></tr>
+    <tr><td>ORM / Database</td><td>Drizzle ORM, PostgreSQL 15</td><td>pg driver, @neondatabase/serverless (production)</td></tr>
+    <tr><td>AI</td><td>OpenAI GPT-5.1</td><td>Replit AI Integrations (managed key), SSE streaming</td></tr>
+    <tr><td>Deployment</td><td>Replit Cloud (pnpm monorepo)</td><td>Neon serverless DB, auto-HTTPS, custom domain support</td></tr>
+  </table>
+
+  <h4>Monorepo Workspace Layout</h4>
+  <table>
+    <tr><th>Package</th><th>Path</th><th>Purpose</th></tr>
+    <tr><td><code>@workspace/yms</code></td><td><code>replit/artifacts/yms/</code></td><td>React frontend application</td></tr>
+    <tr><td><code>@workspace/api-server</code></td><td><code>replit/artifacts/api-server/</code></td><td>Express REST API server</td></tr>
+    <tr><td><code>@workspace/db</code></td><td><code>replit/lib/db/</code></td><td>Drizzle schema, migrations, shared types</td></tr>
+    <tr><td><code>@workspace/mockup-sandbox</code></td><td><code>replit/artifacts/mockup-sandbox/</code></td><td>Isolated component preview server (Vite port 8081)</td></tr>
+  </table>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<!--  PAGE 3 — SITEMAP                                                         -->
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<div class="page page-break">
+  <div class="section-header">
+    <div class="section-num">4</div>
+    <div>
+      <div class="section-title">Sitemap &amp; Navigation</div>
+      <div class="section-subtitle">All routes, access rules, and sidebar groups</div>
+    </div>
+  </div>
+
+  <div class="sitemap-group">
+    <div class="sitemap-group-title">Public / Pre-Auth</div>
+    <div class="sitemap-nodes">
+      <div class="sitemap-node"><div class="sitemap-node-name">Login</div><div class="sitemap-node-route">/</div><div class="sitemap-node-roles"><span class="role-chip role-carrier">All visitors</span></div></div>
+      <div class="sitemap-node"><div class="sitemap-node-name">Carrier Portal</div><div class="sitemap-node-route">/portal</div><div class="sitemap-node-roles"><span class="role-chip role-carrier">Carriers</span></div></div>
+      <div class="sitemap-node"><div class="sitemap-node-name">Lifecycle Video</div><div class="sitemap-node-route">/video</div><div class="sitemap-node-roles"><span class="role-chip role-carrier">Public</span></div></div>
+    </div>
+  </div>
+
+  <div class="sitemap-group">
+    <div class="sitemap-group-title">Dashboard</div>
+    <div class="sitemap-nodes">
+      <div class="sitemap-node"><div class="sitemap-node-name">Dashboard</div><div class="sitemap-node-route">/</div><div class="sitemap-node-roles"><span class="role-chip role-admin">Admin</span><span class="role-chip role-manager">Manager</span><span class="role-chip role-guard">Guard</span><span class="role-chip role-jockey">Jockey</span><span class="role-chip role-dock">Dock</span></div></div>
+    </div>
+  </div>
+
+  <div class="sitemap-group">
+    <div class="sitemap-group-title">Operations</div>
+    <div class="sitemap-nodes">
+      <div class="sitemap-node"><div class="sitemap-node-name">Appointments</div><div class="sitemap-node-route">/appointments</div><div class="sitemap-node-roles"><span class="role-chip role-admin">Admin</span><span class="role-chip role-manager">Manager</span></div></div>
+      <div class="sitemap-node"><div class="sitemap-node-name">Gate Check-In</div><div class="sitemap-node-route">/gate/check-in</div><div class="sitemap-node-roles"><span class="role-chip role-admin">Admin</span><span class="role-chip role-manager">Manager</span><span class="role-chip role-guard">Guard</span></div></div>
+      <div class="sitemap-node"><div class="sitemap-node-name">Gate Check-Out</div><div class="sitemap-node-route">/gate/check-out</div><div class="sitemap-node-roles"><span class="role-chip role-admin">Admin</span><span class="role-chip role-manager">Manager</span><span class="role-chip role-guard">Guard</span></div></div>
+      <div class="sitemap-node"><div class="sitemap-node-name">Guard Mode</div><div class="sitemap-node-route">/gate/guard-mode</div><div class="sitemap-node-roles"><span class="role-chip role-admin">Admin</span><span class="role-chip role-manager">Manager</span><span class="role-chip role-guard">Guard</span></div></div>
+      <div class="sitemap-node"><div class="sitemap-node-name">Yard Inventory</div><div class="sitemap-node-route">/yard/inventory</div><div class="sitemap-node-roles"><span class="role-chip role-admin">Admin</span><span class="role-chip role-manager">Manager</span><span class="role-chip role-guard">Guard</span><span class="role-chip role-jockey">Jockey</span><span class="role-chip role-dock">Dock</span></div></div>
+      <div class="sitemap-node"><div class="sitemap-node-name">Yard Map</div><div class="sitemap-node-route">/yard/map</div><div class="sitemap-node-roles"><span class="role-chip role-admin">Admin</span><span class="role-chip role-manager">Manager</span><span class="role-chip role-jockey">Jockey</span></div></div>
+      <div class="sitemap-node"><div class="sitemap-node-name">Dock Management</div><div class="sitemap-node-route">/dock</div><div class="sitemap-node-roles"><span class="role-chip role-admin">Admin</span><span class="role-chip role-manager">Manager</span><span class="role-chip role-dock">Dock</span></div></div>
+      <div class="sitemap-node"><div class="sitemap-node-name">Yard Moves</div><div class="sitemap-node-route">/moves</div><div class="sitemap-node-roles"><span class="role-chip role-admin">Admin</span><span class="role-chip role-manager">Manager</span><span class="role-chip role-jockey">Jockey</span></div></div>
+    </div>
+  </div>
+
+  <div class="sitemap-group">
+    <div class="sitemap-group-title">Compliance</div>
+    <div class="sitemap-nodes">
+      <div class="sitemap-node"><div class="sitemap-node-name">Holds &amp; Exceptions</div><div class="sitemap-node-route">/exceptions</div><div class="sitemap-node-roles"><span class="role-chip role-admin">Admin</span><span class="role-chip role-manager">Manager</span></div></div>
+      <div class="sitemap-node"><div class="sitemap-node-name">Inspections</div><div class="sitemap-node-route">/inspections</div><div class="sitemap-node-roles"><span class="role-chip role-admin">Admin</span><span class="role-chip role-manager">Manager</span><span class="role-chip role-guard">Guard</span><span class="role-chip role-dock">Dock</span></div></div>
+      <div class="sitemap-node"><div class="sitemap-node-name">Yard Audit</div><div class="sitemap-node-route">/yard/audit</div><div class="sitemap-node-roles"><span class="role-chip role-admin">Admin</span><span class="role-chip role-manager">Manager</span></div></div>
+    </div>
+  </div>
+
+  <div class="sitemap-group">
+    <div class="sitemap-group-title">Analytics</div>
+    <div class="sitemap-nodes">
+      <div class="sitemap-node"><div class="sitemap-node-name">Reports &amp; Analytics</div><div class="sitemap-node-route">/reports</div><div class="sitemap-node-roles"><span class="role-chip role-admin">Admin</span><span class="role-chip role-manager">Manager</span></div></div>
+      <div class="sitemap-node"><div class="sitemap-node-name">Revenue Intelligence</div><div class="sitemap-node-route">/revenue</div><div class="sitemap-node-roles"><span class="role-chip role-admin">Admin</span><span class="role-chip role-manager">Manager</span></div></div>
+      <div class="sitemap-node"><div class="sitemap-node-name">Notifications</div><div class="sitemap-node-route">/notifications</div><div class="sitemap-node-roles"><span class="role-chip role-admin">Admin</span><span class="role-chip role-manager">Manager</span><span class="role-chip role-guard">Guard</span><span class="role-chip role-jockey">Jockey</span><span class="role-chip role-dock">Dock</span></div></div>
+    </div>
+  </div>
+
+  <div class="sitemap-group">
+    <div class="sitemap-group-title">Administration</div>
+    <div class="sitemap-nodes">
+      <div class="sitemap-node"><div class="sitemap-node-name">Carrier Management</div><div class="sitemap-node-route">/admin/carriers</div><div class="sitemap-node-roles"><span class="role-chip role-admin">Admin</span><span class="role-chip role-manager">Manager</span></div></div>
+      <div class="sitemap-node"><div class="sitemap-node-name">Yard Setup</div><div class="sitemap-node-route">/admin/yard-setup</div><div class="sitemap-node-roles"><span class="role-chip role-admin">Admin only</span></div></div>
+      <div class="sitemap-node"><div class="sitemap-node-name">User Management</div><div class="sitemap-node-route">/admin/users</div><div class="sitemap-node-roles"><span class="role-chip role-admin">Admin only</span></div></div>
+      <div class="sitemap-node"><div class="sitemap-node-name">Audit Log</div><div class="sitemap-node-route">/admin/audit</div><div class="sitemap-node-roles"><span class="role-chip role-admin">Admin</span><span class="role-chip role-manager">Manager</span></div></div>
+      <div class="sitemap-node"><div class="sitemap-node-name">Email Intelligence</div><div class="sitemap-node-route">/email-intelligence</div><div class="sitemap-node-roles"><span class="role-chip role-admin">Admin</span><span class="role-chip role-manager">Manager</span><span class="badge badge-ai">Enhanced</span></div></div>
+      <div class="sitemap-node"><div class="sitemap-node-name">AI Configuration</div><div class="sitemap-node-route">/admin/ai-config</div><div class="sitemap-node-roles"><span class="role-chip role-admin">Admin only</span></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<!--  PAGE 4 — USER ROLES                                                      -->
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<div class="page page-break">
+  <div class="section-header">
+    <div class="section-num">5</div>
+    <div>
+      <div class="section-title">User Roles &amp; Personas</div>
+      <div class="section-subtitle">Six system roles with distinct access levels and daily workflows</div>
+    </div>
+  </div>
+
+  <div class="screenshot-block">
+    <img src="screenshots/18-admin-users.jpg" alt="User Management screen" />
+    <div class="screenshot-caption">Fig 5.1 — User Management: role assignment and active status for all facility staff.</div>
+  </div>
+
+  <table>
+    <tr>
+      <th style="width:15%">Role</th>
+      <th style="width:20%">Persona</th>
+      <th>Primary Responsibilities</th>
+      <th style="width:18%">System ID</th>
+    </tr>
+    <tr>
+      <td><span class="role-chip role-admin">Admin</span></td>
+      <td>Yard Manager / IT Admin</td>
+      <td>Full system access. Configures zones, dock doors, gates, users, AI settings. Resolves critical exceptions. Manages carriers and rate tables.</td>
+      <td><code>admin</code></td>
+    </tr>
+    <tr>
+      <td><span class="role-chip role-manager">Yard Manager</span></td>
+      <td>Operations Supervisor</td>
+      <td>Monitors real-time yard state via dashboard and yard map. Approves exceptions. Manages appointments, reports, and carrier performance.</td>
+      <td><code>yard_manager</code></td>
+    </tr>
+    <tr>
+      <td><span class="role-chip role-guard">Gate Guard</span></td>
+      <td>Security / Gate Operator</td>
+      <td>Processes inbound and outbound gate transactions. Verifies driver identity and credentials. Issues gate passes. Auto-redirected to Guard Mode on login.</td>
+      <td><code>gate_guard</code></td>
+    </tr>
+    <tr>
+      <td><span class="role-chip role-jockey">Yard Jockey</span></td>
+      <td>Spotter / Switcher Driver</td>
+      <td>Executes move tasks from the Yard Moves queue. Views yard map and slot positions to locate trailers. Updates move task status.</td>
+      <td><code>yard_jockey</code></td>
+    </tr>
+    <tr>
+      <td><span class="role-chip role-dock">Dock User</span></td>
+      <td>Dock Operator / Forklift Op</td>
+      <td>Manages dock door status via the Kanban board. Records loading/unloading start and completion. Initiates inspections and flags damage.</td>
+      <td><code>dock_user</code></td>
+    </tr>
+    <tr>
+      <td><span class="role-chip role-carrier">Carrier</span></td>
+      <td>Trucking Company Rep</td>
+      <td>External portal access only. Views own appointment schedule and trailer status. Cannot access internal operational screens.</td>
+      <td><code>carrier</code></td>
+    </tr>
+  </table>
+
+  <h3>Demo Persona Roster (Seed Data)</h3>
+  <table>
+    <tr><th>Name</th><th>Email</th><th>Role</th><th>Notes</th></tr>
+    <tr><td>Sandra Mitchell</td><td>s.mitchell@ymsnow.com</td><td><span class="role-chip role-admin">Admin</span></td><td>Default admin persona</td></tr>
+    <tr><td>Robert Chen</td><td>r.chen@ymsnow.com</td><td><span class="role-chip role-manager">Yard Manager</span></td><td>Operations supervisor</td></tr>
+    <tr><td>Maria Gonzalez</td><td>m.gonzalez@ymsnow.com</td><td><span class="role-chip role-guard">Gate Guard</span></td><td>Auto-routes to Guard Mode</td></tr>
+    <tr><td>Jamal Williams</td><td>j.williams@ymsnow.com</td><td><span class="role-chip role-guard">Gate Guard</span></td><td>Secondary guard</td></tr>
+    <tr><td>DeShawn Carter</td><td>d.carter@ymsnow.com</td><td><span class="role-chip role-jockey">Yard Jockey</span></td><td>Primary spotter</td></tr>
+    <tr><td>Jose Martinez</td><td>j.martinez@ymsnow.com</td><td><span class="role-chip role-jockey">Yard Jockey</span></td><td>Secondary spotter</td></tr>
+    <tr><td>Kevin O'Malley</td><td>k.omalley@ymsnow.com</td><td><span class="role-chip role-dock">Dock User</span></td><td>Dock operator</td></tr>
+    <tr><td>Lisa Park</td><td>l.park@ymsnow.com</td><td><span class="role-chip role-dock">Dock User</span></td><td>Dock operator</td></tr>
+  </table>
+  <div class="infobox infobox-amber"><strong>Demo Credential:</strong> All personas share the PIN <strong>12345</strong> in the development/demo environment.</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<!--  MODULES — DASHBOARD                                                      -->
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<div class="page page-break">
+  <div class="section-header">
+    <div class="section-num">6</div>
+    <div>
+      <div class="section-title">Dashboard</div>
+      <div class="section-subtitle">Route: / &nbsp;|&nbsp; Roles: All authenticated</div>
+    </div>
+  </div>
+  <div class="screenshot-block">
+    <img src="screenshots/01-dashboard.jpg" alt="Dashboard" />
+    <div class="screenshot-caption">Fig 6.1 — Operational Dashboard: live KPIs, action-required panel, revenue intelligence snippet, and product-mode banner.</div>
+  </div>
+  <h3>Purpose</h3>
+  <p>The Dashboard is the home screen for all authenticated users. It provides an at-a-glance operational overview of the entire facility — current yard inventory count, dock utilisation %, active holds, aged trailers, overdue moves, and units ready for outbound departure. The content adapts based on the active product mode: Core shows manual metrics only; Elevate and Enhanced add an AI summary brief and ROI panel.</p>
+  <h3>Key Components</h3>
+  <ul>
+    <li><strong>Operational Overview KPIs:</strong> Yard Inventory count, Utilisation %, On Hold count, Aged Trailers (24h+), Overdue Moves, Ready Out</li>
+    <li><strong>Revenue Intelligence Snippet:</strong> Collapse/expand section with today's revenue and pending billing events</li>
+    <li><strong>Action Required Panel:</strong> Prioritised list of items needing immediate attention (holds, escalated moves, unresolved exceptions)</li>
+    <li><strong>Product Mode Banner:</strong> Dismissable onboarding card describing the active tier's capabilities</li>
+    <li><strong>AI Assist Summary (Elevate/Enhanced):</strong> GPT-generated operational brief with top recommendations</li>
+  </ul>
+</div>
+
+<!-- ── Appointments ── -->
+<div class="page page-break">
+  <div class="section-header">
+    <div class="section-num">7</div>
+    <div>
+      <div class="section-title">Appointments</div>
+      <div class="section-subtitle">Route: /appointments &nbsp;|&nbsp; Roles: Admin, Yard Manager</div>
+    </div>
+  </div>
+  <div class="screenshot-block">
+    <img src="screenshots/09-appointments.jpg" alt="Appointments calendar view" />
+    <div class="screenshot-caption">Fig 7.1 — Appointments: weekly calendar view with colour-coded movement types and slot-conflict detection.</div>
+  </div>
+  <h3>Purpose</h3>
+  <p>The Appointments module manages the full schedule of expected trailer arrivals and departures. Carriers and yard managers can create, edit, and cancel appointments. The system auto-detects slot conflicts and surfaces late or no-show appointments for exception handling.</p>
+  <h3>Key Features</h3>
+  <ul>
+    <li><strong>Views:</strong> Calendar (Day / Week / Month) and List view with status filter tabs (All, Today, Late, No-Show, Confirmed, Cancelled)</li>
+    <li><strong>Movement Types:</strong> Inbound, Outbound, Empty Drop, Loaded Arrival, Live Load, Live Unload — each colour-coded on the calendar</li>
+    <li><strong>Slot Conflict Detection:</strong> Yellow dot indicator when two appointments share the same dock/slot window</li>
+    <li><strong>Status KPIs:</strong> Today, Late, No Show, Confirmed, Cancelled counts updated in real time</li>
+    <li><strong>Create Appointment:</strong> Form for reference #, carrier, trailer #, driver, time window, movement type</li>
+  </ul>
+  <h3>Status Lifecycle</h3>
+  <table>
+    <tr><th>Status</th><th>Trigger</th><th>Next State</th></tr>
+    <tr><td>Scheduled</td><td>Appointment created</td><td>Confirmed, Cancelled</td></tr>
+    <tr><td>Confirmed</td><td>Carrier confirms via portal or manager confirms</td><td>Checked In (gate), No Show, Cancelled</td></tr>
+    <tr><td>Checked In</td><td>Gate check-in completed</td><td>Completed</td></tr>
+    <tr><td>Late</td><td>System detects arrival past time window end</td><td>Checked In (with exception), No Show</td></tr>
+    <tr><td>No Show</td><td>Manual flag or end-of-day automation</td><td>Cancelled</td></tr>
+    <tr><td>Cancelled</td><td>Manual cancellation</td><td>Terminal</td></tr>
+  </table>
+</div>
+
+<!-- ── Gate Operations ── -->
+<div class="page page-break">
+  <div class="section-header">
+    <div class="section-num">8</div>
+    <div>
+      <div class="section-title">Gate Operations</div>
+      <div class="section-subtitle">Routes: /gate/check-in, /gate/check-out, /gate/guard-mode &nbsp;|&nbsp; Roles: Admin, Yard Manager, Gate Guard</div>
+    </div>
+  </div>
+
+  <div class="screenshot-grid">
+    <div class="screenshot-block">
+      <img src="screenshots/02-gate-checkin.jpg" alt="Gate Check-In" />
+      <div class="screenshot-caption">Fig 8.1 — Gate Check-In: 5-step process with search, identity verification, and load details capture.</div>
+    </div>
+    <div class="screenshot-block">
+      <img src="screenshots/03-gate-checkout.jpg" alt="Gate Check-Out" />
+      <div class="screenshot-caption">Fig 8.2 — Gate Check-Out: 4-step exit process with clearance check and exit pass.</div>
+    </div>
+  </div>
+
+  <div class="screenshot-block" style="max-width:600px">
+    <img src="screenshots/04-guard-mode.jpg" alt="Guard Mode" />
+    <div class="screenshot-caption">Fig 8.3 — Guard Mode: full-screen simplified interface optimised for gate kiosk stations.</div>
+  </div>
+
+  <h3>Gate Check-In — 5-Step Process</h3>
+  <div class="workflow">
+    <div class="wf-step">
+      <div class="wf-num">1</div>
+      <div class="wf-content">
+        <div class="wf-label">Find Visit</div>
+        <div class="wf-desc">Search by appointment #, trailer #, or driver name. Select from results or initiate an Unscheduled Arrival (Walk-In).</div>
+      </div>
+    </div>
+    <div class="wf-step">
+      <div class="wf-num">2</div>
+      <div class="wf-content">
+        <div class="wf-label">Verify Identity</div>
+        <div class="wf-desc">Three sections: <strong>Driver Identity</strong> (name + CDL last 4), <strong>Carrier Credentials</strong> (USDOT + SCAC), <strong>Vehicle</strong> (truck # + trailer # with mismatch detection). Discrepancies auto-create exceptions.</div>
+      </div>
+    </div>
+    <div class="wf-step">
+      <div class="wf-num">3</div>
+      <div class="wf-content">
+        <div class="wf-label">Load Details</div>
+        <div class="wf-desc">Five sections: Seal &amp; Movement type, Special Conditions (Hazmat toggle + Reefer toggle with °F input), Trailer Condition (Good/Damaged/Needs Inspection), Documents (BOL PDF/JPG/PNG upload), and optional Gate Notes.</div>
+      </div>
+    </div>
+    <div class="wf-step">
+      <div class="wf-num">4</div>
+      <div class="wf-content">
+        <div class="wf-label">Assign or Hold</div>
+        <div class="wf-desc">After successful check-in, assign trailer to available yard slot or place a hold (Documentation, Security, Damage, Seal Mismatch, Driver Issue, Customs).</div>
+      </div>
+    </div>
+    <div class="wf-step wf-num done">
+      <div class="wf-num done">✓</div>
+      <div class="wf-content">
+        <div class="wf-label">Gate Pass</div>
+        <div class="wf-desc">Print official gate pass with visit number, carrier, driver, trailer/truck numbers, movement type, check-in time, and any supplemental data (USDOT, SCAC, reefer temp, condition, BOL). Guards and driver sign.</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Gate Check-Out — 4-Step Process</h3>
+  <div class="workflow">
+    <div class="wf-step"><div class="wf-num">1</div><div class="wf-content"><div class="wf-label">Find Visit</div><div class="wf-desc">Search by visit #, trailer #, or truck #. QR code scan available.</div></div></div>
+    <div class="wf-step"><div class="wf-num">2</div><div class="wf-content"><div class="wf-label">Verify Unit</div><div class="wf-desc">Confirm trailer and truck numbers match the visit record. Check Ready Out status.</div></div></div>
+    <div class="wf-step"><div class="wf-num">3</div><div class="wf-content"><div class="wf-label">Check Clearance</div><div class="wf-desc">System checks for active holds, pending inspections, and documentation status. Blocks exit if hold exists.</div></div></div>
+    <div class="wf-step"><div class="wf-num done">✓</div><div class="wf-content"><div class="wf-label">Exit Pass</div><div class="wf-desc">Mark visit as exited, generate exit pass, update yard inventory count. Triggers billing events for detention if applicable.</div></div></div>
+  </div>
+
+  <h3>Special Features</h3>
+  <table>
+    <tr><th>Feature</th><th>Description</th></tr>
+    <tr><td>Fast Lane Mode</td><td>Bypasses verification steps for known expected arrivals — guard clicks one truck from the right-panel list to instant-check-in.</td></tr>
+    <tr><td>Guard Mode</td><td>Full-screen black-themed kiosk interface. Auto-activated for <code>gate_guard</code> role on first login per session. Stripped of all navigation.</td></tr>
+    <tr><td>Duplicate Check</td><td>Real-time API call checks if trailer # is already checked in. Blocks re-entry with red badge and link to existing visit.</td></tr>
+    <tr><td>Late Arrival Detection</td><td>If appointment time window has passed, amber warning shown and a <em>Late Arrival</em> exception is auto-created on check-in submit.</td></tr>
+    <tr><td>Discrepancy Exceptions</td><td>If guard changes driver name, truck #, or trailer # from the appointment record, a <em>Manual Modification</em> exception is auto-created for supervisor review.</td></tr>
+    <tr><td>Expected Today Panel</td><td>Right-hand side panel with live list of today's expected arrivals filtered by All / Pending / Late / Checked In. Clicking a row pre-fills the search.</td></tr>
+  </table>
+</div>
+
+<!-- ── Yard Operations ── -->
+<div class="page page-break">
+  <div class="section-header">
+    <div class="section-num">9</div>
+    <div>
+      <div class="section-title">Yard Operations</div>
+      <div class="section-subtitle">Inventory, Map, Dock Management, and Yard Moves</div>
+    </div>
+  </div>
+
+  <div class="screenshot-grid">
+    <div class="screenshot-block">
+      <img src="screenshots/05-yard-inventory.jpg" alt="Yard Inventory" />
+      <div class="screenshot-caption">Fig 9.1 — Yard Inventory: live trailer list with status, location, carrier, dwell time, and next-step actions.</div>
+    </div>
+    <div class="screenshot-block">
+      <img src="screenshots/06-yard-map.jpg" alt="Yard Map" />
+      <div class="screenshot-caption">Fig 9.2 — Yard Map: interactive SVG-based map showing all zones, slots, dock doors, and gate status.</div>
+    </div>
+  </div>
+
+  <div class="screenshot-grid">
+    <div class="screenshot-block">
+      <img src="screenshots/07-dock-management.jpg" alt="Dock Management" />
+      <div class="screenshot-caption">Fig 9.3 — Dock Management: Kanban board (Available → At Dock → Loading → Unloading → Complete) with SLA timers.</div>
+    </div>
+    <div class="screenshot-block">
+      <img src="screenshots/08-move-tasks.jpg" alt="Yard Moves" />
+      <div class="screenshot-caption">Fig 9.4 — Yard Moves: jockey task queue with assignment, in-progress, priority, and overdue counts.</div>
+    </div>
+  </div>
+
+  <h3>Yard Inventory</h3>
+  <p>Live table of all trailers currently in the yard. Columns: Visit #, Trailer #, Carrier, Location (zone + slot/dock), Status, Time on Yard, Last Update, Next Step quick action. Status badge shows In Yard, At Dock, Unloading, Loading, On Hold, Ready Out. Aged trailers (24h+) flagged in red. Group-by-Status toggle collapses rows into visual buckets. Alert chips at top surface holds, aged counts, and trailers awaiting slot assignment.</p>
+
+  <h3>Yard Map</h3>
+  <p>Interactive SVG canvas showing the physical facility layout. Zones are colour-coded: Staging Area A (inbound), Staging Area B (outbound), Reefer Yard, Hazmat Isolation, Parking Lot C. Each slot shows trailer SCAC code when occupied. Left sidebar shows operational queue sorted by time-on-yard. Top bar filters by zone, movement type, and status. Filter, zoom in/out, and fullscreen controls. Legend panel describes colour scheme.</p>
+
+  <h3>Dock Management</h3>
+  <p>Kanban board with 10 dock doors across 5 columns (Available, At Dock, Loading, Unloading, Completed). Each card shows trailer #, carrier, movement type, and SLA timer coloured green (on time), amber (at risk 2h+), red (over SLA 4h+). Critical-breached cards display a red "SLA Breach — Escalation Required" banner. Drag-and-drop cards between columns to update door status. Schedule view alternative to Kanban. 40% utilisation KPI shown in header.</p>
+
+  <h3>Yard Moves</h3>
+  <p>Task management console for yard jockeys. KPI strip shows Unassigned, Assigned, In Progress, High Priority, Overdue, and Completed Today counts. Tasks can be filtered by status tab and searched by trailer/carrier/jockey. Cards show move type, trailer, from/to location, priority level, and elapsed time. Jockey Workload section collapses/expands per-driver task lists. Managers can create moves manually via "+ Create Move" button.</p>
+
+  <h3>Yard Zone Configuration (Seed Data)</h3>
+  <table>
+    <tr><th>Zone</th><th>Code</th><th>Type</th><th>Total Slots</th><th>Description</th></tr>
+    <tr><td>Hazmat Isolation</td><td>HAZ</td><td>Hazmat</td><td>4</td><td>Isolated hazmat-rated parking zone</td></tr>
+    <tr><td>Parking Lot C</td><td>PKG-C</td><td>Parking</td><td>10</td><td>Overflow and long-term bobtail parking</td></tr>
+    <tr><td>Reefer Yard</td><td>RFR</td><td>Reefer</td><td>8</td><td>Temperature-controlled trailer parking</td></tr>
+    <tr><td>Staging Area A</td><td>STG-A</td><td>Staging</td><td>15</td><td>Primary inbound staging near Gate 1</td></tr>
+    <tr><td>Staging Area B</td><td>STG-B</td><td>Staging</td><td>12</td><td>Secondary staging for outbound preparation</td></tr>
+  </table>
+</div>
+
+<!-- ── Compliance ── -->
+<div class="page page-break">
+  <div class="section-header">
+    <div class="section-num">10</div>
+    <div>
+      <div class="section-title">Compliance Modules</div>
+      <div class="section-subtitle">Holds &amp; Exceptions, Inspections, Yard Audit</div>
+    </div>
+  </div>
+
+  <div class="screenshot-grid">
+    <div class="screenshot-block">
+      <img src="screenshots/10-exceptions.jpg" alt="Holds & Exceptions" />
+      <div class="screenshot-caption">Fig 10.1 — Holds &amp; Exceptions: prioritised exception list with severity badges, type chips, and one-click resolution.</div>
+    </div>
+    <div class="screenshot-block">
+      <img src="screenshots/11-inspections.jpg" alt="Inspections" />
+      <div class="screenshot-caption">Fig 10.2 — Inspections: structured checklist inspections with pass/fail result, inspector assignment, and date.</div>
+    </div>
+  </div>
+
+  <div class="screenshot-block">
+    <img src="screenshots/12-yard-audit.jpg" alt="Yard Audit" />
+    <div class="screenshot-caption">Fig 10.3 — Yard Check: physical audit reconciliation tool — match, mismatch, or flag as missing/extra against system records.</div>
+  </div>
+
+  <h3>Holds &amp; Exceptions</h3>
+  <p>Centralised exception management. Types include: Manual Modification, Late Arrival, Documentation Hold, Security Hold, Damage Hold, Seal Mismatch, Driver Issue, Customs Hold. Severities: Critical, High, Medium, Low. Each exception links to a visit and can be assigned to a staff member. Filter by status (Open/Active, Resolved), severity, and type. Resolve button sends PATCH to <code>/api/exceptions/:id/resolve</code>. Exception count displayed as red badge in sidebar.</p>
+
+  <h4>Exception Auto-Creation Triggers</h4>
+  <table>
+    <tr><th>Trigger</th><th>Type Created</th><th>Severity</th></tr>
+    <tr><td>Gate guard modifies driver name, truck, or trailer at check-in</td><td>Manual Modification</td><td>High (if trailer #), else Medium</td></tr>
+    <tr><td>Truck arrives past appointment time window</td><td>Late Arrival</td><td>Medium</td></tr>
+    <tr><td>Dock SLA timer breaches 4-hour threshold</td><td>SLA Breach</td><td>High</td></tr>
+    <tr><td>Trailer marked damaged at gate check-in</td><td>Damage Hold</td><td>Medium</td></tr>
+    <tr><td>Trailer condition "Needs Inspection" at gate</td><td>Inspection Required</td><td>Low</td></tr>
+  </table>
+
+  <h3>Inspections</h3>
+  <p>Structured asset inspection module supporting multiple inspection types: Gate Inbound, Damage Assessment, and Yard Spot Check. Each inspection has a reference number (INS-XXXXX), linked trailer, assigned inspector, status (Pending/In Progress/Completed), result (Pass/Fail), and timestamp. The detailed form provides a checklist of inspection items, photo attachment points mapped to trailer hotspot views (front, rear, driver side, passenger side, interior, roof), and optional exception linkage.</p>
+
+  <h3>Yard Audit (Yard Check)</h3>
+  <p>Physical inventory reconciliation tool. Operators walk the yard and match physical trailer positions against system records. Each inventory item can be marked Matched, Mismatched (wrong slot), Missing (in system but not found), or Extra (found but not in system). Scope filters narrow to specific zones or dock areas. "Mark All Matched" button for rapid clean-yard certification. Results update audit records and can trigger corrective move tasks for mismatches.</p>
+</div>
+
+<!-- ── Analytics & Revenue ── -->
+<div class="page page-break">
+  <div class="section-header">
+    <div class="section-num">11</div>
+    <div>
+      <div class="section-title">Analytics &amp; Revenue Intelligence</div>
+      <div class="section-subtitle">Routes: /reports, /revenue, /notifications</div>
+    </div>
+  </div>
+
+  <div class="screenshot-grid">
+    <div class="screenshot-block">
+      <img src="screenshots/13-analytics.jpg" alt="Reports & Analytics" />
+      <div class="screenshot-caption">Fig 11.1 — Reports &amp; Analytics: multi-tab dashboard with KPI strip, trend charts, and CSV/PDF export.</div>
+    </div>
+    <div class="screenshot-block">
+      <img src="screenshots/14-revenue.jpg" alt="Revenue Intelligence" />
+      <div class="screenshot-caption">Fig 11.2 — Revenue Intelligence: billing event tracking, cost savings, dock utilisation, and rate configuration.</div>
+    </div>
+  </div>
+
+  <div class="screenshot-block">
+    <img src="screenshots/15-notifications.jpg" alt="Notifications" />
+    <div class="screenshot-caption">Fig 11.3 — Notifications: unified alert centre combining exceptions, escalated tasks, and email intelligence conflicts.</div>
+  </div>
+
+  <h3>Reports &amp; Analytics</h3>
+  <p>Multi-tab analytics dashboard with global filters (time range, carrier, zone, movement type). Tabs: Overview, Carrier, Dock, Move Tasks, Revenue &amp; Billing. Header KPIs: Avg Dwell Time, Yard Occupancy %, Dock Utilisation %, Avg Move Time, On-Time Arrivals %, Hold Rate %. Charts include Yard Occupancy Trend and Avg Dwell Time Trend (Recharts line charts). Export CSV and Export PDF buttons available in the header.</p>
+
+  <h3>Revenue &amp; Financial Intelligence</h3>
+  <p>Four sub-tabs: Revenue Intelligence, Cost Savings, Billing Events, Rate Configuration. KPIs: Today's Revenue, This Week Revenue, Est. Monthly Revenue, Cost Savings, Pending Events, Billed Events, Avg Rev/Visit, Dock Utilisation. Revenue by Service Type bar chart. Revenue types tracked: Detention Charge, Yard Storage, Reefer Slot Premium, Late Arrival Penalty, Dock Door Usage, Inspection Service, No-Show Fee.</p>
+
+  <h3>Notifications</h3>
+  <p>Unified alert centre aggregating all system-generated events. Shows Total Alerts, High Priority count, Escalated Tasks count, and Email Conflicts count. Each notification has a type badge (Exception, Escalated Task, Email Conflict), severity badge (Critical, High, Medium), a description, and a timestamp. Actions: View (navigates to source record) and Dismiss. Bell icon in top nav shows live unread count badge.</p>
+</div>
+
+<!-- ── Administration ── -->
+<div class="page page-break">
+  <div class="section-header">
+    <div class="section-num">12</div>
+    <div>
+      <div class="section-title">Administration Modules</div>
+      <div class="section-subtitle">Carrier Management, Yard Setup, Users, Audit Log</div>
+    </div>
+  </div>
+
+  <div class="screenshot-grid">
+    <div class="screenshot-block">
+      <img src="screenshots/17-admin-carriers.jpg" alt="Carrier Management" />
+      <div class="screenshot-caption">Fig 12.1 — Carrier Management: performance scorecards, SCAC codes, on-time rates, and dwell times per carrier.</div>
+    </div>
+    <div class="screenshot-block">
+      <img src="screenshots/16-admin-yard-setup.jpg" alt="Yard Setup" />
+      <div class="screenshot-caption">Fig 12.2 — Yard Setup: zone, slot, dock door, and gate configuration with active/inactive toggles.</div>
+    </div>
+  </div>
+
+  <div class="screenshot-block">
+    <img src="screenshots/20-admin-audit.jpg" alt="Audit Log" />
+    <div class="screenshot-caption">Fig 12.3 — Audit Log: complete timestamped history of all system actions grouped by date, filterable by action type, module, and date range.</div>
+  </div>
+
+  <h3>Carrier Management</h3>
+  <p>All 12 registered carrier partners. Columns: Carrier name, SCAC code, Star rating, On-time %, Avg dwell time, Trailers currently in yard. Right panel shows detailed profile, contact info (name, email, phone, address), and performance history when a carrier is selected. Carriers flagged as "Needs Attention" are highlighted in the header. Admins can add carriers, edit contacts, set brand colour, and deactivate carriers.</p>
+
+  <h3>Yard Setup</h3>
+  <p>Four tabs — Zones, Slots, Dock Doors, Gates. KPIs show totals and utilisation for each entity type. Zones tab lists all zones with code, type, slot availability bar, and active toggle. Each zone can be created or edited inline. Slots tab shows individual slot numbers, zone assignment, type, and capacity. Dock Doors tab shows 10 doors (D-01 through D-10) with type and current status. Gates tab shows 3 gates (Gate 1–3) with type (Entry/Exit/Bi-directional).</p>
+
+  <h3>User Management</h3>
+  <p>Table of all users with avatar, name, email, role badge, active status, and inline role-change dropdown. Filterable by role and status. Admins can reassign roles on the fly — change takes effect on next login. System supports 12 demo users spanning all 6 roles.</p>
+
+  <h3>Audit Log</h3>
+  <p>Immutable chronological record of all system actions. Each entry shows action description (e.g. "Gate check-in — trailer JBHU-832400"), module badge (Visit, Appointment, Exception), actor name, and timestamp. Filterable by action type, module, and date range. 30 total seed entries. Most active entity type is Visit (27 events). Supports "Newest first" / "Oldest first" sort.</p>
+</div>
+
+<!-- ── AI & Email Intelligence ── -->
+<div class="page page-break">
+  <div class="section-header">
+    <div class="section-num">13</div>
+    <div>
+      <div class="section-title">AI &amp; Email Intelligence</div>
+      <div class="section-subtitle">Routes: /email-intelligence, /admin/ai-config &nbsp;|&nbsp; Enhanced / Elevate modes</div>
+    </div>
+  </div>
+
+  <div class="screenshot-grid">
+    <div class="screenshot-block">
+      <img src="screenshots/19-email-intelligence.jpg" alt="Email Intelligence" />
+      <div class="screenshot-caption">Fig 13.1 — Carrier Email Intelligence: AI-parsed inbound emails, conflict detection, and registered carrier contacts.</div>
+    </div>
+    <div class="screenshot-block">
+      <img src="screenshots/21-ai-config.jpg" alt="AI Configuration" />
+      <div class="screenshot-caption">Fig 13.2 — AI Console: master switches, predictions, access controls, and alert configuration.</div>
+    </div>
+  </div>
+
+  <h3>AI Chat Assistant</h3>
+  <p>Floating assistant panel (bottom-right) available in Elevate and Enhanced modes. Powered by OpenAI GPT-5.1 via Replit AI Integrations. Uses SSE streaming so responses appear word-by-word. Has system context about the current yard state (carriers, appointments, exceptions). Supports natural language queries: "How many trailers are aged?", "Which dock is over SLA?", "Create a move task for SWFT-53201".</p>
+
+  <h3>Carrier Email Intelligence</h3>
+  <p>Parses inbound carrier emails using GPT to extract shipment references, detect ETAs, and flag conflicts between email content and scheduled appointments. Conflict categories: Conflicts Only (schedule discrepancy detected), No Conflict (clean parse), Invalid Sender (unregistered email domain). Registered carrier contacts list maintained for known sender matching. Supervisor alerts generated for unresolved conflicts.</p>
+
+  <h3>AI Configuration Console</h3>
+  <p>Admin-only console for governing all AI features. Master switch disables/enables AI globally. Sub-switches: Natural Language Chat Assistant, Predictive Operations Copilot, Smart Suggestions on Screens, Proactive Operational Alerts. Tabs: Control, Predictions, Access &amp; Data, Alerts &amp; Visibility. Usage KPIs: Queries Handled, Alerts Generated, Actions Triggered, Unanswered, Alerts Acted On, Incidents Prevented.</p>
+
+  <h3>Predictive Alerts (Enhanced)</h3>
+  <ul>
+    <li>Yard congestion predictions based on appointment density</li>
+    <li>Dock bottleneck forecasting from historical dwell patterns</li>
+    <li>Aged-trailer escalation alerts at 24h, 48h, and 72h thresholds</li>
+    <li>Carrier on-time risk scoring for upcoming arrivals</li>
+  </ul>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<!--  USER STORIES                                                             -->
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<div class="page page-break">
+  <div class="section-header">
+    <div class="section-num">14</div>
+    <div>
+      <div class="section-title">User Stories by Role</div>
+      <div class="section-subtitle">As a [role], I want to [action], so that [benefit]</div>
+    </div>
+  </div>
+
+  <h3>Gate Guard</h3>
+  <div class="story">
+    <div class="story-id">US-GG-001</div>
+    <div class="story-text">As a Gate Guard, I want to search for an incoming truck by appointment number, trailer number, or driver name, so that I can quickly identify their record without manually paging through a list.</div>
+    <div class="story-ac"><strong>Acceptance:</strong> Auto-complete suggestions appear from today's expected trucks. Search returns matching appointments. Empty result offers Walk-In option.</div>
+  </div>
+  <div class="story">
+    <div class="story-id">US-GG-002</div>
+    <div class="story-text">As a Gate Guard, I want to verify a driver's identity by collecting their name, CDL last 4 digits, USDOT, and SCAC code, so that I can ensure the right carrier and driver are entering the facility.</div>
+    <div class="story-ac"><strong>Acceptance:</strong> Fields grouped in labelled sections. CDL field only accepts 4 numeric digits. SCAC auto-uppercases. Mismatches vs. appointment shown with amber indicator.</div>
+  </div>
+  <div class="story">
+    <div class="story-id">US-GG-003</div>
+    <div class="story-text">As a Gate Guard, I want to flag a reefer trailer and record its set temperature, so that the reefer yard can prepare the correct temperature-controlled slot.</div>
+    <div class="story-ac"><strong>Acceptance:</strong> Reefer toggle reveals temperature input. Value stored in visit notes. Reefer temp shown on gate pass and done-screen badge.</div>
+  </div>
+  <div class="story">
+    <div class="story-id">US-GG-004</div>
+    <div class="story-text">As a Gate Guard, I want to document trailer condition at check-in (Good / Damaged / Needs Inspection) with optional notes, so that pre-existing damage is recorded before the trailer enters the facility.</div>
+    <div class="story-ac"><strong>Acceptance:</strong> Condition selector shows three clearly labelled options. Selecting Damaged or Needs Inspection reveals a notes input. Condition stored in visit record.</div>
+  </div>
+  <div class="story">
+    <div class="story-id">US-GG-005</div>
+    <div class="story-text">As a Gate Guard, I want to attach a Bill of Lading document (PDF or image) during check-in, so that shipment documentation is captured at the gate and linked to the visit record.</div>
+    <div class="story-ac"><strong>Acceptance:</strong> File picker accepts PDF, JPG, PNG. Selected filename shown with green confirmation. Filename stored in visit notes. Remove button available.</div>
+  </div>
+  <div class="story">
+    <div class="story-id">US-GG-006</div>
+    <div class="story-text">As a Gate Guard, I want to print a gate pass immediately after check-in, so that the driver has official authorisation to enter the facility.</div>
+    <div class="story-ac"><strong>Acceptance:</strong> Print dialog opens in a new window. Pass includes visit number, carrier, driver, trailer/truck, movement type, check-in time, USDOT, SCAC, reefer temp (if applicable), and two signature lines.</div>
+  </div>
+  <div class="story">
+    <div class="story-id">US-GG-007</div>
+    <div class="story-text">As a Gate Guard, I want a simplified full-screen Guard Mode interface, so that I can process check-ins efficiently on a gate kiosk without navigating the full application UI.</div>
+    <div class="story-ac"><strong>Acceptance:</strong> Guard Mode shows only search field and walk-in button. Black header bar with current time and Exit button. Auto-activated for gate_guard role on first session.</div>
+  </div>
+
+  <h3>Yard Manager / Admin</h3>
+  <div class="story">
+    <div class="story-id">US-YM-001</div>
+    <div class="story-text">As a Yard Manager, I want to see real-time KPIs on the dashboard (yard inventory, utilisation, holds, aged trailers, overdue moves), so that I can assess operational health at a glance without pulling reports.</div>
+    <div class="story-ac"><strong>Acceptance:</strong> Dashboard KPIs refresh every 60 seconds. Aged trailer and hold counts show in red when non-zero. Action Required panel lists items needing immediate attention.</div>
+  </div>
+  <div class="story">
+    <div class="story-id">US-YM-002</div>
+    <div class="story-text">As a Yard Manager, I want to resolve holds and exceptions from a single screen, so that I don't need to navigate to individual visit records to clear blockers.</div>
+    <div class="story-ac"><strong>Acceptance:</strong> Exceptions list shows type, severity, description, and assignee. One-click Resolve button sends PATCH request. Exception disappears from Open list and moves to Resolved.</div>
+  </div>
+  <div class="story">
+    <div class="story-id">US-YM-003</div>
+    <div class="story-text">As a Yard Manager, I want to view and filter the appointment calendar by movement type and date range, so that I can anticipate traffic volume and staff accordingly.</div>
+    <div class="story-ac"><strong>Acceptance:</strong> Calendar supports Day, Week, Month views. Colour legend for movement types. Slot conflict indicator visible. Filter by carrier and movement type available.</div>
+  </div>
+  <div class="story">
+    <div class="story-id">US-YM-004</div>
+    <div class="story-text">As a Yard Manager, I want to see carrier performance metrics (on-time rate, dwell time, star rating), so that I can make informed decisions about carrier relationships.</div>
+    <div class="story-ac"><strong>Acceptance:</strong> Carrier Management shows on-time % bar, dwell time, in-yard count, and star rating for each carrier. Clicking a row opens detail panel with contact info.</div>
+  </div>
+  <div class="story">
+    <div class="story-id">US-YM-005</div>
+    <div class="story-text">As a Yard Manager, I want to export operations reports as CSV or PDF, so that I can share performance data with stakeholders outside the system.</div>
+    <div class="story-ac"><strong>Acceptance:</strong> Reports page has "Export CSV" and "Export PDF" buttons. CSV downloads a data file. PDF triggers print dialog. Both respect active filters.</div>
+  </div>
+
+  <h3>Yard Jockey</h3>
+  <div class="story">
+    <div class="story-id">US-YJ-001</div>
+    <div class="story-text">As a Yard Jockey, I want to see my assigned move tasks with clear source and destination locations, so that I can move trailers efficiently without radio calls to confirm positions.</div>
+    <div class="story-ac"><strong>Acceptance:</strong> Moves queue shows from/to location, trailer number, carrier, priority, and elapsed time. My tasks are grouped under "Jockey Workload".</div>
+  </div>
+  <div class="story">
+    <div class="story-id">US-YJ-002</div>
+    <div class="story-text">As a Yard Jockey, I want to view the interactive yard map to locate a specific trailer by slot position, so that I don't waste time driving around searching.</div>
+    <div class="story-ac"><strong>Acceptance:</strong> Yard map shows occupied slots with trailer SCAC label. Operational queue on left side shows trailers sorted by urgency. Filtering by zone reduces the visible area.</div>
+  </div>
+
+  <h3>Dock Operator</h3>
+  <div class="story">
+    <div class="story-id">US-DO-001</div>
+    <div class="story-text">As a Dock Operator, I want to update dock door status by dragging a card on the Kanban board, so that yard and gate staff always know which doors are available without me making phone calls.</div>
+    <div class="story-ac"><strong>Acceptance:</strong> Cards drag between Available, At Dock, Loading, Unloading, and Completed columns. Status update fires API call. SLA timer starts when card moves to At Dock.</div>
+  </div>
+  <div class="story">
+    <div class="story-id">US-DO-002</div>
+    <div class="story-text">As a Dock Operator, I want to see SLA breach alerts on dock cards, so that I can escalate or prioritise operations before penalty thresholds are exceeded.</div>
+    <div class="story-ac"><strong>Acceptance:</strong> Timer turns amber at 2h, red at 4h. "Over SLA" badge appears. "SLA Breach — Escalation Required" banner shown on card. Exception auto-created.</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<!--  WORKFLOWS                                                                -->
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<div class="page page-break">
+  <div class="section-header">
+    <div class="section-num">15</div>
+    <div>
+      <div class="section-title">Core Operational Workflows</div>
+      <div class="section-subtitle">End-to-end process flows for major operational scenarios</div>
+    </div>
+  </div>
+
+  <h3>WF-01 — Full Inbound Trailer Lifecycle</h3>
+  <div class="workflow">
+    <div class="wf-step"><div class="wf-num">1</div><div class="wf-content"><div class="wf-label">Appointment Created</div><div class="wf-desc">Yard Manager or carrier creates appointment via /appointments. Reference number auto-generated. Status: Scheduled.</div><div class="wf-roles"><span class="role-chip role-manager">Yard Manager</span><span class="role-chip role-admin">Admin</span></div></div></div>
+    <div class="wf-step"><div class="wf-num">2</div><div class="wf-content"><div class="wf-label">Carrier Confirms</div><div class="wf-desc">Carrier confirms via Carrier Portal. Status changes to Confirmed. Appears in Expected Today on gate check-in screen.</div><div class="wf-roles"><span class="role-chip role-carrier">Carrier</span></div></div></div>
+    <div class="wf-step"><div class="wf-num">3</div><div class="wf-content"><div class="wf-label">Gate Check-In</div><div class="wf-desc">Guard searches appointment, verifies identity &amp; credentials, records load details (seal, reefer, condition, BOL), submits check-in. Visit record created. Gate pass printed. Status: Checked In.</div><div class="wf-roles"><span class="role-chip role-guard">Gate Guard</span></div></div></div>
+    <div class="wf-step"><div class="wf-num">4</div><div class="wf-content"><div class="wf-label">Slot Assignment</div><div class="wf-desc">From the done screen, guard or manager assigns trailer to an available yard slot. Jockey receives move task automatically or manually.</div><div class="wf-roles"><span class="role-chip role-guard">Gate Guard</span><span class="role-chip role-manager">Yard Manager</span></div></div></div>
+    <div class="wf-step"><div class="wf-num">5</div><div class="wf-content"><div class="wf-label">Yard Move Executed</div><div class="wf-desc">Yard jockey picks up task from Yard Moves queue, locates trailer via yard map, spots it to assigned slot, marks task complete.</div><div class="wf-roles"><span class="role-chip role-jockey">Yard Jockey</span></div></div></div>
+    <div class="wf-step"><div class="wf-num">6</div><div class="wf-content"><div class="wf-label">Dock Assignment</div><div class="wf-desc">Dock operator or manager drags trailer card from Available to At Dock on Kanban board. SLA timer starts. Status: At Dock.</div><div class="wf-roles"><span class="role-chip role-dock">Dock User</span><span class="role-chip role-manager">Yard Manager</span></div></div></div>
+    <div class="wf-step"><div class="wf-num">7</div><div class="wf-content"><div class="wf-label">Unloading</div><div class="wf-desc">Dock operator drags card to Unloading column when work begins. Timer continues. Status: Unloading.</div><div class="wf-roles"><span class="role-chip role-dock">Dock User</span></div></div></div>
+    <div class="wf-step"><div class="wf-num">8</div><div class="wf-content"><div class="wf-label">Ready Out</div><div class="wf-desc">Once unloading complete, trailer marked Ready Out in yard inventory. Appears in Expected Check-Outs on gate check-out screen.</div><div class="wf-roles"><span class="role-chip role-dock">Dock User</span><span class="role-chip role-manager">Yard Manager</span></div></div></div>
+    <div class="wf-step"><div class="wf-num done">✓</div><div class="wf-content"><div class="wf-label">Gate Check-Out</div><div class="wf-desc">Guard finds visit, verifies unit, checks clearance (no holds), confirms exit. Visit status set to Completed. Billing events created for detention if applicable. Visit removed from live inventory.</div><div class="wf-roles"><span class="role-chip role-guard">Gate Guard</span></div></div></div>
+  </div>
+
+  <h3>WF-02 — Walk-In (Unscheduled Arrival)</h3>
+  <div class="workflow">
+    <div class="wf-step"><div class="wf-num warn">!</div><div class="wf-content"><div class="wf-label">No Appointment Found</div><div class="wf-desc">Guard searches and finds no matching appointment. Walk-In button selected.</div></div></div>
+    <div class="wf-step"><div class="wf-num">2</div><div class="wf-content"><div class="wf-label">Identity Verification</div><div class="wf-desc">Guard manually enters all driver, carrier, and vehicle data. No mismatch detection (no appointment to compare against).</div></div></div>
+    <div class="wf-step"><div class="wf-num">3</div><div class="wf-content"><div class="wf-label">Load Details</div><div class="wf-desc">Standard load detail form completed. Walk-In badge displayed on the form card.</div></div></div>
+    <div class="wf-step"><div class="wf-num done">✓</div><div class="wf-content"><div class="wf-label">Visit Created &amp; Walk-In Count Incremented</div><div class="wf-desc">Visit created with no appointment linkage. Walk-Ins KPI on gate check-in incremented. Remainder of workflow same as scheduled arrival.</div></div></div>
+  </div>
+
+  <h3>WF-03 — Exception Resolution</h3>
+  <div class="workflow">
+    <div class="wf-step"><div class="wf-num warn">!</div><div class="wf-content"><div class="wf-label">Exception Created</div><div class="wf-desc">Auto-created (late arrival, discrepancy, SLA breach, damage) or manually raised by staff.</div></div></div>
+    <div class="wf-step"><div class="wf-num">2</div><div class="wf-content"><div class="wf-label">Notification Sent</div><div class="wf-desc">Exception appears in Notifications centre and sidebar badge. High-priority exceptions appear in Action Required panel on Dashboard.</div></div></div>
+    <div class="wf-step"><div class="wf-num">3</div><div class="wf-content"><div class="wf-label">Supervisor Review</div><div class="wf-desc">Yard Manager opens Holds &amp; Exceptions, reviews details, assigns to staff member if needed.</div><div class="wf-roles"><span class="role-chip role-manager">Yard Manager</span></div></div></div>
+    <div class="wf-step"><div class="wf-num">4</div><div class="wf-content"><div class="wf-label">Corrective Action</div><div class="wf-desc">For holds: affected trailer remains in yard. Guard or manager may re-verify documents, contact carrier, or await customs clearance.</div></div></div>
+    <div class="wf-step"><div class="wf-num done">✓</div><div class="wf-content"><div class="wf-label">Exception Resolved</div><div class="wf-desc">Manager clicks Resolve. Exception status updated to Resolved. Trailer hold lifted. Daily resolved count incremented. Audit log entry created.</div></div></div>
+  </div>
+
+  <h3>WF-04 — Yard Audit</h3>
+  <div class="workflow">
+    <div class="wf-step"><div class="wf-num">1</div><div class="wf-content"><div class="wf-label">Initiate Audit</div><div class="wf-desc">Manager opens /yard/audit. System generates a checklist of all 18 current inventory items.</div></div></div>
+    <div class="wf-step"><div class="wf-num">2</div><div class="wf-content"><div class="wf-label">Physical Walk</div><div class="wf-desc">Operator physically walks each zone. For each trailer found, selects "Match" if in correct slot.</div></div></div>
+    <div class="wf-step"><div class="wf-num branch">?</div><div class="wf-content"><div class="wf-label">Discrepancy Detected</div><div class="wf-desc">If trailer not found → marked Missing. If trailer found in wrong slot → marked Mismatched. If unknown trailer found → marked Extra.</div></div></div>
+    <div class="wf-step"><div class="wf-num done">✓</div><div class="wf-content"><div class="wf-label">Audit Completed</div><div class="wf-desc">Results summary shows matched/mismatched/missing/extra counts. Corrective move tasks auto-created for mismatches. Audit record saved.</div></div></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<!--  PERMISSION MATRIX                                                        -->
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<div class="page page-break">
+  <div class="section-header">
+    <div class="section-num">16</div>
+    <div>
+      <div class="section-title">Permission Matrix</div>
+      <div class="section-subtitle">Access rights per role across all modules and key actions</div>
+    </div>
+  </div>
+
+  <p style="font-size:12px;color:var(--muted);margin-bottom:12px">
+    <strong>Legend:</strong> ✅ Full Access &nbsp;|&nbsp; <span style="color:var(--amber);font-weight:700">RO</span> Read Only &nbsp;|&nbsp; — No Access
+  </p>
+
+  <table style="font-size:12px">
+    <thead>
+      <tr>
+        <th style="width:22%">Module / Action</th>
+        <th class="perm-header">Admin</th>
+        <th class="perm-header">Yard Manager</th>
+        <th class="perm-header">Gate Guard</th>
+        <th class="perm-header">Yard Jockey</th>
+        <th class="perm-header">Dock User</th>
+        <th class="perm-header">Carrier</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td colspan="7" style="background:#f8fafc;font-weight:700;font-size:11px;letter-spacing:0.5px;text-transform:uppercase;color:#64748b;padding:8px 14px">Dashboard &amp; Navigation</td></tr>
+      <tr><td>Dashboard (view)</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-no">—</td></tr>
+      <tr><td>AI Assist Banner (Elevate+)</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-no">—</td><td class="perm-no">—</td><td class="perm-no">—</td><td class="perm-no">—</td></tr>
+      <tr><td>Notifications (view)</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-no">—</td></tr>
+
+      <tr><td colspan="7" style="background:#f8fafc;font-weight:700;font-size:11px;letter-spacing:0.5px;text-transform:uppercase;color:#64748b;padding:8px 14px">Appointments</td></tr>
+      <tr><td>View appointments</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-no">—</td><td class="perm-no">—</td><td class="perm-no">—</td><td class="perm-ro">RO</td></tr>
+      <tr><td>Create appointment</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-no">—</td><td class="perm-no">—</td><td class="perm-no">—</td><td class="perm-no">—</td></tr>
+      <tr><td>Edit / Cancel appointment</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-no">—</td><td class="perm-no">—</td><td class="perm-no">—</td><td class="perm-no">—</td></tr>
+
+      <tr><td colspan="7" style="background:#f8fafc;font-weight:700;font-size:11px;letter-spacing:0.5px;text-transform:uppercase;color:#64748b;padding:8px 14px">Gate Operations</td></tr>
+      <tr><td>Gate Check-In (process)</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-no">—</td><td class="perm-no">—</td><td class="perm-no">—</td></tr>
+      <tr><td>Gate Check-Out (process)</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-no">—</td><td class="perm-no">—</td><td class="perm-no">—</td></tr>
+      <tr><td>Guard Mode access</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-no">—</td><td class="perm-no">—</td><td class="perm-no">—</td></tr>
+      <tr><td>Fast Lane mode</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-no">—</td><td class="perm-no">—</td><td class="perm-no">—</td></tr>
+      <tr><td>Print gate pass</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-no">—</td><td class="perm-no">—</td><td class="perm-no">—</td></tr>
+      <tr><td>Place hold at gate</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-no">—</td><td class="perm-no">—</td><td class="perm-no">—</td></tr>
+
+      <tr><td colspan="7" style="background:#f8fafc;font-weight:700;font-size:11px;letter-spacing:0.5px;text-transform:uppercase;color:#64748b;padding:8px 14px">Yard Operations</td></tr>
+      <tr><td>Yard Inventory (view)</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-no">—</td></tr>
+      <tr><td>Assign slot to trailer</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-no">—</td><td class="perm-no">—</td><td class="perm-no">—</td></tr>
+      <tr><td>Yard Map (view &amp; interact)</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-no">—</td><td class="perm-yes">✅</td><td class="perm-no">—</td><td class="perm-no">—</td></tr>
+      <tr><td>Create move task</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-no">—</td><td class="perm-no">—</td><td class="perm-no">—</td></tr>
+      <tr><td>Execute / update move task</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-no">—</td><td class="perm-yes">✅</td><td class="perm-no">—</td><td class="perm-no">—</td></tr>
+      <tr><td>Dock Management Kanban</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-no">—</td><td class="perm-no">—</td><td class="perm-yes">✅</td><td class="perm-no">—</td></tr>
+
+      <tr><td colspan="7" style="background:#f8fafc;font-weight:700;font-size:11px;letter-spacing:0.5px;text-transform:uppercase;color:#64748b;padding:8px 14px">Compliance</td></tr>
+      <tr><td>View exceptions</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-no">—</td><td class="perm-no">—</td><td class="perm-no">—</td><td class="perm-no">—</td></tr>
+      <tr><td>Resolve exceptions</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-no">—</td><td class="perm-no">—</td><td class="perm-no">—</td><td class="perm-no">—</td></tr>
+      <tr><td>Create inspections</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-no">—</td><td class="perm-yes">✅</td><td class="perm-no">—</td></tr>
+      <tr><td>View inspections</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-no">—</td><td class="perm-yes">✅</td><td class="perm-no">—</td></tr>
+      <tr><td>Yard Audit</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-no">—</td><td class="perm-no">—</td><td class="perm-no">—</td><td class="perm-no">—</td></tr>
+
+      <tr><td colspan="7" style="background:#f8fafc;font-weight:700;font-size:11px;letter-spacing:0.5px;text-transform:uppercase;color:#64748b;padding:8px 14px">Analytics</td></tr>
+      <tr><td>Reports &amp; Analytics</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-no">—</td><td class="perm-no">—</td><td class="perm-no">—</td><td class="perm-no">—</td></tr>
+      <tr><td>Export CSV / PDF</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-no">—</td><td class="perm-no">—</td><td class="perm-no">—</td><td class="perm-no">—</td></tr>
+      <tr><td>Revenue Intelligence</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-no">—</td><td class="perm-no">—</td><td class="perm-no">—</td><td class="perm-no">—</td></tr>
+      <tr><td>Audit Log</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-no">—</td><td class="perm-no">—</td><td class="perm-no">—</td><td class="perm-no">—</td></tr>
+
+      <tr><td colspan="7" style="background:#f8fafc;font-weight:700;font-size:11px;letter-spacing:0.5px;text-transform:uppercase;color:#64748b;padding:8px 14px">Administration</td></tr>
+      <tr><td>Carrier Management</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-no">—</td><td class="perm-no">—</td><td class="perm-no">—</td><td class="perm-no">—</td></tr>
+      <tr><td>Yard Setup (zones/slots/docks)</td><td class="perm-yes">✅</td><td class="perm-no">—</td><td class="perm-no">—</td><td class="perm-no">—</td><td class="perm-no">—</td><td class="perm-no">—</td></tr>
+      <tr><td>User Management / Role Change</td><td class="perm-yes">✅</td><td class="perm-no">—</td><td class="perm-no">—</td><td class="perm-no">—</td><td class="perm-no">—</td><td class="perm-no">—</td></tr>
+      <tr><td>Email Intelligence</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-no">—</td><td class="perm-no">—</td><td class="perm-no">—</td><td class="perm-no">—</td></tr>
+      <tr><td>AI Configuration Console</td><td class="perm-yes">✅</td><td class="perm-no">—</td><td class="perm-no">—</td><td class="perm-no">—</td><td class="perm-no">—</td><td class="perm-no">—</td></tr>
+      <tr><td>AI Chat Assistant</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-no">—</td><td class="perm-no">—</td><td class="perm-no">—</td><td class="perm-no">—</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<!--  PRODUCT MODE FEATURE MATRIX                                             -->
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<div class="page page-break">
+  <div class="section-header">
+    <div class="section-num">17</div>
+    <div>
+      <div class="section-title">Product Mode Feature Matrix</div>
+      <div class="section-subtitle">Feature availability across Core, Elevate, and Enhanced tiers</div>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width:40%">Feature</th>
+        <th style="text-align:center" class="perm-header">Core</th>
+        <th style="text-align:center" class="perm-header">Elevate</th>
+        <th style="text-align:center" class="perm-header">Enhanced</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td colspan="4" style="background:#f8fafc;font-weight:700;font-size:11px;letter-spacing:0.5px;text-transform:uppercase;color:#64748b;padding:8px 14px">Gate Operations</td></tr>
+      <tr><td>Multi-step check-in (Search → Verify → Load → Assign → Pass)</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td></tr>
+      <tr><td>CDL Last 4 / USDOT / SCAC capture</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td></tr>
+      <tr><td>Reefer temperature recording</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td></tr>
+      <tr><td>Trailer condition capture + BOL upload</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td></tr>
+      <tr><td>Gate pass printing</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td></tr>
+      <tr><td>Guard Mode kiosk</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td></tr>
+      <tr><td>Fast Lane mode</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td></tr>
+      <tr><td>Auto-exception on late arrival / discrepancy</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td></tr>
+
+      <tr><td colspan="4" style="background:#f8fafc;font-weight:700;font-size:11px;letter-spacing:0.5px;text-transform:uppercase;color:#64748b;padding:8px 14px">Yard &amp; Dock</td></tr>
+      <tr><td>Yard Inventory live table</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td></tr>
+      <tr><td>Interactive Yard Map</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td></tr>
+      <tr><td>Dock Kanban + drag-and-drop</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td></tr>
+      <tr><td>SLA timers and escalation alerts</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td></tr>
+      <tr><td>Move task creation and assignment</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td></tr>
+      <tr><td>Dock scheduling calendar</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td></tr>
+
+      <tr><td colspan="4" style="background:#f8fafc;font-weight:700;font-size:11px;letter-spacing:0.5px;text-transform:uppercase;color:#64748b;padding:8px 14px">Compliance</td></tr>
+      <tr><td>Hold &amp; exception management</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td></tr>
+      <tr><td>Inspection checklists + photo evidence</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td></tr>
+      <tr><td>Yard audit reconciliation</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td></tr>
+      <tr><td>Audit log (immutable)</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td></tr>
+
+      <tr><td colspan="4" style="background:#f8fafc;font-weight:700;font-size:11px;letter-spacing:0.5px;text-transform:uppercase;color:#64748b;padding:8px 14px">Analytics</td></tr>
+      <tr><td>Reports (Overview, Carrier, Dock, Moves, Revenue)</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td></tr>
+      <tr><td>CSV / PDF export</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td></tr>
+      <tr><td>Revenue &amp; Billing Intelligence</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td></tr>
+
+      <tr><td colspan="4" style="background:#f8fafc;font-weight:700;font-size:11px;letter-spacing:0.5px;text-transform:uppercase;color:#64748b;padding:8px 14px">AI Capabilities</td></tr>
+      <tr><td>AI Chat Assistant (GPT-5.1 streaming)</td><td class="perm-no">—</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td></tr>
+      <tr><td>AI Dashboard brief / Operational summary</td><td class="perm-no">—</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td></tr>
+      <tr><td>Smart suggestions on dock / appointment screens</td><td class="perm-no">—</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td></tr>
+      <tr><td>Proactive congestion &amp; dwell-time alerts</td><td class="perm-no">—</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td></tr>
+      <tr><td>Carrier Email Intelligence (inbox parsing)</td><td class="perm-no">—</td><td class="perm-no">—</td><td class="perm-yes">✅</td></tr>
+      <tr><td>Automated exception creation via AI</td><td class="perm-no">—</td><td class="perm-no">—</td><td class="perm-yes">✅</td></tr>
+      <tr><td>ROI &amp; cost savings panel</td><td class="perm-no">—</td><td class="perm-no">—</td><td class="perm-yes">✅</td></tr>
+      <tr><td>Truck lifecycle animated explainer video</td><td class="perm-no">—</td><td class="perm-no">—</td><td class="perm-yes">✅</td></tr>
+      <tr><td>AI Configuration Console</td><td class="perm-no">—</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<!--  GLOSSARY                                                                 -->
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<div class="page page-break">
+  <div class="section-header">
+    <div class="section-num">18</div>
+    <div>
+      <div class="section-title">Glossary</div>
+      <div class="section-subtitle">Key terms and abbreviations used throughout this document</div>
+    </div>
+  </div>
+
+  <table>
+    <tr><th style="width:20%">Term</th><th>Definition</th></tr>
+    <tr><td>BOL</td><td>Bill of Lading — legal shipping document listing cargo contents, origin, and destination. Captured at gate check-in.</td></tr>
+    <tr><td>CDL</td><td>Commercial Driver License — mandatory licence for operating large trucks. System captures last 4 digits only for privacy.</td></tr>
+    <tr><td>DC / Distribution Centre</td><td>A warehouse facility that receives inbound trailers, processes goods, and dispatches outbound trailers.</td></tr>
+    <tr><td>Detention</td><td>A charge levied against a carrier when their trailer exceeds the free dwell-time allowance at a facility.</td></tr>
+    <tr><td>Dwell Time</td><td>Total time a trailer spends at the facility from gate check-in to gate check-out.</td></tr>
+    <tr><td>Exception</td><td>Any deviation from normal operations: late arrivals, discrepancies, holds, SLA breaches, or damage events.</td></tr>
+    <tr><td>Gate Pass</td><td>Printed authorisation document issued to a driver after successful check-in. Contains visit number, trailer/truck details, and signature lines.</td></tr>
+    <tr><td>Guard Mode</td><td>Stripped-down full-screen UI mode for gate kiosk stations, optimised for fast processing and minimal distraction.</td></tr>
+    <tr><td>Hold</td><td>A status placed on a trailer that prevents it from being moved or checked out until the hold is resolved (e.g. documentation, customs, security).</td></tr>
+    <tr><td>Jockey</td><td>Informal name for a yard spotter — a driver who moves trailers within the yard using a yard truck (also called a hostler).</td></tr>
+    <tr><td>KPI</td><td>Key Performance Indicator — a quantitative metric used to measure operational performance.</td></tr>
+    <tr><td>Live Load/Unload</td><td>A movement type where a truck stays connected to the trailer while it is being loaded or unloaded, rather than dropping the trailer in a slot.</td></tr>
+    <tr><td>Move Task</td><td>A work order assigned to a jockey to physically move a specific trailer from one location to another within the yard.</td></tr>
+    <tr><td>Reefer</td><td>Refrigerated trailer. Set temperature is recorded at gate check-in and the trailer is assigned to the temperature-controlled Reefer Yard zone.</td></tr>
+    <tr><td>SCAC</td><td>Standard Carrier Alpha Code — a 2–4 letter identifier assigned to transportation companies by the National Motor Freight Traffic Association.</td></tr>
+    <tr><td>SLA</td><td>Service Level Agreement — a time-based commitment for dock operations. Breach thresholds: At Risk at 2h, Over SLA at 4h.</td></tr>
+    <tr><td>Slot</td><td>A numbered parking position in the yard where trailers are staged when not at a dock door.</td></tr>
+    <tr><td>USDOT</td><td>United States Department of Transportation number — a unique identifier assigned to commercial motor carriers by the FMCSA.</td></tr>
+    <tr><td>Visit</td><td>A single gate-to-gate event representing one trailer's stay at the facility. Created at check-in, closed at check-out.</td></tr>
+    <tr><td>Walk-In</td><td>An unscheduled trailer arrival with no prior appointment in the system. Processed as a walk-in visit.</td></tr>
+    <tr><td>YMS</td><td>Yard Management System — software that manages and optimises trailer and vehicle movements within a logistics facility.</td></tr>
+    <tr><td>Zone</td><td>A named physical area of the yard with a specific function: Staging Area A (inbound), Staging Area B (outbound), Reefer Yard, Hazmat Isolation, Parking Lot C.</td></tr>
+  </table>
+
+  <div class="divider"></div>
+
+  <div class="infobox infobox-green">
+    <strong>Document Maintained By:</strong> YardNow Engineering &amp; Product Team &nbsp;·&nbsp;
+    <strong>Last Updated:</strong> May 2026 &nbsp;·&nbsp;
+    <strong>Version:</strong> 2.0 &nbsp;·&nbsp;
+    <strong>Applies To:</strong> YardNow platform build commit <code>690f72cf</code> and later
+  </div>
+
+  <p style="text-align:center;color:var(--muted);font-size:12px;margin-top:32px">
+    YardNow — Yard Intelligence Platform &nbsp;|&nbsp; Confidential &amp; Proprietary &nbsp;|&nbsp; All rights reserved
+  </p>
+</div>
+
+</body>
+</html>
