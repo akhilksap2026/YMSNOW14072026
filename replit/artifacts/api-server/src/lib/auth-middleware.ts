@@ -6,7 +6,13 @@ import { tenantContext } from "./storage";
 declare global {
   namespace Express {
     interface Request {
-      auth?: { userId: string; tenantId: string; role: string };
+      auth?: {
+        userId: string;
+        /** null for platform admins who are not bound to any tenant. */
+        tenantId: string | null;
+        role: string;
+        isPlatformAdmin?: boolean;
+      };
     }
   }
 }
@@ -18,6 +24,9 @@ declare global {
  * Skipped paths (no cookie required):
  *   /auth/*   — login, logout, me all live here
  *   /health   — uptime probe
+ *
+ * Platform admins (isPlatformAdmin: true) bypass tenantContext — they are
+ * not scoped to any single tenant and must not have tenant storage applied.
  */
 export function authMiddleware(req: Request, res: Response, next: NextFunction) {
   if (req.path.startsWith("/auth/") || req.path === "/health" || req.path === "/healthz") {
@@ -35,7 +44,29 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction) 
   }
 
   req.auth = payload;
+
+  if (payload.isPlatformAdmin) {
+    // Platform admins are not bound to a tenant — skip AsyncLocalStorage scoping.
+    // Their routes access the DB directly via requirePlatformAdmin-guarded handlers.
+    return next();
+  }
+
   // Bind the tenant to AsyncLocalStorage for the rest of this request's call chain.
   // DatabaseStorage's proxy reads this to scope every query automatically.
-  tenantContext.run(payload.tenantId, next);
+  tenantContext.run(payload.tenantId!, next);
+}
+
+/**
+ * requirePlatformAdmin — 403 for every request that is not from a platform admin.
+ * Chain after authMiddleware.
+ *
+ * @example
+ *   app.get("/api/platform/tenants", requirePlatformAdmin, handler)
+ */
+export function requirePlatformAdmin(req: Request, res: Response, next: NextFunction): void {
+  if (!req.auth?.isPlatformAdmin) {
+    res.status(403).json({ error: "platform_admin_required" });
+    return;
+  }
+  next();
 }

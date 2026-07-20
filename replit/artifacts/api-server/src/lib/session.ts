@@ -9,8 +9,11 @@ const SECRET = process.env.SESSION_SECRET ?? "dev-secret-change-me";
 
 export interface SessionPayload {
   userId: string;
-  tenantId: string;
+  /** null for platform admins who are not bound to any tenant. */
+  tenantId: string | null;
   role: string;
+  /** Present and true only for KSAP platform administrators. */
+  isPlatformAdmin?: boolean;
 }
 
 function b64(s: string): string {

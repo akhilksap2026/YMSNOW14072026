@@ -1,5 +1,5 @@
 import app from "./app";
-import { seedDatabase, seedRbacIfEmpty, seedBillingIfEmpty } from "./lib/seed";
+import { seedDatabase, seedRbacIfEmpty, seedBillingIfEmpty, seedPlatformAdminIfEmpty } from "./lib/seed";
 
 const rawPort = process.env["PORT"];
 
@@ -59,6 +59,7 @@ app.listen(port, () => {
   withDbRetry(() => seedDatabase(), "seed")
     .then(() => withDbRetry(() => seedRbacIfEmpty(), "rbac"))
     .then(() => withDbRetry(() => seedBillingIfEmpty(), "billing"))
+    .then(() => withDbRetry(() => seedPlatformAdminIfEmpty(), "platform-admin"))
     .catch((err) => {
       console.error("Startup seed failed:", err);
     });

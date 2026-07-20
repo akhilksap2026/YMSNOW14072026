@@ -24,6 +24,7 @@ import {
   plans       as plansTable,
   planModules as planModulesTable,
   subscriptions as subscriptionsTable,
+  platformAdmins,
 } from "@workspace/db";
 import { count, eq, sql } from "drizzle-orm";
 
@@ -846,4 +847,24 @@ export async function resetAndReseed() {
   await db.delete(users);
   console.log("All tables cleared. Re-seeding...");
   await seedDatabase();
+}
+
+/**
+ * Inserts the canonical KSAP platform admin account if it does not yet exist.
+ * Platform admins live outside the tenant-scoped `users` table; they have no
+ * tenantId and are identified by isPlatformAdmin: true in their session token.
+ */
+export async function seedPlatformAdminIfEmpty(): Promise<void> {
+  const [existing] = await db.select({ id: platformAdmins.id }).from(platformAdmins).limit(1);
+  if (existing) {
+    console.log("Platform admin already seeded, skipping.");
+    return;
+  }
+  await db.insert(platformAdmins).values({
+    id:        "ksap-admin",
+    email:     "admin@ksap.io",
+    firstName: "KSAP",
+    lastName:  "Admin",
+  });
+  console.log("Platform admin seeded: ksap-admin (admin@ksap.io)");
 }

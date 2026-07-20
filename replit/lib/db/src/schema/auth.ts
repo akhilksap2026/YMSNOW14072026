@@ -1,4 +1,4 @@
-import { pgTable, text, varchar, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, timestamp, boolean } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
@@ -29,3 +29,16 @@ export type User = typeof users.$inferSelect;
 export const insertTenantSchema = createInsertSchema(tenants).omit({ createdAt: true });
 export type InsertTenant = z.infer<typeof insertTenantSchema>;
 export type Tenant = typeof tenants.$inferSelect;
+
+/**
+ * Platform admins are KSAP operators not bound to any tenant.
+ * They live outside the tenant-scoped `users` table so tenantId is never required.
+ */
+export const platformAdmins = pgTable("platform_admins", {
+  id:        varchar("id").primaryKey(),
+  email:     text("email"),
+  firstName: text("first_name"),
+  lastName:  text("last_name"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+export type PlatformAdmin = typeof platformAdmins.$inferSelect;

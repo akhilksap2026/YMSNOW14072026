@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { db } from "../db";
-import { users, userProfiles } from "@workspace/db";
+import { users, userProfiles, platformAdmins } from "@workspace/db";
 import { eq } from "drizzle-orm";
 import { signToken, verifyToken } from "../lib/session";
 
@@ -12,7 +12,9 @@ const DEMO_PASSWORD = "12345";
 /**
  * POST /api/auth/login
  * Body: { userId: string, password: string }
- * Returns identity JSON + sets httpOnly session cookie.
+ *
+ * Tries tenant users first; falls back to platform_admins.
+ * Platform admins receive a token with tenantId: null and isPlatformAdmin: true.
  */
 router.post("/login", async (req, res) => {
   const { userId, password } = req.body ?? {};
@@ -24,6 +26,7 @@ router.post("/login", async (req, res) => {
     return res.status(401).json({ error: "Invalid credentials" });
   }
 
+  // ── 1. Try tenant user ────────────────────────────────────────────────────
   const [row] = await db
     .select({
       userId:    users.id,
@@ -38,27 +41,52 @@ router.post("/login", async (req, res) => {
     .where(eq(users.id, userId))
     .limit(1);
 
-  if (!row) {
-    return res.status(401).json({ error: "User not found" });
+  if (row) {
+    const tenantId = row.tenantId;
+    if (!tenantId) {
+      return res.status(500).json({ error: "User has no tenant assigned" });
+    }
+    const role = row.role ?? "admin";
+    const token = signToken({ userId: row.userId, tenantId, role });
+    res.cookie(COOKIE, token, COOKIE_OPTS);
+    return res.json({
+      userId:    row.userId,
+      tenantId,
+      role,
+      isPlatformAdmin: false,
+      firstName: row.firstName,
+      lastName:  row.lastName,
+      email:     row.email,
+    });
   }
 
-  const tenantId = row.tenantId;
-  if (!tenantId) {
-    return res.status(500).json({ error: "User has no tenant assigned" });
+  // ── 2. Try platform admin ─────────────────────────────────────────────────
+  const [adminRow] = await db
+    .select()
+    .from(platformAdmins)
+    .where(eq(platformAdmins.id, userId))
+    .limit(1);
+
+  if (adminRow) {
+    const token = signToken({
+      userId:          adminRow.id,
+      tenantId:        null,
+      role:            "platform_admin",
+      isPlatformAdmin: true,
+    });
+    res.cookie(COOKIE, token, COOKIE_OPTS);
+    return res.json({
+      userId:          adminRow.id,
+      tenantId:        null,
+      role:            "platform_admin",
+      isPlatformAdmin: true,
+      firstName:       adminRow.firstName,
+      lastName:        adminRow.lastName,
+      email:           adminRow.email,
+    });
   }
-  const role = row.role ?? "admin";
 
-  const token = signToken({ userId: row.userId, tenantId, role });
-  res.cookie(COOKIE, token, COOKIE_OPTS);
-
-  res.json({
-    userId:    row.userId,
-    tenantId,
-    role,
-    firstName: row.firstName,
-    lastName:  row.lastName,
-    email:     row.email,
-  });
+  return res.status(401).json({ error: "User not found" });
 });
 
 /**
@@ -72,7 +100,7 @@ router.post("/logout", (_req, res) => {
 
 /**
  * GET /api/auth/me
- * Returns { userId, tenantId, role } from the session cookie.
+ * Returns the full session payload (including isPlatformAdmin when applicable).
  * Auth middleware skips /auth/*, so we verify the token ourselves.
  */
 router.get("/me", (req, res) => {
