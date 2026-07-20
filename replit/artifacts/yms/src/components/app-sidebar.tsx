@@ -26,6 +26,7 @@ import {
   PlayCircle,
   Mail,
   Users,
+  Lock,
 } from "lucide-react";
 
 import {
@@ -174,6 +175,28 @@ function NavItem({ item, badgeCounts }: { item: NavItem; badgeCounts?: Record<st
   );
 }
 
+/**
+ * LockedNavItem — shown when the role would have access but the module is not
+ * licensed for this tenant.  Communicates "upgrade to unlock" without hiding
+ * the feature entirely.  RBAC-restricted items (wrong role) are fully hidden.
+ */
+function LockedNavItem({ item }: { item: NavItem }) {
+  return (
+    <SidebarMenuItem className="relative">
+      <div
+        className="flex items-center gap-2 h-8 px-3 rounded-md text-[13px] select-none cursor-not-allowed"
+        style={{ opacity: 0.38 }}
+        title={`${item.title} is not included in your current plan`}
+        aria-disabled="true"
+      >
+        <item.icon className="h-4 w-4 shrink-0" />
+        <span className="truncate flex-1">{item.title}</span>
+        <Lock className="h-3 w-3 flex-shrink-0 ml-auto" aria-label="module locked" />
+      </div>
+    </SidebarMenuItem>
+  );
+}
+
 function CollapsibleNavGroup({
   label,
   items,
@@ -194,16 +217,32 @@ function CollapsibleNavGroup({
   const [open, setOpen] = useState(defaultOpen);
   const { entitlements } = useEntitlements();
 
-  const filtered = items.filter((item) => {
-    // Module entitlement: hide if the module is not licensed for this tenant
-    if (item.module && !moduleEnabled(entitlements, item.module)) return false;
-    // AI mode: hide ai-only items in Standard mode
+  // Hard hides: AI-only items in Standard mode, or role doesn't match at all.
+  // These are invisible — the user has no concept of them.
+  const roleVisible = items.filter((item) => {
     if (hideAI && item.aiOnly) return false;
-    // RBAC: hide if the current role doesn't have access
     if (item.roles && userRole && !item.roles.includes(userRole)) return false;
     return true;
   });
-  if (filtered.length === 0) return null;
+
+  // Of those the role can see, split by module licensing.
+  // Unlicensed → padlock (visible, upgrade affordance).
+  // No module field → always available.
+  const available = roleVisible.filter((item) => !item.module || moduleEnabled(entitlements, item.module));
+  const locked    = roleVisible.filter((item) =>  item.module && !moduleEnabled(entitlements, item.module));
+
+  if (available.length === 0 && locked.length === 0) return null;
+
+  const renderItems = () => (
+    <SidebarMenu className="gap-px">
+      {available.map((item) => (
+        <NavItem key={item.title} item={item} badgeCounts={badgeCounts} />
+      ))}
+      {locked.map((item) => (
+        <LockedNavItem key={item.title} item={item} />
+      ))}
+    </SidebarMenu>
+  );
 
   if (!collapsible) {
     return (
@@ -214,11 +253,7 @@ function CollapsibleNavGroup({
           </span>
         </div>
         <SidebarGroupContent>
-          <SidebarMenu className="gap-px">
-            {filtered.map((item) => (
-              <NavItem key={item.title} item={item} badgeCounts={badgeCounts} />
-            ))}
-          </SidebarMenu>
+          {renderItems()}
         </SidebarGroupContent>
       </SidebarGroup>
     );

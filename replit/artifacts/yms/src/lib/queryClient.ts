@@ -74,6 +74,20 @@ function isAuthError(error: unknown): boolean {
   return error instanceof Error && error.message.startsWith("401:");
 }
 
+/**
+ * True when the API returned 403 module_not_licensed.
+ * The sidebar already shows padlock icons for unlicensed modules, so there is
+ * no need to surface an additional error toast — the user already understands
+ * the feature is not included in their plan.
+ */
+function isModuleLicenseError(error: unknown): boolean {
+  return (
+    error instanceof Error &&
+    error.message.startsWith("403:") &&
+    error.message.includes("module_not_licensed")
+  );
+}
+
 export const queryClient = new QueryClient({
   queryCache: new QueryCache({
     onError(error, query) {
@@ -81,6 +95,8 @@ export const queryClient = new QueryClient({
       // In TanStack Query v5, useQuery has no per-query onError, so this is the
       // single global handler — fire for every non-auth query failure.
       if (isAuthError(error)) return;
+      // 403 module_not_licensed: sidebar padlocks already communicate the state.
+      if (isModuleLicenseError(error)) return;
       // Suppress background refetch noise: only toast when the query has no data
       // (i.e. the failure leaves the UI blank, not just stale).
       if (query.state.data !== undefined) return;
