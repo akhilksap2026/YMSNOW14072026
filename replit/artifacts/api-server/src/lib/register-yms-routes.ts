@@ -796,7 +796,7 @@ export async function registerYmsRoutes(app: Express): Promise<void> {
   });
 
   // Gate Check-In
-  app.post("/api/gate/check-in", async (req: any, res) => {
+  app.post("/api/gate/check-in", requirePermission("gate", "canExecute"), async (req: any, res) => {
     try {
       const {
         appointmentId,
@@ -841,7 +841,7 @@ export async function registerYmsRoutes(app: Express): Promise<void> {
         userId,
       });
 
-      const checkInRole = (req as any).headers?.["x-user-role"] || null;
+      const checkInRole = (req as any).auth?.role || (req as any).headers?.["x-user-role"] || null;
       await storage.createAuditLog({
         action: "gate_check_in",
         entityType: "visit",
@@ -868,7 +868,7 @@ export async function registerYmsRoutes(app: Express): Promise<void> {
   });
 
   // Gate Check-Out
-  app.post("/api/gate/check-out", async (req: any, res) => {
+  app.post("/api/gate/check-out", requirePermission("gate", "canExecute"), async (req: any, res) => {
     try {
       const visitId = Number(req.body.visitId);
       if (!visitId) return res.status(400).json({ message: "visitId is required" });
@@ -915,7 +915,7 @@ export async function registerYmsRoutes(app: Express): Promise<void> {
       const hrs = Math.floor(dwellMs / 3600000);
       const mins = Math.floor((dwellMs % 3600000) / 60000);
 
-      const checkOutRole = (req as any).headers?.["x-user-role"] || null;
+      const checkOutRole = (req as any).auth?.role || (req as any).headers?.["x-user-role"] || null;
       await storage.createAuditLog({
         action: "gate_check_out",
         entityType: "visit",
@@ -957,7 +957,7 @@ export async function registerYmsRoutes(app: Express): Promise<void> {
       const updated = await storage.updateVisit(id, update);
 
       const prevVisit = await storage.getVisit(id);
-      const statusRole = (req as any).headers?.["x-user-role"] || null;
+      const statusRole = (req as any).auth?.role || (req as any).headers?.["x-user-role"] || null;
       const auditDetails: any = {
         ...update,
         role: statusRole,
@@ -1855,7 +1855,7 @@ export async function registerYmsRoutes(app: Express): Promise<void> {
     res.status(501).json({ message: "File upload not configured" });
   });
 
-  app.patch("/api/admin/users/:userId/role", async (req: any, res) => {
+  app.patch("/api/admin/users/:userId/role", requirePermission("user_mgmt", "canModify"), async (req: any, res) => {
     try {
       const { userId } = req.params;
       const { role } = req.body;
@@ -2794,7 +2794,7 @@ export async function registerYmsRoutes(app: Express): Promise<void> {
   // Get permissions for the current user's role (for frontend enforcement)
   app.get("/api/admin/rbac/my-permissions", async (req, res) => {
     try {
-      const role = (req.headers["x-user-role"] as string) || "viewer";
+      const role = (req as any).auth?.role || (req.headers["x-user-role"] as string) || "viewer";
       const matrix = await getPermissionsForRole(role);
       res.json({ role, permissions: matrix });
     } catch (e: any) {

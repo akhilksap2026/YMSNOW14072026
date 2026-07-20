@@ -1,5 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 import { verifyToken } from "./session";
+import { tenantContext } from "./storage";
 
 // Extend Express Request so route handlers can read req.auth
 declare global {
@@ -34,5 +35,7 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction) 
   }
 
   req.auth = payload;
-  next();
+  // Bind the tenant to AsyncLocalStorage for the rest of this request's call chain.
+  // DatabaseStorage's proxy reads this to scope every query automatically.
+  tenantContext.run(payload.tenantId, next);
 }

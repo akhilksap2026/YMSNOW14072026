@@ -1,0 +1,1 @@
+- [Phase-0 architecture](phase0-arch.md) — YMSNOW multi-tenant hardening prompts 0.0–0.4 decisions and constraints

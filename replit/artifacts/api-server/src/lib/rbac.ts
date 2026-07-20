@@ -125,7 +125,9 @@ export function checkPermission(
 
 export function requirePermission(module: string, permType: PermType) {
   return (req: any, res: any, next: any) => {
-    const role: string = (req.headers["x-user-role"] as string) || "viewer";
+    // Prefer the server-verified role from the session cookie; fall back to the
+    // x-user-role header only for routes not yet fully hardened (persona-switcher).
+    const role: string = req.auth?.role || (req.headers["x-user-role"] as string) || "viewer";
     if (!checkPermission(role, module, permType)) {
       return res.status(403).json({
         message: "You do not have permission to perform this action. Please contact the Yard Supervisor.",

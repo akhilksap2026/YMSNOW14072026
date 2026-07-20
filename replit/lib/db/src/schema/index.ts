@@ -394,6 +394,7 @@ export const yardAuditItems = pgTable("yard_audit_items", {
 
 export const insertYardAuditItemSchema = createInsertSchema(yardAuditItems).omit({
   id: true,
+  tenantId: true,
   createdAt: true,
   updatedAt: true,
 });
@@ -448,6 +449,7 @@ export const inspections = pgTable("inspections", {
 
 export const insertInspectionSchema = createInsertSchema(inspections).omit({
   id: true,
+  tenantId: true,
   createdAt: true,
   updatedAt: true,
 });
@@ -508,8 +510,8 @@ export const aiAuditLogs = pgTable("ai_audit_logs", {
   riskLevel: text("risk_level"),
 });
 
-export const insertAiConfigSchema = createInsertSchema(aiConfig).omit({ id: true });
-export const insertAiAuditLogSchema = createInsertSchema(aiAuditLogs).omit({ id: true, createdAt: true });
+export const insertAiConfigSchema = createInsertSchema(aiConfig).omit({ id: true, tenantId: true });
+export const insertAiAuditLogSchema = createInsertSchema(aiAuditLogs).omit({ id: true, tenantId: true, createdAt: true });
 export type AiConfig = typeof aiConfig.$inferSelect;
 export type InsertAiConfig = z.infer<typeof insertAiConfigSchema>;
 export type AiAuditLog = typeof aiAuditLogs.$inferSelect;
@@ -528,21 +530,21 @@ export const revenueRates = pgTable("revenue_rates", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-export const insertRevenueRateSchema = createInsertSchema(revenueRates).omit({ id: true });
+export const insertRevenueRateSchema = createInsertSchema(revenueRates).omit({ id: true, tenantId: true });
 export type RevenueRate = typeof revenueRates.$inferSelect;
 export type InsertRevenueRate = z.infer<typeof insertRevenueRateSchema>;
 
-export const insertCarrierSchema = createInsertSchema(carriers).omit({ id: true, createdAt: true });
-export const insertYardZoneSchema = createInsertSchema(yardZones).omit({ id: true });
-export const insertYardSlotSchema = createInsertSchema(yardSlots).omit({ id: true });
-export const insertDockDoorSchema = createInsertSchema(dockDoors).omit({ id: true });
-export const insertGateSchema = createInsertSchema(gates).omit({ id: true });
-export const insertAppointmentSchema = createInsertSchema(appointments).omit({ id: true, createdAt: true, updatedAt: true });
-export const insertVisitSchema = createInsertSchema(visits).omit({ id: true, createdAt: true, updatedAt: true });
-export const insertMoveTaskSchema = createInsertSchema(moveTasks).omit({ id: true, createdAt: true });
-export const insertExceptionSchema = createInsertSchema(exceptions).omit({ id: true, createdAt: true });
-export const insertPhotoSchema = createInsertSchema(photos).omit({ id: true, createdAt: true });
-export const insertAuditLogSchema = createInsertSchema(auditLogs).omit({ id: true, createdAt: true });
+export const insertCarrierSchema = createInsertSchema(carriers).omit({ id: true, tenantId: true, createdAt: true });
+export const insertYardZoneSchema = createInsertSchema(yardZones).omit({ id: true, tenantId: true });
+export const insertYardSlotSchema = createInsertSchema(yardSlots).omit({ id: true, tenantId: true });
+export const insertDockDoorSchema = createInsertSchema(dockDoors).omit({ id: true, tenantId: true });
+export const insertGateSchema = createInsertSchema(gates).omit({ id: true, tenantId: true });
+export const insertAppointmentSchema = createInsertSchema(appointments).omit({ id: true, tenantId: true, createdAt: true, updatedAt: true });
+export const insertVisitSchema = createInsertSchema(visits).omit({ id: true, tenantId: true, createdAt: true, updatedAt: true });
+export const insertMoveTaskSchema = createInsertSchema(moveTasks).omit({ id: true, tenantId: true, createdAt: true });
+export const insertExceptionSchema = createInsertSchema(exceptions).omit({ id: true, tenantId: true, createdAt: true });
+export const insertPhotoSchema = createInsertSchema(photos).omit({ id: true, tenantId: true, createdAt: true });
+export const insertAuditLogSchema = createInsertSchema(auditLogs).omit({ id: true, tenantId: true, createdAt: true });
 export const insertUserProfileSchema = createInsertSchema(userProfiles).omit({ id: true });
 export const insertGateTransactionSchema = createInsertSchema(gateTransactions).omit({ id: true });
 
