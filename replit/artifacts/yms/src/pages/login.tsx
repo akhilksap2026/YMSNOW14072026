@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Eye, EyeOff, ChevronDown, Check, LogIn, Shield, Activity, Layers, GitMerge } from "lucide-react";
 import { DEMO_USERS, ROLE_META, type DemoUser } from "@/lib/demo-users";
+import { apiRequest, storeCurrentRole } from "@/lib/queryClient";
 
 // ─── Isometric constants (module-level, never re-created) ──────────────────
 const TW = 48, TH = 24, BH = 28;
@@ -382,11 +383,22 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selected)             { setError("Select an operator profile to continue."); return; }
-    if (password !== "12345")  { setError("Access denied — invalid credentials."); return; }
+    if (!selected) { setError("Select an operator profile to continue."); return; }
     setLoading(true);
-    await new Promise(r => setTimeout(r, 750));
-    onLogin(selected.id, selected.role);
+    setError("");
+    try {
+      const res = await apiRequest("POST", "/api/auth/login", {
+        userId: selected.id,
+        password,
+      });
+      const data = await res.json();
+      storeCurrentRole(data.role);
+      onLogin(data.userId, data.role);
+    } catch (err: any) {
+      setError(err.message?.replace(/^\d+: /, "") || "Login failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

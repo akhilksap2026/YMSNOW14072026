@@ -1,8 +1,10 @@
 import express, { type Express, type Request, type Response, type NextFunction } from "express";
 import cors from "cors";
 import compression from "compression";
+import cookieParser from "cookie-parser";
 import router from "./routes";
 import { registerYmsRoutes } from "./lib/register-yms-routes";
+import { authMiddleware } from "./lib/auth-middleware";
 
 const app: Express = express();
 
@@ -10,6 +12,11 @@ app.use(compression());
 app.use(cors());
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+
+// Auth middleware — enforces session cookie on all /api routes.
+// /api/auth/* and /api/health are skipped inside the middleware.
+app.use("/api", authMiddleware);
 
 app.use("/api", router);
 

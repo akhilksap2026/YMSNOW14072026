@@ -34,7 +34,6 @@ function TabletSidebarSync() {
 }
 
 const SHIFT_START_KEY = "ymsnow_shift_start";
-const LOGIN_KEY = "ymsnow_logged_in";
 
 function useShiftClock() {
   const [elapsed, setElapsed] = useState("");
@@ -312,7 +311,7 @@ function AuthenticatedApp({ onLogout }: { onLogout: () => void }) {
   const changeRoleMutation = useMutation({
     mutationFn: async (newRole: string) => {
       if (!user) return;
-      await apiRequest("PATCH", `/api/admin/users/${user.id}/role`, { role: newRole });
+      await apiRequest("PATCH", `/api/admin/users/${user.userId}/role`, { role: newRole });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/user/profile"] });
@@ -511,35 +510,41 @@ function AuthenticatedApp({ onLogout }: { onLogout: () => void }) {
 }
 
 function AppGate() {
-  const [isLoggedIn, setIsLoggedIn] = useState(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get("autologin") === "1") {
-      localStorage.setItem(LOGIN_KEY, "true");
-      localStorage.setItem(PERSONA_KEY, "demo-admin-001");
-      return true;
-    }
-    return localStorage.getItem(LOGIN_KEY) === "true";
-  });
+  const { user, isLoading } = useAuth();
+
+  // Keep the x-user-role header in sync so existing RBAC middleware keeps working
+  useEffect(() => {
+    if (user) storeCurrentRole(user.role);
+  }, [user?.role]);
 
   const handleLogin = (userId: string, role: string) => {
-    localStorage.setItem(LOGIN_KEY, "true");
+    // login.tsx already called POST /api/auth/login and storeCurrentRole
     localStorage.setItem(PERSONA_KEY, userId);
-    storeCurrentRole(role);
     if (role === "carrier") {
       window.location.replace("/portal");
       return;
     }
-    setIsLoggedIn(true);
+    // Invalidate the me-query so useAuth re-fetches and transitions to authenticated state
+    queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem(LOGIN_KEY);
-    sessionStorage.removeItem("ymsnow_shift_start");
+  const handleLogout = async () => {
+    try { await apiRequest("POST", "/api/auth/logout"); } catch { /* ignore */ }
+    sessionStorage.removeItem(SHIFT_START_KEY);
+    // Immediately clear the cached identity so the login page renders at once
+    queryClient.setQueryData(["/api/auth/me"], null);
     queryClient.clear();
-    setIsLoggedIn(false);
   };
 
-  if (!isLoggedIn) {
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <Skeleton className="h-32 w-64 mx-auto mt-20" />
+      </div>
+    );
+  }
+
+  if (!user) {
     return <LoginPage onLogin={handleLogin} />;
   }
 
