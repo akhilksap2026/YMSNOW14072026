@@ -3,8 +3,9 @@ import { getQueryFn } from "@/lib/queryClient";
 
 export interface AuthUser {
   userId: string;
-  tenantId: string;
+  tenantId: string | null;
   role: string;
+  isPlatformAdmin?: boolean;
   firstName?: string;
   lastName?: string;
   email?: string;

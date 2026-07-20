@@ -9,7 +9,7 @@ import { AppSidebar, allNavItems } from "@/components/app-sidebar";
 import { useAuth } from "@/hooks/use-auth";
 import { useState, useEffect, lazy, Suspense } from "react";
 import { Button } from "@/components/ui/button";
-import { Moon, Sun, RotateCcw, ChevronRight, Bell, Shield, LogOut } from "lucide-react";
+import { Moon, Sun, RotateCcw, ChevronRight, Bell, Shield, LogOut, Building2 } from "lucide-react";
 import { TabletViewProvider, useTabletView } from "@/lib/tablet-view";
 import { TabletToggle } from "@/components/tablet-toggle";
 import { AIAssistant } from "@/components/ai-assistant";
@@ -92,7 +92,8 @@ const InspectionsPage   = lazy(() => import("@/pages/inspections"));
 const ReportsPage       = lazy(() => import("@/pages/reports"));
 const AdminAiConfigPage = lazy(() => import("@/pages/admin-ai-config"));
 const RevenuePage       = lazy(() => import("@/pages/revenue"));
-const EmailIntelligencePage = lazy(() => import("@/pages/email-intelligence"));
+const EmailIntelligencePage  = lazy(() => import("@/pages/email-intelligence"));
+const PlatformAdminPage      = lazy(() => import("@/pages/platform-admin"));
 const NotificationsPage = lazy(() => import("@/pages/notifications"));
 const GateGuardPage     = lazy(() => import("@/pages/gate-guard"));
 const CarrierPortalPage = lazy(() => import("@/pages/carrier-portal"));
@@ -562,6 +563,47 @@ function AuthenticatedApp({ onLogout }: { onLogout: () => void }) {
   );
 }
 
+/**
+ * Minimal shell rendered for isPlatformAdmin sessions.
+ * Completely separate from AuthenticatedApp — no tenant sidebar, no module guards.
+ */
+function PlatformAdminShell({ onLogout }: { onLogout: () => void }) {
+  return (
+    <div className="min-h-screen bg-background flex flex-col">
+      <header className="border-b h-11 flex items-center justify-between px-5 shrink-0 bg-background/80 backdrop-blur-sm">
+        <div className="flex items-center gap-3">
+          <Building2 className="h-4 w-4 text-primary" />
+          <span className="text-sm font-bold tracking-tight">KSAP</span>
+          <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground border border-border rounded px-1.5 py-0.5">
+            Platform Admin
+          </span>
+        </div>
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={onLogout}
+          className="h-7 text-xs text-muted-foreground gap-1.5"
+        >
+          <LogOut className="h-3 w-3" />
+          Sign out
+        </Button>
+      </header>
+      <main className="flex-1 overflow-auto p-6">
+        <div className="max-w-5xl mx-auto">
+          <Suspense fallback={
+            <div className="space-y-4">
+              <Skeleton className="h-8 w-48" />
+              <Skeleton className="h-64 w-full" />
+            </div>
+          }>
+            <PlatformAdminPage />
+          </Suspense>
+        </div>
+      </main>
+    </div>
+  );
+}
+
 function AppGate() {
   const { user, isLoading } = useAuth();
 
@@ -599,6 +641,10 @@ function AppGate() {
 
   if (!user) {
     return <LoginPage onLogin={handleLogin} />;
+  }
+
+  if (user.isPlatformAdmin) {
+    return <PlatformAdminShell onLogout={handleLogout} />;
   }
 
   return <AuthenticatedApp onLogout={handleLogout} />;
