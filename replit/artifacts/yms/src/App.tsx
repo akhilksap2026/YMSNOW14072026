@@ -24,6 +24,7 @@ import LoginPage from "@/pages/login";
 import { ProductModeProvider, useProductMode, showAIRecommendations } from "@/lib/product-mode";
 import { ModeSelector } from "@/components/mode-selector";
 import { EntitlementsProvider, useEntitlements, moduleEnabled } from "@/lib/entitlements";
+import { ErrorBoundary } from "@/components/error-boundary";
 
 function TabletSidebarSync() {
   const { tabletMode } = useTabletView();
@@ -668,22 +669,24 @@ export default function App() {
       <TabletViewProvider>
       <ThemeProvider>
         <TooltipProvider>
-          <Switch>
-            <Route path="/portal">
-              <Suspense fallback={<div className="flex items-center justify-center h-screen"><Skeleton className="h-32 w-64 mx-auto mt-20" /></div>}>
-                <CarrierPortalPage />
-              </Suspense>
-            </Route>
-            <Route path="/video">
-              <Suspense fallback={<div className="flex items-center justify-center h-screen bg-[#0f172a]"><Skeleton className="h-32 w-64 mx-auto mt-20" /></div>}>
-                <TruckLifecycleVideoPage />
-              </Suspense>
-            </Route>
-            <Route>
-              <AppGate />
-            </Route>
-          </Switch>
-          <Toaster />
+          <ErrorBoundary>
+            <Switch>
+              <Route path="/portal">
+                <Suspense fallback={<div className="flex items-center justify-center h-screen"><Skeleton className="h-32 w-64 mx-auto mt-20" /></div>}>
+                  <CarrierPortalPage />
+                </Suspense>
+              </Route>
+              <Route path="/video">
+                <Suspense fallback={<div className="flex items-center justify-center h-screen bg-[#0f172a]"><Skeleton className="h-32 w-64 mx-auto mt-20" /></div>}>
+                  <TruckLifecycleVideoPage />
+                </Suspense>
+              </Route>
+              <Route>
+                <AppGate />
+              </Route>
+            </Switch>
+            <Toaster />
+          </ErrorBoundary>
         </TooltipProvider>
       </ThemeProvider>
       </TabletViewProvider>

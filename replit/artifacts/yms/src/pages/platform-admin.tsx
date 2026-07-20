@@ -27,6 +27,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Plus, Building2, RefreshCw, PauseCircle, PlayCircle, Loader2, Settings2 } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useLocation } from "wouter";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -206,12 +207,18 @@ export default function PlatformAdminPage() {
           </TableHeader>
           <TableBody>
             {isLoading ? (
-              <TableRow>
-                <TableCell colSpan={6} className="h-32 text-center text-muted-foreground text-sm">
-                  <Loader2 className="h-4 w-4 animate-spin inline mr-2" />
-                  Loading tenants…
-                </TableCell>
-              </TableRow>
+              <>
+                {[1, 2, 3].map((i) => (
+                  <TableRow key={i}>
+                    <TableCell><Skeleton className="h-4 w-44" /></TableCell>
+                    <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+                    <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+                    <TableCell><Skeleton className="h-4 w-16" /></TableCell>
+                    <TableCell><Skeleton className="h-4 w-28" /></TableCell>
+                    <TableCell className="text-right"><Skeleton className="h-7 w-32 ml-auto" /></TableCell>
+                  </TableRow>
+                ))}
+              </>
             ) : tenants.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={6} className="h-32 text-center text-muted-foreground text-sm">
