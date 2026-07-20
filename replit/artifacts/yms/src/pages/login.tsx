@@ -374,21 +374,33 @@ const TRUCK_ICON = (
 interface LoginPageProps { onLogin: (userId:string, role:string)=>void; }
 
 export default function LoginPage({ onLogin }: LoginPageProps) {
-  const [selected, setSelected] = useState<DemoUser|null>(null);
-  const [password, setPassword] = useState("12345");
-  const [showPw, setShowPw]     = useState(false);
-  const [error, setError]       = useState("");
-  const [loading, setLoading]   = useState(false);
-  const [pwFocus, setPwFocus]   = useState(false);
+  const [selected, setSelected]         = useState<DemoUser|null>(null);
+  const [password, setPassword]         = useState("12345");
+  const [showPw, setShowPw]             = useState(false);
+  const [error, setError]               = useState("");
+  const [loading, setLoading]           = useState(false);
+  const [pwFocus, setPwFocus]           = useState(false);
+  const [platformMode, setPlatformMode] = useState(false);
+  const [manualUser, setManualUser]     = useState("");
+  const [userFocus, setUserFocus]       = useState(false);
+
+  const switchMode = (toPlat: boolean) => {
+    setPlatformMode(toPlat);
+    setError("");
+    setManualUser(toPlat ? "ksap-admin" : "");
+    setPassword("12345");
+    if (!toPlat) setSelected(null);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selected) { setError("Select an operator profile to continue."); return; }
+    if (!platformMode && !selected) { setError("Select an operator profile to continue."); return; }
+    if (platformMode && !manualUser.trim()) { setError("Enter your platform admin username."); return; }
     setLoading(true);
     setError("");
     try {
       const res = await apiRequest("POST", "/api/auth/login", {
-        userId: selected.id,
+        userId: platformMode ? manualUser.trim() : selected!.id,
         password,
       });
       const data = await res.json();
@@ -505,26 +517,81 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-[10px] font-bold uppercase tracking-widest mb-1.5" style={{ color:"#475569" }}>
-                  Operator Profile
-                </label>
-                <UserDropdown selected={selected} onSelect={u=>{ setSelected(u); setError(""); }}/>
+
+              {/* Mode toggle */}
+              <div className="flex items-center justify-between">
+                {!platformMode ? (
+                  <span className="text-[10px]" style={{ color:"#94a3b8" }}>
+                    Platform admin?{" "}
+                    <button type="button" onClick={()=>switchMode(true)}
+                      className="font-semibold underline" style={{ color:"#1d4ed8" }}>
+                      Sign in here
+                    </button>
+                  </span>
+                ) : (
+                  <span className="text-[10px]" style={{ color:"#94a3b8" }}>
+                    <button type="button" onClick={()=>switchMode(false)}
+                      className="font-semibold underline" style={{ color:"#1d4ed8" }}>
+                      ← Back to operator login
+                    </button>
+                  </span>
+                )}
               </div>
 
-              <div>
-                <label className="block text-[10px] font-bold uppercase tracking-widest mb-1.5" style={{ color:"#475569" }}>
-                  System Username
-                </label>
-                <div className="relative">
-                  <input type="text" readOnly value={selected?.username??""} placeholder="auto-populated on selection"
+              {!platformMode ? (
+                <>
+                  <div>
+                    <label className="block text-[10px] font-bold uppercase tracking-widest mb-1.5" style={{ color:"#475569" }}>
+                      Operator Profile
+                    </label>
+                    <UserDropdown selected={selected} onSelect={u=>{ setSelected(u); setError(""); }}/>
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] font-bold uppercase tracking-widest mb-1.5" style={{ color:"#475569" }}>
+                      System Username
+                    </label>
+                    <div className="relative">
+                      <input type="text" readOnly value={selected?.username??""} placeholder="auto-populated on selection"
+                        autoComplete="username"
+                        className="w-full px-3 py-2.5 rounded-xl text-[13px] focus:outline-none"
+                        style={{ background:"#f8fafc", border:"1.5px solid #e2e8f0",
+                                 color:selected?"#475569":"#cbd5e1", cursor:"default" }}/>
+                      {selected && <div className="absolute right-3 top-1/2 -translate-y-1/2"><RoleBadge role={selected.role}/></div>}
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div>
+                  <label className="block text-[10px] font-bold uppercase tracking-widest mb-1.5" style={{ color:"#475569" }}>
+                    Platform Admin Username
+                  </label>
+                  <div className="flex items-center gap-1.5 mb-2">
+                    <div className="w-4 h-4 rounded flex items-center justify-center flex-shrink-0"
+                      style={{ background:"#1e3a8a" }}>
+                      <Shield className="w-2.5 h-2.5 text-white" />
+                    </div>
+                    <span className="text-[10px] font-semibold" style={{ color:"#1e3a8a" }}>KSAP Platform Administration</span>
+                  </div>
+                  <input
+                    type="text"
+                    value={manualUser}
+                    onChange={e=>{ setManualUser(e.target.value); setError(""); }}
+                    onFocus={()=>setUserFocus(true)}
+                    onBlur={()=>setUserFocus(false)}
+                    placeholder="Platform admin username"
                     autoComplete="username"
-                    className="w-full px-3 py-2.5 rounded-xl text-[13px] focus:outline-none"
-                    style={{ background:"#f8fafc", border:"1.5px solid #e2e8f0",
-                             color:selected?"#475569":"#cbd5e1", cursor:"default" }}/>
-                  {selected && <div className="absolute right-3 top-1/2 -translate-y-1/2"><RoleBadge role={selected.role}/></div>}
+                    autoFocus
+                    className="w-full px-3 py-2.5 rounded-xl text-[13px] focus:outline-none transition-all"
+                    style={{
+                      background: userFocus ? "#f0f7ff" : "#f8fafc",
+                      border: `1.5px solid ${error ? "#f87171" : userFocus ? "#1d4ed8" : "#e2e8f0"}`,
+                      color: "#0f172a",
+                      boxShadow: userFocus ? "0 0 0 3px rgba(29,78,216,0.10)" : "none",
+                    }}
+                  />
                 </div>
-              </div>
+              )}
 
               <div>
                 <label className="block text-[10px] font-bold uppercase tracking-widest mb-1.5" style={{ color:"#475569" }}>
