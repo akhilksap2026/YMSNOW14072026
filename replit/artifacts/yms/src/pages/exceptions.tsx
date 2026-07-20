@@ -232,7 +232,7 @@ export default function ExceptionsPage() {
         filters={
           <>
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-[140px]" data-testid="select-exception-status">
+              <SelectTrigger className="w-[140px]" aria-label="Filter by status" data-testid="select-exception-status">
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
@@ -242,7 +242,7 @@ export default function ExceptionsPage() {
               </SelectContent>
             </Select>
             <Select value={severityFilter} onValueChange={setSeverityFilter}>
-              <SelectTrigger className="w-[130px]" data-testid="select-severity-filter">
+              <SelectTrigger className="w-[130px]" aria-label="Filter by severity" data-testid="select-severity-filter">
                 <SelectValue placeholder="Severity" />
               </SelectTrigger>
               <SelectContent>
@@ -254,7 +254,7 @@ export default function ExceptionsPage() {
               </SelectContent>
             </Select>
             <Select value={typeFilter} onValueChange={setTypeFilter}>
-              <SelectTrigger className="w-[150px]" data-testid="select-type-filter">
+              <SelectTrigger className="w-[150px]" aria-label="Filter by hold type" data-testid="select-type-filter">
                 <SelectValue placeholder="Hold type" />
               </SelectTrigger>
               <SelectContent>

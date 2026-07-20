@@ -920,7 +920,7 @@ export default function MoveTasksPage({ userRole, currentPersonaId }: { userRole
             <div className="w-px h-5 bg-border mx-0.5 shrink-0" />
             <Tip text="Filter by specific move type or urgency">
               <Select value={quickFilter} onValueChange={setQuickFilter}>
-                <SelectTrigger className="h-8 w-36 text-xs bg-background" data-testid="select-quick-filter">
+                <SelectTrigger className="h-8 w-36 text-xs bg-background" aria-label="Quick filter by move type" data-testid="select-quick-filter">
                   <SelectValue placeholder="Quick Filter" />
                 </SelectTrigger>
                 <SelectContent>

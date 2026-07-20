@@ -1299,7 +1299,7 @@ export default function YardInventoryPage({ userRole }: { userRole?: string } = 
       <div className="flex items-center gap-2 flex-wrap border border-border/60 rounded-lg bg-muted/20 px-3 py-2 shadow-sm">
         <Tip text="Filter trailers by workflow stage">
           <Select value={segment} onValueChange={(v) => setSegment(v as SegmentFilter)}>
-            <SelectTrigger className="w-44 h-8 text-xs bg-background" data-testid="select-segment">
+            <SelectTrigger className="w-44 h-8 text-xs bg-background" aria-label="Filter by workflow stage" data-testid="select-segment">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -1331,7 +1331,7 @@ export default function YardInventoryPage({ userRole }: { userRole?: string } = 
 
         <Tip text="Filter by movement type (inbound, outbound, live load, etc.)">
           <Select value={typeFilter} onValueChange={setTypeFilter}>
-            <SelectTrigger className="w-36 h-8 text-xs bg-background" data-testid="select-type-filter">
+            <SelectTrigger className="w-36 h-8 text-xs bg-background" aria-label="Filter by movement type" data-testid="select-type-filter">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>

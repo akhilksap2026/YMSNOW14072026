@@ -19,8 +19,8 @@ import { apiRequest, storeCurrentRole } from "@/lib/queryClient";
 import { invalidateAll } from "@/lib/invalidation";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import NotFound from "@/pages/not-found";
 import LoginPage from "@/pages/login";
+import DashboardPage from "@/pages/dashboard";
 import { ProductModeProvider, useProductMode, showAIRecommendations } from "@/lib/product-mode";
 import { ModeSelector } from "@/components/mode-selector";
 import { EntitlementsProvider, useEntitlements, moduleEnabled } from "@/lib/entitlements";
@@ -75,7 +75,7 @@ function ShiftClock() {
   );
 }
 
-const DashboardPage     = lazy(() => import("@/pages/dashboard"));
+const NotFoundPage      = lazy(() => import("@/pages/not-found"));
 const AppointmentsPage  = lazy(() => import("@/pages/appointments"));
 const GateCheckInPage   = lazy(() => import("@/pages/gate-checkin"));
 const GateCheckOutPage  = lazy(() => import("@/pages/gate-checkout"));
@@ -325,7 +325,7 @@ function AppRouter({ userRole, currentPersona }: { userRole?: string; currentPer
         </ModuleGuard>
       </Route>
 
-      <Route component={NotFound} />
+      <Route component={NotFoundPage} />
     </Switch>
   );
 }

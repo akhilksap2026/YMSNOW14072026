@@ -77,7 +77,7 @@ function GatePassPrint({ visit, onClose, onNewCheckIn }: {
           <h2 className="text-base font-bold flex items-center gap-2">
             <FileText className="h-4 w-4 text-primary" /> Gate Pass Ready
           </h2>
-          <Button variant="ghost" size="icon" onClick={onClose}><X className="h-4 w-4" /></Button>
+          <Button variant="ghost" size="icon" aria-label="Close gate pass" onClick={onClose}><X className="h-4 w-4" /></Button>
         </div>
 
         <div ref={printRef} className="border-2 border-foreground rounded-lg p-6 bg-background text-foreground">
@@ -310,7 +310,7 @@ export default function GateGuardPage() {
           {step === "form" && (
             <div className="space-y-5">
               <div className="flex items-center gap-3">
-                <Button variant="ghost" size="icon" onClick={handleReset}><ArrowRight className="h-4 w-4 rotate-180" /></Button>
+                <Button variant="ghost" size="icon" aria-label="Go back" onClick={handleReset}><ArrowRight className="h-4 w-4 rotate-180" /></Button>
                 <div>
                   <h2 className="text-xl font-bold">{isWalkIn ? "Walk-In Check-In" : `Appointment ${selectedApt?.referenceNumber}`}</h2>
                   <p className="text-sm text-muted-foreground">{isWalkIn ? "Enter driver and vehicle details" : "Confirm and complete check-in"}</p>

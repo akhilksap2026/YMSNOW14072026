@@ -538,6 +538,7 @@ export default function YardMapPage() {
           className="h-7 w-7 shrink-0"
           onClick={() => setLeftPanelOpen(v => !v)}
           title={leftPanelOpen ? "Hide queue panel" : "Show queue panel"}
+          aria-label={leftPanelOpen ? "Hide queue panel" : "Show queue panel"}
           data-testid="button-toggle-left-panel"
         >
           {leftPanelOpen
@@ -638,10 +639,10 @@ export default function YardMapPage() {
             <BookOpen className="h-3 w-3" />
             <span className="hidden sm:inline">Legend</span>
           </Button>
-          <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleZoom(0.8)} title="Zoom in" data-testid="button-zoom-in"><ZoomIn className="h-3.5 w-3.5" /></Button>
-          <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleZoom(1.25)} title="Zoom out" data-testid="button-zoom-out"><ZoomOut className="h-3.5 w-3.5" /></Button>
-          <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleFitAll} title="Fit all" data-testid="button-fit-all"><Maximize2 className="h-3.5 w-3.5" /></Button>
-          <Button variant="ghost" size="icon" className="h-6 w-6" title="Click slot to select · Drag to move · Scroll to zoom · Hold to pan" data-testid="button-map-help">
+          <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleZoom(0.8)} title="Zoom in" aria-label="Zoom in" data-testid="button-zoom-in"><ZoomIn className="h-3.5 w-3.5" /></Button>
+          <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleZoom(1.25)} title="Zoom out" aria-label="Zoom out" data-testid="button-zoom-out"><ZoomOut className="h-3.5 w-3.5" /></Button>
+          <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleFitAll} title="Fit all" aria-label="Fit all" data-testid="button-fit-all"><Maximize2 className="h-3.5 w-3.5" /></Button>
+          <Button variant="ghost" size="icon" className="h-6 w-6" title="Click slot to select · Drag to move · Scroll to zoom · Hold to pan" aria-label="Map keyboard shortcuts: click to select, drag to move, scroll to zoom, hold to pan" data-testid="button-map-help">
             <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
           </Button>
         </div>
@@ -990,9 +991,14 @@ export default function YardMapPage() {
                     const matchesFilter = slotMatchesFilter(s);
                     return (
                       <g key={s.id} data-testid={`map-slot-${s.id}`}
+                        role="button"
+                        aria-label={s.visitNumber ? `Slot ${s.slotNumber}: ${s.trailerNumber || s.visitNumber}${s.movementType ? `, ${s.movementType}` : ''}${isSelected ? ', selected' : ''}` : s.isBlocked ? `Slot ${s.slotNumber}: blocked` : `Slot ${s.slotNumber}: empty`}
+                        aria-pressed={isSelected}
+                        tabIndex={0}
                         onMouseEnter={e => { setHoveredSlot(s.id); setHoverSlotData({ slot: s, x: e.clientX, y: e.clientY }); setHoverDoorData(null); }}
                         onMouseLeave={() => { setHoveredSlot(null); setHoverSlotData(null); }}
                         onMouseDown={e => { if (s.visitNumber) startDragSlot(s, e); }}
+                        onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedSlot(s); } }}
                         style={{ cursor: s.visitNumber ? "grab" : "default", opacity: hasFilters && !matchesFilter ? 0.15 : 1, transition: "opacity 0.2s" }}>
 
                         {/* Selection highlight ring */}

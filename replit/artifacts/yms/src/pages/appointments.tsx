@@ -590,7 +590,7 @@ function AptRow({ apt, carrierName, onSelect, onQuickAction, isPending }: AptRow
         )}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-7 w-7" disabled={isPending}>
+            <Button variant="ghost" size="icon" className="h-7 w-7" aria-label="Appointment options" disabled={isPending}>
               <MoreHorizontal className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
@@ -1230,7 +1230,7 @@ export default function AppointmentsPage({
           filters={
             <>
               <Select value={typeFilter} onValueChange={setTypeFilter}>
-                <SelectTrigger className="w-[160px] h-9">
+                <SelectTrigger className="w-[160px] h-9" aria-label="Filter by appointment type">
                   <SelectValue placeholder="All Types" />
                 </SelectTrigger>
                 <SelectContent>
@@ -1314,13 +1314,13 @@ export default function AppointmentsPage({
                 {calendarTitle}
               </h3>
               <div className="flex items-center bg-muted p-0.5 rounded-md border">
-                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => navigateCalendar(-1)}>
+                <Button variant="ghost" size="icon" className="h-7 w-7" aria-label="Previous period" onClick={() => navigateCalendar(-1)}>
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
                 <Button variant="ghost" size="sm" className="h-7 px-2.5 text-xs font-medium" onClick={() => setCalDate(new Date())}>
                   Today
                 </Button>
-                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => navigateCalendar(1)}>
+                <Button variant="ghost" size="icon" className="h-7 w-7" aria-label="Next period" onClick={() => navigateCalendar(1)}>
                   <ChevronRight className="h-4 w-4" />
                 </Button>
               </div>

@@ -194,7 +194,7 @@ export default function CarrierPortalPage() {
           <Card className="shadow-sm">
             <CardContent className="p-6 space-y-5">
               <div className="flex items-center gap-2">
-                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setStep("date")}>
+                <Button variant="ghost" size="icon" className="h-8 w-8" aria-label="Back to date selection" onClick={() => setStep("date")}>
                   <ArrowLeft className="h-4 w-4" />
                 </Button>
                 <div>
@@ -248,7 +248,7 @@ export default function CarrierPortalPage() {
           <Card className="shadow-sm">
             <CardContent className="p-6 space-y-5">
               <div className="flex items-center gap-2">
-                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setStep("slot")}>
+                <Button variant="ghost" size="icon" className="h-8 w-8" aria-label="Back to time slots" onClick={() => setStep("slot")}>
                   <ArrowLeft className="h-4 w-4" />
                 </Button>
                 <div>
