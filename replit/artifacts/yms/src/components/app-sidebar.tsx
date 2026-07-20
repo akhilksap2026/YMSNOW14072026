@@ -77,27 +77,39 @@ const dashboardItem: NavItem = {
   title: "Dashboard",
   url: "/",
   icon: LayoutDashboard,
-  roles: ["admin", "yard_manager", "supervisor", "dock_user", "gate_guard", "yard_jockey"],
+  // All operational roles see the dashboard; carrier excluded (carrier portal is their home)
+  roles: ["admin", "yard_manager", "dock_user", "gate_guard", "yard_jockey"],
 };
 
 const operationsItems: NavItem[] = [
-  { title: "Appointments",    url: "/appointments",   icon: CalendarDays,    roles: ["admin", "yard_manager", "supervisor", "carrier"],                               module: "appointments"  },
-  { title: "Gate Operations", url: "/gate/check-in",  icon: LogIn,           roles: ["admin", "yard_manager", "supervisor", "gate_guard"], badgeKey: "gateExpected", module: "gate"          },
-  { title: "Yard Inventory",  url: "/yard/inventory", icon: Truck,           roles: ["admin", "yard_manager", "supervisor", "gate_guard", "yard_jockey", "dock_user"],module: "yard_inventory"},
-  { title: "Yard Map",        url: "/yard/map",       icon: MapPin,          roles: ["admin", "yard_manager", "supervisor", "yard_jockey"], secondary: true,          module: "yard_map"      },
-  { title: "Dock Management", url: "/dock",           icon: DoorOpen,        roles: ["admin", "yard_manager", "supervisor", "dock_user"],                             module: "dock"          },
-  { title: "Yard Moves",      url: "/moves",          icon: ArrowRightLeft,  roles: ["admin", "yard_manager", "supervisor", "yard_jockey", "dock_user"], badgeKey: "movePending", module: "move_tasks" },
+  // RBAC: admin+yard_manager=ALL; gate_guard=VIEW; dock_user=VIEW; carrier=VIEW
+  { title: "Appointments",    url: "/appointments",   icon: CalendarDays,    roles: ["admin", "yard_manager", "gate_guard", "dock_user", "carrier"],               module: "appointments"  },
+  // RBAC: admin+yard_manager=ALL; gate_guard=VCME (primary operator)
+  { title: "Gate Operations", url: "/gate/check-in",  icon: LogIn,           roles: ["admin", "yard_manager", "gate_guard"], badgeKey: "gateExpected",             module: "gate"          },
+  // RBAC: all operational roles have at least VIEW on yard_slot
+  { title: "Yard Inventory",  url: "/yard/inventory", icon: Truck,           roles: ["admin", "yard_manager", "gate_guard", "yard_jockey", "dock_user"],           module: "yard_inventory"},
+  // RBAC: admin+yard_manager=ALL; yard_jockey=VME (primary mover)
+  { title: "Yard Map",        url: "/yard/map",       icon: MapPin,          roles: ["admin", "yard_manager", "yard_jockey"], secondary: true,                     module: "yard_map"      },
+  // RBAC: admin+yard_manager=ALL; dock_user=VCM (primary operator)
+  { title: "Dock Management", url: "/dock",           icon: DoorOpen,        roles: ["admin", "yard_manager", "dock_user"],                                        module: "dock"          },
+  // RBAC: admin+yard_manager=ALL; yard_jockey=VME; dock_user=VC
+  { title: "Yard Moves",      url: "/moves",          icon: ArrowRightLeft,  roles: ["admin", "yard_manager", "yard_jockey", "dock_user"], badgeKey: "movePending",module: "move_tasks"    },
 ];
 
 const complianceItems: NavItem[] = [
-  { title: "Holds & Exceptions", url: "/exceptions",  icon: AlertTriangle, roles: ["admin", "yard_manager", "supervisor"], badgeKey: "exceptionsOpen", module: "hold_mgmt"   },
-  { title: "Inspections",        url: "/inspections",  icon: ShieldCheck,   roles: ["admin", "yard_manager", "supervisor", "gate_guard", "dock_user"], secondary: true, module: "inspections" },
-  { title: "Yard Audit",         url: "/yard/audit",   icon: ClipboardCheck,roles: ["admin", "yard_manager", "supervisor"], secondary: true,           module: "yard_audit"  },
+  // RBAC: admin+yard_manager=ALL; gate_guard=VC (can raise holds); dock_user=VIEW
+  { title: "Holds & Exceptions", url: "/exceptions",  icon: AlertTriangle, roles: ["admin", "yard_manager", "gate_guard", "dock_user"], badgeKey: "exceptionsOpen", module: "hold_mgmt"   },
+  // RBAC: admin+yard_manager=ALL; gate_guard and dock_user perform inspections
+  { title: "Inspections",        url: "/inspections",  icon: ShieldCheck,   roles: ["admin", "yard_manager", "gate_guard", "dock_user"], secondary: true,           module: "inspections" },
+  // RBAC: admin+yard_manager only (audit requires modify/approve)
+  { title: "Yard Audit",         url: "/yard/audit",   icon: ClipboardCheck,roles: ["admin", "yard_manager"], secondary: true,                                     module: "yard_audit"  },
 ];
 
 const analyticsItems: NavItem[] = [
-  { title: "Reports & Analytics", url: "/reports",       icon: BarChart3,   roles: ["admin", "yard_manager", "supervisor"],                             module: "reports" },
-  { title: "Revenue",             url: "/revenue",       icon: TrendingUp,  roles: ["admin", "yard_manager", "supervisor"], secondary: true,            module: "reports" },
+  // RBAC: admin=ALL; yard_manager=VIEW; dock_user=VIEW (reports module is Pro+)
+  { title: "Reports & Analytics", url: "/reports",       icon: BarChart3,   roles: ["admin", "yard_manager", "dock_user"],                              module: "reports" },
+  // Revenue is admin/manager-only financial data
+  { title: "Revenue",             url: "/revenue",       icon: TrendingUp,  roles: ["admin", "yard_manager"], secondary: true,                          module: "reports" },
   { title: "Notifications",       url: "/notifications", icon: Bell,        badgeKey: "notificationsCount", secondary: true }, // always-on
 ];
 

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Eye, EyeOff, ChevronDown, Check, LogIn, Shield, Activity, Layers, GitMerge } from "lucide-react";
+import { Eye, EyeOff, ChevronRight, ChevronLeft, LogIn, Shield, Activity, Layers, GitMerge, Building2 } from "lucide-react";
 import { DEMO_USERS, ROLE_META, type DemoUser } from "@/lib/demo-users";
 import { apiRequest, storeCurrentRole } from "@/lib/queryClient";
 
@@ -286,92 +286,25 @@ function RoleBadge({ role }: { role:string }) {
   );
 }
 
-// Group users by tenant for the dropdown
-const TENANT_ORDER = ["Northwind Logistics", "Acme Corp", "Riverton Freight"];
-const TENANT_COLORS: Record<string, string> = {
-  "Northwind Logistics": "#1d4ed8",
-  "Acme Corp":           "#0d9488",
-  "Riverton Freight":    "#dc2626",
+// ── Tenant meta (step-1 company cards) ───────────────────────────────────────
+const TENANT_META: Record<string, { plan: string; color: string; suspended: boolean }> = {
+  "Northwind Logistics": { plan: "Enterprise", color: "#1d4ed8", suspended: false },
+  "Acme Corp":           { plan: "Core",       color: "#0d9488", suspended: false },
+  "Riverton Freight":    { plan: "Core",       color: "#dc2626", suspended: true  },
 };
+const COMPANIES = Object.keys(TENANT_META);
 
-function UserDropdown({ selected, onSelect }: { selected:DemoUser|null; onSelect:(u:DemoUser)=>void }) {
-  const [open, setOpen] = useState(false);
-
-  const grouped = TENANT_ORDER.map(t => ({
-    tenant: t,
-    color: TENANT_COLORS[t] ?? "#64748b",
-    users: DEMO_USERS.filter(u => u.tenant === t),
-  }));
-
+// ── Step progress bar ─────────────────────────────────────────────────────────
+function StepDots({ step }: { step: 1|2|3 }) {
   return (
-    <div className="relative">
-      <button type="button" onClick={()=>setOpen(o=>!o)}
-        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left focus:outline-none"
-        style={{ background:"#f8fafc", border:`1.5px solid ${open?"#1d4ed8":"#e2e8f0"}`,
-                 boxShadow:open?"0 0 0 3px rgba(29,78,216,0.10)":"none" }}
-      >
-        {selected ? (
-          <>
-            <Avatar firstName={selected.firstName} lastName={selected.lastName} role={selected.role} />
-            <div className="flex-1 min-w-0">
-              <div className="text-[13px] font-semibold truncate" style={{ color:"#0f172a" }}>{selected.firstName} {selected.lastName}</div>
-              <div className="text-[10px] truncate" style={{ color: TENANT_COLORS[selected.tenant] ?? "#94a3b8", fontWeight:600 }}>{selected.tenant}</div>
-            </div>
-            <RoleBadge role={selected.role} />
-          </>
-        ) : (
-          <>
-            <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style={{ border:"1.5px dashed #cbd5e1" }}>
-              <span className="text-lg font-light" style={{ color:"#94a3b8" }}>+</span>
-            </div>
-            <span className="flex-1 text-sm" style={{ color:"#94a3b8" }}>Select your operator profile…</span>
-          </>
-        )}
-        <ChevronDown className={`w-4 h-4 flex-shrink-0 transition-transform duration-200 ${open?"rotate-180":""}`} style={{ color:"#94a3b8" }} />
-      </button>
-
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ opacity:0, y:-6, scale:0.98 }} animate={{ opacity:1, y:0, scale:1 }}
-            exit={{ opacity:0, y:-6, scale:0.98 }} transition={{ duration:0.13 }}
-            className="absolute z-50 left-0 right-0 mt-1.5 rounded-xl overflow-auto"
-            style={{ background:"#fff", border:"1.5px solid #e2e8f0", boxShadow:"0 12px 36px rgba(0,0,0,0.12)", maxHeight:"340px" }}
-          >
-            {grouped.map(({ tenant, color, users }) => (
-              <div key={tenant}>
-                {/* Tenant group header */}
-                <div className="flex items-center gap-2 px-3 pt-2.5 pb-1">
-                  <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: color }}/>
-                  <span className="text-[9px] font-bold uppercase tracking-widest" style={{ color }}>{tenant}</span>
-                </div>
-                <div className="px-1 pb-1">
-                  {users.map(u => {
-                    const sel = selected?.id === u.id;
-                    return (
-                      <button key={u.id} type="button"
-                        onClick={()=>{ onSelect(u); setOpen(false); }}
-                        className="w-full flex items-center gap-3 px-2.5 py-2 rounded-lg text-left"
-                        style={{ background: sel?"rgba(29,78,216,0.06)":"transparent" }}
-                        onMouseEnter={e=>{ if(!sel)(e.currentTarget as HTMLButtonElement).style.background="#f8fafc"; }}
-                        onMouseLeave={e=>{ if(!sel)(e.currentTarget as HTMLButtonElement).style.background="transparent"; }}
-                      >
-                        <Avatar firstName={u.firstName} lastName={u.lastName} role={u.role} sm />
-                        <div className="flex-1 min-w-0">
-                          <div className="text-[12px] font-semibold truncate" style={{ color:"#0f172a" }}>{u.firstName} {u.lastName}</div>
-                          <div className="text-[10px] truncate" style={{ color:"#94a3b8" }}>{u.email}</div>
-                        </div>
-                        <RoleBadge role={u.role} />
-                        {sel && <Check className="w-3.5 h-3.5 text-blue-600 flex-shrink-0 ml-1" />}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            ))}
-          </motion.div>
-        )}
-      </AnimatePresence>
+    <div className="flex items-center gap-1.5 mb-5">
+      {([1,2,3] as const).map(n => (
+        <div key={n} className="rounded-full transition-all duration-300" style={{
+          width: n === step ? 24 : 16, height: 6,
+          background: n < step ? "#22c55e" : n === step ? "#1d4ed8" : "#e2e8f0",
+        }}/>
+      ))}
+      <span className="ml-1 text-[10px] font-medium" style={{ color:"#94a3b8" }}>Step {step} / 3</span>
     </div>
   );
 }
@@ -398,30 +331,34 @@ const TRUCK_ICON = (
 interface LoginPageProps { onLogin: (userId:string, role:string)=>void; }
 
 export default function LoginPage({ onLogin }: LoginPageProps) {
-  const [selected, setSelected]         = useState<DemoUser|null>(null);
-  const [password, setPassword]         = useState("12345");
-  const [showPw, setShowPw]             = useState(false);
-  const [error, setError]               = useState("");
-  const [loading, setLoading]           = useState(false);
-  const [pwFocus, setPwFocus]           = useState(false);
+  const [step, setStep]               = useState<1|2|3>(1);
+  const [company, setCompany]         = useState<string|null>(null);
+  const [selected, setSelected]       = useState<DemoUser|null>(null);
+  const [password, setPassword]       = useState("12345");
+  const [showPw, setShowPw]           = useState(false);
+  const [error, setError]             = useState("");
+  const [loading, setLoading]         = useState(false);
+  const [pwFocus, setPwFocus]         = useState(false);
   const [platformMode, setPlatformMode] = useState(false);
-  const [manualUser, setManualUser]     = useState("");
-  const [userFocus, setUserFocus]       = useState(false);
+  const [manualUser, setManualUser]   = useState("");
+  const [userFocus, setUserFocus]     = useState(false);
 
-  const switchMode = (toPlat: boolean) => {
-    setPlatformMode(toPlat);
+  const companyUsers = company ? DEMO_USERS.filter(u => u.tenant === company) : [];
+
+  const goBack = () => {
     setError("");
-    setManualUser(toPlat ? "ksap-admin" : "");
-    setPassword("12345");
-    if (!toPlat) setSelected(null);
+    if (platformMode) { setPlatformMode(false); setManualUser(""); return; }
+    if (step === 3) setStep(2);
+    else if (step === 2) { setStep(1); setSelected(null); }
   };
+
+  const handleSelectCompany = (c: string) => { setCompany(c); setSelected(null); setError(""); setStep(2); };
+  const handleSelectUser    = (u: DemoUser) => { setSelected(u); setError(""); setStep(3); };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!platformMode && !selected) { setError("Select an operator profile to continue."); return; }
     if (platformMode && !manualUser.trim()) { setError("Enter your platform admin username."); return; }
-    setLoading(true);
-    setError("");
+    setLoading(true); setError("");
     try {
       const res = await apiRequest("POST", "/api/auth/login", {
         userId: platformMode ? manualUser.trim() : selected!.id,
@@ -437,22 +374,29 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
     }
   };
 
+  const heading = platformMode
+    ? "Platform Admin Access"
+    : step === 1 ? "Sign In to Your Yard"
+    : step === 2 ? (company ?? "Select Profile")
+    : "Enter Credential";
+
+  const subheading = platformMode
+    ? "KSAP internal administration portal"
+    : step === 1 ? "Select your organisation to begin"
+    : step === 2 ? "Choose your operator profile"
+    : `${selected!.firstName} ${selected!.lastName} · ${company}`;
+
   return (
     <div className="min-h-screen flex overflow-hidden" style={{ background:"#f0f4f8" }}>
 
       {/* ── Left: Live Yard Scene ──────────────────────────── */}
       <div className="hidden lg:flex flex-col flex-1 relative overflow-hidden">
         <YardCanvas />
-
-        {/* Edge fades */}
         <div className="absolute inset-0 pointer-events-none"
           style={{ background:"linear-gradient(to right, transparent 72%, #f0f4f8 100%)" }}/>
         <div className="absolute inset-0 pointer-events-none"
           style={{ background:"linear-gradient(to bottom, rgba(240,244,248,0.5) 0%, transparent 15%, transparent 82%, rgba(240,244,248,0.6) 100%)" }}/>
-
         <div className="relative z-10 flex flex-col justify-between h-full p-10 pointer-events-none">
-
-          {/* Logo + LIVE */}
           <motion.div initial={{ opacity:0, y:-10 }} animate={{ opacity:1, y:0 }}
             transition={{ duration:0.45, delay:0.1 }} className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -475,8 +419,6 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
               <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color:"#15803d" }}>Live</span>
             </div>
           </motion.div>
-
-          {/* Headline + KPIs */}
           <div className="max-w-sm">
             <motion.div initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }}
               transition={{ delay:0.3, duration:0.55, ease:"easeOut" }}>
@@ -495,8 +437,6 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
               {KPIs.map(k => <KPIChip key={k.label} {...k}/>)}
             </div>
           </div>
-
-          {/* Legend */}
           <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ delay:1.1, duration:0.45 }}>
             <div className="flex items-center gap-4 mb-2">
               {LEGEND.map(([color,label]) => (
@@ -513,7 +453,7 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
         </div>
       </div>
 
-      {/* ── Right: Login Form ──────────────────────────────── */}
+      {/* ── Right: Login Panel ─────────────────────────────── */}
       <div className="w-full lg:w-[420px] flex-shrink-0 flex flex-col"
         style={{ background:"#ffffff", borderLeft:"1px solid #e2e8f0", boxShadow:"-4px 0 28px rgba(0,0,0,0.07)" }}>
 
@@ -530,155 +470,202 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
           <motion.div initial={{ opacity:0, x:14 }} animate={{ opacity:1, x:0 }}
             transition={{ duration:0.4, ease:"easeOut" }} className="w-full max-w-[340px]">
 
-            <div className="mb-7">
-              <div className="text-[10px] font-bold uppercase tracking-[0.18em] mb-2" style={{ color:"#94a3b8" }}>
-                Secure Operations Access
-              </div>
-              <h2 className="text-[22px] font-black mb-1.5" style={{ color:"#0f172a" }}>Sign In to Your Yard</h2>
-              <p className="text-[12px] leading-snug" style={{ color:"#94a3b8" }}>
-                Authorized personnel only. Select your operator profile and authenticate to continue.
-              </p>
+            {/* Back link */}
+            <AnimatePresence>
+              {(step > 1 || platformMode) && (
+                <motion.button key="back" type="button" onClick={goBack}
+                  initial={{ opacity:0, x:-6 }} animate={{ opacity:1, x:0 }} exit={{ opacity:0 }}
+                  transition={{ duration:0.15 }}
+                  className="flex items-center gap-1 mb-4 text-[11px] font-semibold"
+                  style={{ color:"#1d4ed8" }}>
+                  <ChevronLeft className="w-3.5 h-3.5"/> Back
+                </motion.button>
+              )}
+            </AnimatePresence>
+
+            {/* Step dots (operator flow only) */}
+            {!platformMode && <StepDots step={step} />}
+
+            {/* Heading */}
+            <div className="mb-6">
+              {platformMode && (
+                <div className="flex items-center gap-1.5 mb-2">
+                  <div className="w-4 h-4 rounded flex items-center justify-center flex-shrink-0"
+                    style={{ background:"#1e3a8a" }}>
+                    <Shield className="w-2.5 h-2.5 text-white" />
+                  </div>
+                  <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color:"#1e3a8a" }}>KSAP Platform</span>
+                </div>
+              )}
+              <h2 className="text-[20px] font-black mb-1" style={{ color:"#0f172a" }}>{heading}</h2>
+              <p className="text-[12px] leading-snug" style={{ color:"#94a3b8" }}>{subheading}</p>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <AnimatePresence mode="wait">
 
-              {/* Mode toggle */}
-              <div className="flex items-center justify-between">
-                {!platformMode ? (
-                  <span className="text-[10px]" style={{ color:"#94a3b8" }}>
-                    Platform admin?{" "}
-                    <button type="button" onClick={()=>switchMode(true)}
-                      className="font-semibold underline" style={{ color:"#1d4ed8" }}>
-                      Sign in here
+              {/* ── Step 1: Company ───────────────────────────── */}
+              {!platformMode && step === 1 && (
+                <motion.div key="step1"
+                  initial={{ opacity:0, x:18 }} animate={{ opacity:1, x:0 }} exit={{ opacity:0, x:-18 }}
+                  transition={{ duration:0.18 }} className="space-y-2.5">
+                  {COMPANIES.map(c => {
+                    const meta = TENANT_META[c];
+                    const count = DEMO_USERS.filter(u => u.tenant === c).length;
+                    return (
+                      <button key={c} type="button" onClick={() => handleSelectCompany(c)}
+                        className="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-left transition-all focus:outline-none"
+                        style={{ background:"#f8fafc", border:"1.5px solid #e2e8f0" }}
+                        onMouseEnter={e => { const el = e.currentTarget; el.style.border=`1.5px solid ${meta.color}`; el.style.boxShadow=`0 0 0 3px ${meta.color}18`; el.style.background="#fff"; }}
+                        onMouseLeave={e => { const el = e.currentTarget; el.style.border="1.5px solid #e2e8f0"; el.style.boxShadow="none"; el.style.background="#f8fafc"; }}
+                      >
+                        <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                          style={{ background:`${meta.color}15` }}>
+                          <Building2 className="w-4 h-4" style={{ color:meta.color }}/>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-[13px] font-bold truncate" style={{ color:"#0f172a" }}>{c}</div>
+                          <div className="flex items-center gap-1.5 mt-0.5 text-[10px]">
+                            <span className="font-bold" style={{ color:meta.color }}>{meta.plan}</span>
+                            <span style={{ color:"#cbd5e1" }}>·</span>
+                            <span style={{ color:"#94a3b8" }}>{count} operator{count !== 1 ? "s" : ""}</span>
+                            {meta.suspended && (
+                              <span className="px-1.5 py-0.5 rounded text-[9px] font-bold"
+                                style={{ background:"#fee2e2", color:"#dc2626" }}>Suspended</span>
+                            )}
+                          </div>
+                        </div>
+                        <ChevronRight className="w-4 h-4 flex-shrink-0" style={{ color:"#cbd5e1" }}/>
+                      </button>
+                    );
+                  })}
+                  <div className="pt-1 text-center">
+                    <button type="button"
+                      onClick={() => { setPlatformMode(true); setManualUser("ksap-admin"); setPassword("12345"); setError(""); }}
+                      className="text-[10px]" style={{ color:"#94a3b8" }}>
+                      Platform admin?{" "}
+                      <span className="font-semibold underline" style={{ color:"#1d4ed8" }}>Sign in here</span>
                     </button>
-                  </span>
-                ) : (
-                  <span className="text-[10px]" style={{ color:"#94a3b8" }}>
-                    <button type="button" onClick={()=>switchMode(false)}
-                      className="font-semibold underline" style={{ color:"#1d4ed8" }}>
-                      ← Back to operator login
-                    </button>
-                  </span>
-                )}
-              </div>
-
-              {!platformMode ? (
-                <>
-                  <div>
-                    <label className="block text-[10px] font-bold uppercase tracking-widest mb-1.5" style={{ color:"#475569" }}>
-                      Operator Profile
-                    </label>
-                    <UserDropdown selected={selected} onSelect={u=>{ setSelected(u); setError(""); }}/>
                   </div>
-
-                  <div>
-                    <label className="block text-[10px] font-bold uppercase tracking-widest mb-1.5" style={{ color:"#475569" }}>
-                      System Username
-                    </label>
-                    <div className="relative">
-                      <input type="text" readOnly value={selected?.username??""} placeholder="auto-populated on selection"
-                        autoComplete="username"
-                        className="w-full px-3 py-2.5 rounded-xl text-[13px] focus:outline-none"
-                        style={{ background:"#f8fafc", border:"1.5px solid #e2e8f0",
-                                 color:selected?"#475569":"#cbd5e1", cursor:"default" }}/>
-                      {selected && <div className="absolute right-3 top-1/2 -translate-y-1/2"><RoleBadge role={selected.role}/></div>}
-                    </div>
-                  </div>
-                </>
-              ) : (
-                <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-widest mb-1.5" style={{ color:"#475569" }}>
-                    Platform Admin Username
-                  </label>
-                  <div className="flex items-center gap-1.5 mb-2">
-                    <div className="w-4 h-4 rounded flex items-center justify-center flex-shrink-0"
-                      style={{ background:"#1e3a8a" }}>
-                      <Shield className="w-2.5 h-2.5 text-white" />
-                    </div>
-                    <span className="text-[10px] font-semibold" style={{ color:"#1e3a8a" }}>KSAP Platform Administration</span>
-                  </div>
-                  <input
-                    type="text"
-                    value={manualUser}
-                    onChange={e=>{ setManualUser(e.target.value); setError(""); }}
-                    onFocus={()=>setUserFocus(true)}
-                    onBlur={()=>setUserFocus(false)}
-                    placeholder="Platform admin username"
-                    autoComplete="username"
-                    autoFocus
-                    className="w-full px-3 py-2.5 rounded-xl text-[13px] focus:outline-none transition-all"
-                    style={{
-                      background: userFocus ? "#f0f7ff" : "#f8fafc",
-                      border: `1.5px solid ${error ? "#f87171" : userFocus ? "#1d4ed8" : "#e2e8f0"}`,
-                      color: "#0f172a",
-                      boxShadow: userFocus ? "0 0 0 3px rgba(29,78,216,0.10)" : "none",
-                    }}
-                  />
-                </div>
-              )}
-
-              <div>
-                <label className="block text-[10px] font-bold uppercase tracking-widest mb-1.5" style={{ color:"#475569" }}>
-                  Access Credential
-                </label>
-                <div className="relative">
-                  <input type={showPw?"text":"password"} value={password} autoComplete="current-password"
-                    onChange={e=>{ setPassword(e.target.value); setError(""); }}
-                    onFocus={()=>setPwFocus(true)} onBlur={()=>setPwFocus(false)}
-                    className="w-full px-3 py-2.5 rounded-xl text-[13px] pr-10 focus:outline-none transition-all"
-                    style={{
-                      background: pwFocus?"#f0f7ff":"#f8fafc",
-                      border:`1.5px solid ${error?"#f87171":pwFocus?"#1d4ed8":"#e2e8f0"}`,
-                      color:"#0f172a",
-                      boxShadow: pwFocus?"0 0 0 3px rgba(29,78,216,0.10)":error?"0 0 0 3px rgba(248,113,113,0.10)":"none",
-                    }}/>
-                  <button type="button" onClick={()=>setShowPw(s=>!s)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2" style={{ color:"#94a3b8" }}>
-                    {showPw ? <EyeOff className="w-4 h-4"/> : <Eye className="w-4 h-4"/>}
-                  </button>
-                </div>
-                <AnimatePresence>
-                  {error && (
-                    <motion.p initial={{ opacity:0, height:0 }} animate={{ opacity:1, height:"auto" }} exit={{ opacity:0, height:0 }}
-                      className="flex items-center gap-1.5 mt-1.5 text-[11px] text-red-500 overflow-hidden">
-                      <span className="w-1 h-1 rounded-full bg-red-400 flex-shrink-0 inline-block"/>
-                      {error}
-                    </motion.p>
-                  )}
-                </AnimatePresence>
-              </div>
-
-              <motion.button type="submit" disabled={loading}
-                whileHover={{ scale: loading?1:1.01 }} whileTap={{ scale: loading?1:0.99 }}
-                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-[13px] font-bold text-white mt-1"
-                style={{
-                  background: loading?"#93c5fd":"linear-gradient(135deg,#1e3a8a 0%,#1d4ed8 60%,#2563eb 100%)",
-                  boxShadow: loading?"none":"0 4px 18px rgba(29,78,216,0.30)",
-                }}>
-                {loading ? (
-                  <><svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
-                  </svg>Authenticating…</>
-                ) : (
-                  <><LogIn className="w-4 h-4"/>Access Operations Portal</>
-                )}
-              </motion.button>
-            </form>
-
-            <AnimatePresence>
-              {selected && (
-                <motion.div initial={{ opacity:0, y:6 }} animate={{ opacity:1, y:0 }} exit={{ opacity:0 }}
-                  transition={{ duration:0.2 }}
-                  className="mt-4 flex items-center gap-2.5 px-3 py-2 rounded-xl"
-                  style={{ background:"#f0f7ff", border:"1px solid #bfdbfe" }}>
-                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse flex-shrink-0"/>
-                  <p className="text-[11px] min-w-0" style={{ color:"#475569" }}>
-                    Identified as&nbsp;<span className="font-bold" style={{ color:"#1d4ed8" }}>{selected.firstName} {selected.lastName}</span>
-                    &nbsp;·&nbsp;{selected.email}
-                  </p>
                 </motion.div>
               )}
+
+              {/* ── Step 2: User ──────────────────────────────── */}
+              {!platformMode && step === 2 && (
+                <motion.div key="step2"
+                  initial={{ opacity:0, x:18 }} animate={{ opacity:1, x:0 }} exit={{ opacity:0, x:-18 }}
+                  transition={{ duration:0.18 }} className="space-y-1.5">
+                  {companyUsers.map(u => (
+                    <button key={u.id} type="button" onClick={() => handleSelectUser(u)}
+                      className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all focus:outline-none"
+                      style={{ background:"#f8fafc", border:"1.5px solid #e2e8f0" }}
+                      onMouseEnter={e => { const el = e.currentTarget; el.style.border="1.5px solid #1d4ed8"; el.style.boxShadow="0 0 0 3px rgba(29,78,216,0.08)"; el.style.background="#fff"; }}
+                      onMouseLeave={e => { const el = e.currentTarget; el.style.border="1.5px solid #e2e8f0"; el.style.boxShadow="none"; el.style.background="#f8fafc"; }}
+                    >
+                      <Avatar firstName={u.firstName} lastName={u.lastName} role={u.role}/>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-[13px] font-semibold truncate" style={{ color:"#0f172a" }}>{u.firstName} {u.lastName}</div>
+                        <div className="text-[10px] truncate" style={{ color:"#94a3b8" }}>{u.email}</div>
+                      </div>
+                      <RoleBadge role={u.role}/>
+                      <ChevronRight className="w-3.5 h-3.5 flex-shrink-0 ml-1" style={{ color:"#cbd5e1" }}/>
+                    </button>
+                  ))}
+                </motion.div>
+              )}
+
+              {/* ── Step 3 / Platform mode: Password ─────────── */}
+              {(step === 3 || platformMode) && (
+                <motion.div key="step3"
+                  initial={{ opacity:0, x:18 }} animate={{ opacity:1, x:0 }} exit={{ opacity:0, x:-18 }}
+                  transition={{ duration:0.18 }}>
+                  <form onSubmit={handleSubmit} className="space-y-4">
+
+                    {/* Platform admin username */}
+                    {platformMode && (
+                      <div>
+                        <label className="block text-[10px] font-bold uppercase tracking-widest mb-1.5" style={{ color:"#475569" }}>
+                          Username
+                        </label>
+                        <input type="text" value={manualUser} autoFocus
+                          onChange={e => { setManualUser(e.target.value); setError(""); }}
+                          onFocus={() => setUserFocus(true)} onBlur={() => setUserFocus(false)}
+                          placeholder="Platform admin username" autoComplete="username"
+                          className="w-full px-3 py-2.5 rounded-xl text-[13px] focus:outline-none transition-all"
+                          style={{
+                            background: userFocus ? "#f0f7ff" : "#f8fafc",
+                            border: `1.5px solid ${error ? "#f87171" : userFocus ? "#1d4ed8" : "#e2e8f0"}`,
+                            color:"#0f172a",
+                            boxShadow: userFocus ? "0 0 0 3px rgba(29,78,216,0.10)" : "none",
+                          }}/>
+                      </div>
+                    )}
+
+                    {/* Selected user summary */}
+                    {!platformMode && selected && (
+                      <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl"
+                        style={{ background:"#f0f7ff", border:"1px solid #bfdbfe" }}>
+                        <Avatar firstName={selected.firstName} lastName={selected.lastName} role={selected.role}/>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-[12px] font-bold truncate" style={{ color:"#0f172a" }}>{selected.firstName} {selected.lastName}</div>
+                          <div className="text-[10px] truncate" style={{ color:"#64748b" }}>{company}</div>
+                        </div>
+                        <RoleBadge role={selected.role}/>
+                      </div>
+                    )}
+
+                    {/* Password */}
+                    <div>
+                      <label className="block text-[10px] font-bold uppercase tracking-widest mb-1.5" style={{ color:"#475569" }}>
+                        Password
+                      </label>
+                      <div className="relative">
+                        <input type={showPw ? "text" : "password"} value={password}
+                          autoComplete="current-password" autoFocus={!platformMode}
+                          onChange={e => { setPassword(e.target.value); setError(""); }}
+                          onFocus={() => setPwFocus(true)} onBlur={() => setPwFocus(false)}
+                          className="w-full px-3 py-2.5 rounded-xl text-[13px] pr-10 focus:outline-none transition-all"
+                          style={{
+                            background: pwFocus ? "#f0f7ff" : "#f8fafc",
+                            border: `1.5px solid ${error ? "#f87171" : pwFocus ? "#1d4ed8" : "#e2e8f0"}`,
+                            color:"#0f172a",
+                            boxShadow: pwFocus ? "0 0 0 3px rgba(29,78,216,0.10)" : error ? "0 0 0 3px rgba(248,113,113,0.10)" : "none",
+                          }}/>
+                        <button type="button" onClick={() => setShowPw(s => !s)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2" style={{ color:"#94a3b8" }}>
+                          {showPw ? <EyeOff className="w-4 h-4"/> : <Eye className="w-4 h-4"/>}
+                        </button>
+                      </div>
+                      <AnimatePresence>
+                        {error && (
+                          <motion.p initial={{ opacity:0, height:0 }} animate={{ opacity:1, height:"auto" }} exit={{ opacity:0, height:0 }}
+                            className="flex items-center gap-1.5 mt-1.5 text-[11px] text-red-500 overflow-hidden">
+                            <span className="w-1 h-1 rounded-full bg-red-400 flex-shrink-0 inline-block"/>
+                            {error}
+                          </motion.p>
+                        )}
+                      </AnimatePresence>
+                    </div>
+
+                    <motion.button type="submit" disabled={loading}
+                      whileHover={{ scale: loading ? 1 : 1.01 }} whileTap={{ scale: loading ? 1 : 0.99 }}
+                      className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-[13px] font-bold text-white mt-1"
+                      style={{
+                        background: loading ? "#93c5fd" : "linear-gradient(135deg,#1e3a8a 0%,#1d4ed8 60%,#2563eb 100%)",
+                        boxShadow: loading ? "none" : "0 4px 18px rgba(29,78,216,0.30)",
+                      }}>
+                      {loading ? (
+                        <><svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                        </svg>Authenticating…</>
+                      ) : (
+                        <><LogIn className="w-4 h-4"/>Access Operations Portal</>
+                      )}
+                    </motion.button>
+                  </form>
+                </motion.div>
+              )}
+
             </AnimatePresence>
           </motion.div>
         </div>
