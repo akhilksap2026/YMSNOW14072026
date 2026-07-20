@@ -16,6 +16,7 @@ import {
   inspections,
   yardAuditItems,
   roles,
+  tenants,
   userRoles,
   permissions,
   rolePermissions,
@@ -45,11 +46,22 @@ export async function seedDatabase() {
     return;
   }
 
+  // Upsert the default tenant (idempotent)
+  const [tenant] = await db
+    .insert(tenants)
+    .values({ name: "Northwind Logistics", slug: "northwind", status: "active" })
+    .onConflictDoUpdate({ target: tenants.slug, set: { name: "Northwind Logistics", status: "active" } })
+    .returning();
+  const tid = tenant.id;
+  // Stamp every inserted row with the tenant id
+  const wt = <T extends object>(rows: T[]): Array<T & { tenantId: string }> =>
+    rows.map((r) => ({ ...r, tenantId: tid }));
+
   console.log("Seeding database with comprehensive demo data...");
 
   const insertedCarriers = await db
     .insert(carriers)
-    .values([
+    .values(wt([
       { name: "Swift Transportation", scacCode: "SWFT", contactName: "Mike Johnson", contactEmail: "dispatch@swift.com", contactPhone: "(602) 269-9700", address: "2200 S 75th Ave, Phoenix, AZ 85043", brandColour: "#FF6B00" },
       { name: "J.B. Hunt Transport Services", scacCode: "JBHT", contactName: "Sarah Williams", contactEmail: "ops@jbhunt.com", contactPhone: "(479) 820-0000", address: "615 JB Hunt Corporate Dr, Lowell, AR 72745", brandColour: "#2D6A2E" },
       { name: "Werner Enterprises", scacCode: "WERN", contactName: "Tom Davis", contactEmail: "yard@werner.com", contactPhone: "(402) 895-6640", address: "14507 Frontier Rd, Omaha, NE 68138", brandColour: "#006633" },
@@ -62,20 +74,20 @@ export async function seedDatabase() {
       { name: "Heartland Express", scacCode: "HTLD", contactName: "Bob Reynolds", contactEmail: "yard@heartlandexpress.com", contactPhone: "(319) 626-3600", address: "901 S Kansas Ave, North Liberty, IA 52317", brandColour: "#CC0000" },
       { name: "KLLM Transport", scacCode: "KLLM", contactName: "Angela Moore", contactEmail: "ops@kllm.com", contactPhone: "(601) 936-5556", address: "135 Riverview Dr, Richland, MS 39218", brandColour: "#1B5EA6" },
       { name: "USA Truck", scacCode: "USAT", contactName: "Derek Chang", contactEmail: "dispatch@usa-truck.com", contactPhone: "(479) 471-2500", address: "3200 Industrial Park Rd, Van Buren, AR 72956", brandColour: "#C41230" },
-    ])
+    ]))
     .returning();
 
   const c = (scac: string) => insertedCarriers.find((x) => x.scacCode === scac)!;
 
   const insertedZones = await db
     .insert(yardZones)
-    .values([
+    .values(wt([
       { name: "Staging Area A", code: "STG-A", type: "staging", description: "Primary inbound staging near Gate 1" },
       { name: "Staging Area B", code: "STG-B", type: "staging", description: "Secondary staging for outbound prep" },
       { name: "Reefer Yard", code: "RFR", type: "reefer", description: "Temperature-controlled trailer parking" },
       { name: "Parking Lot C", code: "PKG-C", type: "parking", description: "Overflow and long-term bobtail parking" },
       { name: "Hazmat Isolation", code: "HAZ", type: "hazmat", description: "Hazmat-rated isolated parking zone" },
-    ])
+    ]))
     .returning();
 
   const z = (code: string) => insertedZones.find((x) => x.code === code)!;
@@ -156,13 +168,13 @@ export async function seedDatabase() {
     });
   }
 
-  const insertedSlots = await db.insert(yardSlots).values(slotsToCreate).returning();
+  const insertedSlots = await db.insert(yardSlots).values(wt(slotsToCreate)).returning();
 
   const slot = (num: string) => insertedSlots.find((s) => s.slotNumber === num)!;
 
   const insertedDoors = await db
     .insert(dockDoors)
-    .values([
+    .values(wt([
       { doorNumber: "D-01", compatibleType: "all", status: "available" },
       { doorNumber: "D-02", compatibleType: "all", status: "available" },
       { doorNumber: "D-03", compatibleType: "all", status: "available" },
@@ -173,18 +185,18 @@ export async function seedDatabase() {
       { doorNumber: "D-08", compatibleType: "reefer", status: "available" },
       { doorNumber: "D-09", compatibleType: "all", status: "available" },
       { doorNumber: "D-10", compatibleType: "all", status: "available" },
-    ])
+    ]))
     .returning();
 
   const door = (num: string) => insertedDoors.find((d) => d.doorNumber === num)!;
 
   const insertedGates = await db
     .insert(gates)
-    .values([
+    .values(wt([
       { name: "Main Gate", type: "both" },
       { name: "Gate 2 - Inbound", type: "in" },
       { name: "Gate 3 - Outbound", type: "out" },
-    ])
+    ]))
     .returning();
 
   const today = new Date();
@@ -208,13 +220,13 @@ export async function seedDatabase() {
   ];
 
   for (const u of demoUsers) {
-    await db.insert(users).values({ id: u.id, firstName: u.firstName, lastName: u.lastName, email: u.email }).onConflictDoNothing();
-    await db.insert(userProfiles).values({ userId: u.id, role: u.role, carrierId: u.carrierId }).onConflictDoNothing();
+    await db.insert(users).values({ id: u.id, firstName: u.firstName, lastName: u.lastName, email: u.email, tenantId: tid }).onConflictDoNothing();
+    await db.insert(userProfiles).values({ userId: u.id, role: u.role, carrierId: u.carrierId, tenantId: tid }).onConflictDoNothing();
   }
 
   const demoAppointments = await db
     .insert(appointments)
-    .values([
+    .values(wt([
       // --- Past appointments (completed, scattered over past 7 days) ---
       { referenceNumber: aptRef(1), carrierId: c("SWFT").id, scheduledDate: daysAgo(5), timeWindowStart: "06:00", timeWindowEnd: "08:00", movementType: "inbound", loadType: "dry", trailerNumber: "SWFT-53201", truckNumber: "SW-4410", driverName: "Carlos Mendez", driverPhone: "(312) 555-0147", poNumber: "PO-2024-00812", bolNumber: "BOL-SW-90341", sealNumber: "SL-77201", status: "completed" },
       { referenceNumber: aptRef(2), carrierId: c("JBHT").id, scheduledDate: daysAgo(4), timeWindowStart: "07:00", timeWindowEnd: "09:00", movementType: "inbound", loadType: "dry", trailerNumber: "JBHU-832145", truckNumber: "JB-7721", driverName: "Marcus Thompson", driverPhone: "(469) 555-0233", poNumber: "PO-2024-00819", bolNumber: "BOL-JB-41205", sealNumber: "SL-88302", status: "completed" },
@@ -261,7 +273,7 @@ export async function seedDatabase() {
       { referenceNumber: aptRef(40), carrierId: c("EXLA").id, scheduledDate: daysAgo(3), timeWindowStart: "06:00", timeWindowEnd: "08:00", movementType: "inbound", loadType: "reefer", trailerNumber: "EXLA-R19400", truckNumber: "EX-8995", driverName: "Grant Kelley", driverPhone: "(804) 555-0222", poNumber: "PO-2024-00804", bolNumber: "BOL-EX-19401", sealNumber: "SL-50505", status: "completed" },
       { referenceNumber: aptRef(41), carrierId: c("ODFL").id, scheduledDate: daysAgo(1), timeWindowStart: "15:00", timeWindowEnd: "17:00", movementType: "outbound", loadType: "dry", trailerNumber: "ODFL-61350", truckNumber: "OD-5490", driverName: "Ian Montgomery", driverPhone: "(336) 555-0311", poNumber: "PO-2024-00810", bolNumber: "BOL-OD-14400", sealNumber: "SL-50606", status: "completed" },
       { referenceNumber: aptRef(42), carrierId: c("HTLD").id, scheduledDate: daysAgo(2), timeWindowStart: "16:00", timeWindowEnd: "18:00", movementType: "inbound", loadType: "dry", trailerNumber: "HTLD-87100", truckNumber: "HT-6610", driverName: "Curtis Palmer", driverPhone: "(816) 555-0199", poNumber: "PO-2024-00816", bolNumber: "BOL-HT-87101", sealNumber: "SL-50707", status: "no_show" },
-    ])
+    ]))
     .returning();
 
   const apt = (i: number) => demoAppointments[i - 1];
@@ -323,7 +335,7 @@ export async function seedDatabase() {
     { visitNumber: `VST-CLOSED02`, appointmentId: null, carrierId: c("KLLM").id, driverName: "Ray Washington", driverLicense: "CDL-AR-880099", truckNumber: "KL-3301", trailerNumber: "KLLM-R05540", sealNumber: "SL-770001", movementType: "inbound", visitStatus: "closed", locationStatus: "exited", holdStatus: "none", currentSlotId: null, currentDockDoorId: null, checkInTime: hoursAgo(10), checkOutTime: hoursAgo(3), checkInBy: "demo-gg-002", notes: "Reefer unloaded and released" },
   ];
 
-  const insertedVisits = await db.insert(visits).values(demoVisits).returning();
+  const insertedVisits = await db.insert(visits).values(wt(demoVisits)).returning();
 
   for (const v of insertedVisits) {
     if (v.currentSlotId) {
@@ -344,6 +356,7 @@ export async function seedDatabase() {
       type: "check_in",
       gateId: insertedGates[0].id,
       userId: v.checkInBy,
+      tenantId: tid,
     });
     if (v.visitStatus === "closed") {
       await db.insert(gateTransactions).values({
@@ -351,13 +364,14 @@ export async function seedDatabase() {
         type: "check_out",
         gateId: insertedGates[2].id,
         userId: v.checkInBy,
+        tenantId: tid,
       });
     }
   }
 
   const visit = (i: number) => insertedVisits[i - 1];
 
-  await db.insert(moveTasks).values([
+  await db.insert(moveTasks).values(wt([
     { visitId: visit(1).id, fromLocationType: "gate", fromLocationId: insertedGates[0].id, fromLocationName: "Gate 1 - Main", toLocationType: "slot", toLocationId: slot("A-09").id, toLocationName: "A-09", moveType: "gate_to_slot", priority: "high", status: "open", source: "gate", notes: "New arrival JBHU-832400 — needs immediate slot placement", createdBy: "demo-gg-001", createdAt: minutesAgo(35) },
     { visitId: visit(3).id, fromLocationType: "slot", fromLocationId: slot("A-01").id, fromLocationName: "A-01", toLocationType: "dock", toLocationId: door("D-08").id, toLocationName: "Door D-08", moveType: "slot_to_dock", priority: "high", status: "open", notes: "Move SWFT trailer to dock for unloading — dock crew waiting", createdBy: "demo-ym-001", createdAt: minutesAgo(20) },
     { visitId: visit(5).id, fromLocationType: "slot", fromLocationId: slot("A-02").id, fromLocationName: "A-02", toLocationType: "dock", toLocationId: door("D-06").id, toLocationName: "Door D-06", moveType: "slot_to_dock", priority: "normal", status: "open", notes: "FedEx trailer scheduled for inbound unload at D-06", createdBy: "demo-ym-001", createdAt: minutesAgo(45) },
@@ -373,15 +387,15 @@ export async function seedDatabase() {
     { visitId: visit(2).id, fromLocationType: "gate", fromLocationId: insertedGates[0].id, fromLocationName: "Gate 1 - Main", toLocationType: "slot", toLocationId: slot("A-10").id, toLocationName: "A-10", moveType: "gate_to_slot", priority: "high", status: "escalated", assignedTo: "demo-yj-002", notes: "URGENT: Werner trailer on doc hold — park immediately, do not send to dock", createdBy: "demo-ym-001", createdAt: hoursAgo(2.5) },
     { visitId: visit(11).id, fromLocationType: "slot", fromLocationId: slot("C-02").id, fromLocationName: "C-02", toLocationType: "dock", toLocationId: door("D-09").id, toLocationName: "Door D-09", moveType: "slot_to_dock", priority: "normal", status: "assigned", assignedTo: "demo-yj-003", notes: "ODFL trailer ready for live load — door prepped by Lisa", createdBy: "demo-ym-001", createdAt: minutesAgo(35) },
     { visitId: visit(12).id, fromLocationType: "dock", fromLocationId: door("D-04").id, fromLocationName: "Door D-04", toLocationType: "slot", toLocationId: slot("B-06").id, toLocationName: "B-06", moveType: "dock_to_yard", priority: "normal", status: "rejected", assignedTo: "demo-yj-001", rejectionReason: "Door D-04 still has trailer spotted — cannot pull yet, dock crew not finished", notes: "Move Heartland from dock to yard", createdBy: "demo-du-001", source: "dock_request", createdAt: hoursAgo(2) },
-  ]);
+  ]));
 
-  await db.insert(exceptions).values([
+  await db.insert(exceptions).values(wt([
     { visitId: visit(2).id, type: "documentation_hold", severity: "medium", description: "Missing Bill of Lading for WERN-49410. Driver does not have copy. Carrier dispatch contacted.", status: "open", createdBy: "demo-gg-001" },
     { visitId: visit(15).id, type: "security_hold", severity: "high", description: "Random security inspection selected for SWFT-53500. USDA agricultural hold flagged by system.", status: "open", assignedTo: "demo-ym-001", createdBy: "demo-gg-001" },
     { visitId: visit(16).id, type: "damage_hold", severity: "medium", description: "Rear door hinge damaged on WERN-49330. Right door does not close fully. Photos documented at check-in.", status: "open", createdBy: "demo-gg-002" },
     { visitId: visit(17).id, type: "customs_hold", severity: "critical", description: "ODFL-61570 contains bonded international freight. Customs Form 7501 pending review. Cannot unload until cleared.", status: "open", assignedTo: "demo-ym-001", createdBy: "demo-gg-001" },
     { visitId: visit(19).id, type: "seal_mismatch", severity: "medium", description: "Previous seal exception on SWFT-53100 resolved - confirmed admin entry error by carrier.", status: "resolved", resolvedBy: "demo-ym-001", resolutionNotes: "Carrier confirmed correct seal number. Updated records.", createdBy: "demo-gg-001" },
-  ]);
+  ]));
 
   const auditEntries = [];
   for (let i = 0; i < insertedVisits.length; i++) {
@@ -418,9 +432,9 @@ export async function seedDatabase() {
     { action: "move_task_accepted", entityType: "move_task", entityId: 6, userId: "demo-yj-003", userName: "Jose Martinez", details: { status: "accepted" } },
   );
 
-  await db.insert(auditLogs).values(auditEntries);
+  await db.insert(auditLogs).values(wt(auditEntries));
 
-  await db.insert(inspections).values([
+  await db.insert(inspections).values(wt([
     {
       visitId: visit(3).id,
       inspectionType: "gate_inbound",
@@ -514,7 +528,7 @@ export async function seedDatabase() {
       inspectorName: "Lisa Park",
       submittedAt: hoursAgo(2),
     },
-  ]);
+  ]));
 
   // ── RBAC Seed ────────────────────────────────────────────────────────────────
   const systemRoles = [
@@ -603,9 +617,9 @@ export async function seedDatabase() {
       const roleName = roleKeyToName[u.role];
       const r = insertedRoles.find((ir) => ir.roleName === roleName);
       if (!r) return null;
-      return { userId: u.id, roleId: r.id, assignedBy: "demo-admin-001", isPrimary: true };
+      return { userId: u.id, roleId: r.id, assignedBy: "demo-admin-001", isPrimary: true, tenantId: tid };
     })
-    .filter(Boolean) as Array<{ userId: string; roleId: number; assignedBy: string; isPrimary: boolean }>;
+    .filter(Boolean) as Array<{ userId: string; roleId: number; assignedBy: string; isPrimary: boolean; tenantId: string }>;
   if (userRoleEntries.length > 0) {
     await db.insert(userRoles).values(userRoleEntries).onConflictDoNothing();
   }
@@ -699,15 +713,19 @@ export async function seedRbacIfEmpty() {
     yard_jockey: "Yard Marshal", carrier: "Carrier User",
   };
 
+  // Get the default tenant to stamp user_roles
+  const [tenantRow] = await db.select({ id: tenants.id }).from(tenants).where(eq(tenants.slug, "northwind")).limit(1);
+  const tid = tenantRow?.id ?? null;
+
   const allUserProfiles = await db.select().from(userProfiles);
   const userRoleEntries = allUserProfiles
     .map((u) => {
       const roleName = roleKeyToName[u.role];
       const r = insertedRoles.find((ir) => ir.roleName === roleName);
       if (!r) return null;
-      return { userId: u.userId, roleId: r.id, assignedBy: "demo-admin-001", isPrimary: true };
+      return { userId: u.userId, roleId: r.id, assignedBy: "demo-admin-001", isPrimary: true, tenantId: tid };
     })
-    .filter(Boolean) as Array<{ userId: string; roleId: number; assignedBy: string; isPrimary: boolean }>;
+    .filter(Boolean) as Array<{ userId: string; roleId: number; assignedBy: string; isPrimary: boolean; tenantId: string | null }>;
   if (userRoleEntries.length > 0) {
     await db.insert(userRoles).values(userRoleEntries).onConflictDoNothing();
   }

@@ -13,7 +13,7 @@ export const tenants = pgTable("tenants", {
 
 export const users = pgTable("users", {
   id: varchar("id").primaryKey(),
-  tenantId: text("tenant_id").references(() => tenants.id),
+  tenantId: text("tenant_id").notNull().references(() => tenants.id),
   email: text("email"),
   firstName: text("first_name"),
   lastName: text("last_name"),

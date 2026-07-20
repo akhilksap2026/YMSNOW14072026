@@ -15,7 +15,7 @@ export const roles = pgTable("roles", {
 
 export const userRoles = pgTable("user_roles", {
   id: serial("id").primaryKey(),
-  tenantId: text("tenant_id").references(() => tenants.id),
+  tenantId: text("tenant_id").notNull().references(() => tenants.id),
   userId: varchar("user_id").notNull().references(() => users.id),
   roleId: integer("role_id").notNull().references(() => roles.id),
   assignedBy: varchar("assigned_by"),

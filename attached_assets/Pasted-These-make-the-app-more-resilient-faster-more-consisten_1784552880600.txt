@@ -1,0 +1,36 @@
+These make the app more resilient, faster, more consistent, and more accessible WITHOUT
+changing what it does. Can run after Phase 2 (recommended) or independently.
+ 
+NON-BREAKING PARITY RULE (applies to EVERY Phase 3 prompt):
+  - Before editing, note what the affected screens/endpoints currently do (data shown,
+    actions, flows, navigation).
+  - After editing, confirm behavior is IDENTICAL. If ANY user-visible behavior changes,
+    REVERT that change.
+  - These prompts add resilience/perf/a11y/consistency ONLY. No feature added, removed,
+    renamed, or altered. No dependency bumps. No schema changes. No API contract changes.
+  - Prefer additive wrappers over rewrites. If a fix requires touching business logic,
+    STOP and report - it does not belong in Phase 3.
+ 
+--------------------------------------------------------------------------------
+PROMPT 3.1 - App-wide error boundary + consistent loading skeletons
+--------------------------------------------------------------------------------
+Objective: Stop one failed query/render from blanking the app; make loading uniform.
+ 
+Scope (IN):
+  - Top-level React error boundary in App.tsx with a friendly "Something went wrong -
+    reload" fallback + reset button. Must NOT swallow or alter normal flows.
+  - Where pages already use TanStack Query isLoading, standardize the loading UI on the
+    shared shadcn <Skeleton> instead of ad-hoc spinners/blank states. Only touch pages
+    that currently show nothing or an inconsistent loader.
+  - Do NOT add loading states where data is synchronous or already handled well.
+ 
+Scope (OUT): Changing query keys, endpoints, or what data loads. Any api-server change.
+ 
+Files you MAY touch: App.tsx, new components/error-boundary.tsx, individual pages ONLY
+to swap an existing loader for the shared skeleton.
+DO-NOT-MODIFY: query logic, route handlers, schema.
+ 
+Verification Gate (+parity): Every page still loads and shows the same data. Temporarily
+throw in one component to confirm the boundary catches it and the rest survives; then
+remove the test throw.
+STOP.
