@@ -1,4 +1,5 @@
 import type { Express } from "express";
+import { requireModule } from "../lib/require-module";
 import { storage } from "../lib/storage";
 import path from "path";
 import fs from "fs";
@@ -47,7 +48,40 @@ import { db } from "../db";
 import { ne, and, eq, sql, count, desc, isNotNull, isNull, gte, lt, or, notInArray, inArray } from "drizzle-orm";
 
 export async function registerYmsRoutes(app: Express): Promise<void> {
-  
+
+  // ── Module entitlement gates (prefix-based, runs before every handler) ──────
+  // Always-on (no gate): /api/auth, /api/healthz, /api/dashboard/stats,
+  //   /api/user/profile, /api/carriers, /api/sidebar/stats, /api/notifications,
+  //   /api/portal, /api/me, /api/admin/reset-to-seed, /api/admin/carriers,
+  //   /api/manual/download, /api/screenshots/download-all
+  const rm = requireModule;
+  app.use("/api/gate",                      rm("gate"));          // gate ops, check-in/out
+  app.use("/api/gates",                     rm("gate"));          // gate configuration
+  app.use("/api/visits",                    rm("gate"));          // visit search & status
+  app.use("/api/appointments",              rm("appointments"));
+  app.use("/api/dock",                      rm("dock"));
+  app.use("/api/yard/inventory",            rm("yard_inventory"));
+  app.use("/api/yard/map",                  rm("yard_map"));
+  app.use("/api/yard/zones",                rm("yard_map"));
+  app.use("/api/yard/slots",                rm("yard_map"));
+  app.use("/api/yard/assign-slot",          rm("yard_map"));
+  app.use("/api/yard/available-slots",      rm("yard_map"));     // also covers -slots-all
+  app.use("/api/yard/jockeys",              rm("move_tasks"));
+  app.use("/api/moves",                     rm("move_tasks"));
+  app.use("/api/exceptions",                rm("hold_mgmt"));
+  app.use("/api/inspections",               rm("inspections"));  // covers inspections-upload-url
+  app.use("/api/yard-audit",                rm("yard_audit"));
+  app.use("/api/reports",                   rm("reports"));
+  app.use("/api/revenue",                   rm("reports"));
+  app.use("/api/admin/users",               rm("user_mgmt"));
+  app.use("/api/admin/rbac",                rm("user_mgmt"));
+  app.use("/api/audit-logs",                rm("user_mgmt"));
+  app.use("/api/ai-config",                 rm("ai_copilot"));
+  app.use("/api/ai-audit-logs",             rm("ai_copilot"));
+  app.use("/api/ai-performance-stats",      rm("ai_copilot"));
+  app.use("/api/email-intelligence",        rm("ai_copilot"));
+  // ── End module gates ─────────────────────────────────────────────────────────
+
   // User Profile
   app.get("/api/user/profile", async (req: any, res) => {
     try {
