@@ -27,6 +27,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Plus, Building2, RefreshCw, PauseCircle, PlayCircle, Loader2, Settings2 } from "lucide-react";
+import { PageHeader, StatusChip } from "@/components/enterprise";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useLocation } from "wouter";
 
@@ -59,20 +60,10 @@ const EMPTY_FORM: CreateForm = {
 };
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
-function StatusBadge({ status }: { status: string | null }) {
-  if (!status) return <Badge variant="outline" className="text-muted-foreground">—</Badge>;
-  const isSuspended = status === "suspended";
-  return (
-    <Badge
-      className={`text-[11px] px-2 py-0.5 font-semibold border-0 ${
-        isSuspended
-          ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
-          : "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
-      }`}
-    >
-      {status}
-    </Badge>
-  );
+function tenantStatusColor(s: string): string {
+  return s === "suspended"
+    ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+    : "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400";
 }
 
 function PlanBadge({ code, name }: { code: string | null; name: string | null }) {
@@ -160,37 +151,33 @@ export default function PlatformAdminPage() {
 
   return (
     <div className="space-y-6">
-      {/* ── Header ── */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-bold tracking-tight flex items-center gap-2">
-            <Building2 className="h-5 w-5 text-primary" />
-            Tenants
-          </h1>
-          <p className="text-sm text-muted-foreground mt-0.5">
-            All YMSNOW tenant organizations — {tenants.length} total
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => refetch()}
-            className="h-8 w-8 p-0 text-muted-foreground"
-            title="Refresh"
-          >
-            <RefreshCw className="h-3.5 w-3.5" />
-          </Button>
-          <Button
-            size="sm"
-            onClick={() => setCreateOpen(true)}
-            className="h-8 text-xs gap-1.5"
-          >
-            <Plus className="h-3.5 w-3.5" />
-            New Tenant
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        title="Tenants"
+        icon={<Building2 className="h-5 w-5" />}
+        subtitle={`All YMSNOW tenant organizations — ${tenants.length} total`}
+        actions={
+          <>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => refetch()}
+              className="h-8 w-8 p-0 text-muted-foreground"
+              aria-label="Refresh tenant list"
+              title="Refresh"
+            >
+              <RefreshCw className="h-3.5 w-3.5" />
+            </Button>
+            <Button
+              size="sm"
+              onClick={() => setCreateOpen(true)}
+              className="h-8 text-xs gap-1.5"
+            >
+              <Plus className="h-3.5 w-3.5" />
+              New Tenant
+            </Button>
+          </>
+        }
+      />
 
       {/* ── Table ── */}
       <div className="border rounded-lg overflow-hidden">
@@ -243,7 +230,9 @@ export default function PlatformAdminPage() {
                       <PlanBadge code={t.planCode} name={t.planName} />
                     </TableCell>
                     <TableCell>
-                      <StatusBadge status={t.subscriptionStatus} />
+                      {t.subscriptionStatus
+                        ? <StatusChip status={t.subscriptionStatus} colorFn={tenantStatusColor} />
+                        : <span className="text-muted-foreground text-sm">—</span>}
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
                       {t.createdAt ? new Date(t.createdAt).toLocaleDateString() : "—"}

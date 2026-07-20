@@ -37,6 +37,7 @@ import {
   Minus,
   ClipboardList,
 } from "lucide-react";
+import { PageHeader } from "@/components/enterprise";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -276,21 +277,22 @@ export default function PlatformTenantDetailPage({ tenantId }: { tenantId: strin
       </div>
 
       {/* ── Page header ── */}
-      <div className="flex items-start justify-between">
-        <div>
-          <h1 className="text-xl font-bold tracking-tight">{data.tenantName}</h1>
-          <p className="text-[11px] text-muted-foreground font-mono mt-0.5">{data.tenantId}</p>
-        </div>
-        <Button
-          size="sm"
-          variant="ghost"
-          onClick={() => refetch()}
-          className="h-8 w-8 p-0 text-muted-foreground"
-          title="Refresh"
-        >
-          <RefreshCw className="h-3.5 w-3.5" />
-        </Button>
-      </div>
+      <PageHeader
+        title={data.tenantName}
+        subtitle={data.tenantId}
+        actions={
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => refetch()}
+            className="h-8 w-8 p-0 text-muted-foreground"
+            aria-label="Refresh tenant details"
+            title="Refresh"
+          >
+            <RefreshCw className="h-3.5 w-3.5" />
+          </Button>
+        }
+      />
 
       {/* ── Subscription card ── */}
       <div className="border rounded-lg p-5 space-y-4 bg-card">
