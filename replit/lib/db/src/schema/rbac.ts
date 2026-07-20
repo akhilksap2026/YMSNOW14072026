@@ -1,7 +1,7 @@
 import { pgTable, text, varchar, integer, boolean, timestamp, serial, unique } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
-import { users } from "./auth";
+import { users, tenants } from "./auth";
 
 export const roles = pgTable("roles", {
   id: serial("id").primaryKey(),
@@ -15,6 +15,7 @@ export const roles = pgTable("roles", {
 
 export const userRoles = pgTable("user_roles", {
   id: serial("id").primaryKey(),
+  tenantId: text("tenant_id").references(() => tenants.id),
   userId: varchar("user_id").notNull().references(() => users.id),
   roleId: integer("role_id").notNull().references(() => roles.id),
   assignedBy: varchar("assigned_by"),

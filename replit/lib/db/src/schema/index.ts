@@ -14,7 +14,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
-import { users } from "./auth";
+import { users, tenants } from "./auth";
 
 export const userRoleEnum = [
   "admin",
@@ -28,6 +28,7 @@ export type UserRole = (typeof userRoleEnum)[number];
 
 export const userProfiles = pgTable("user_profiles", {
   id: serial("id").primaryKey(),
+  tenantId: text("tenant_id").references(() => tenants.id),
   userId: varchar("user_id")
     .notNull()
     .references(() => users.id),
@@ -47,6 +48,7 @@ export const userProfilesRelations = relations(userProfiles, ({ one }) => ({
 
 export const carriers = pgTable("carriers", {
   id: serial("id").primaryKey(),
+  tenantId: text("tenant_id").references(() => tenants.id),
   name: text("name").notNull(),
   scacCode: varchar("scac_code", { length: 10 }),
   contactName: text("contact_name"),
@@ -64,6 +66,7 @@ export const carriersRelations = relations(carriers, ({ many }) => ({
 
 export const yardZones = pgTable("yard_zones", {
   id: serial("id").primaryKey(),
+  tenantId: text("tenant_id").references(() => tenants.id),
   name: text("name").notNull(),
   code: varchar("code", { length: 10 }).notNull(),
   type: text("type").notNull().default("staging"),
@@ -77,6 +80,7 @@ export const yardZonesRelations = relations(yardZones, ({ many }) => ({
 
 export const yardSlots = pgTable("yard_slots", {
   id: serial("id").primaryKey(),
+  tenantId: text("tenant_id").references(() => tenants.id),
   zoneId: integer("zone_id")
     .notNull()
     .references(() => yardZones.id),
@@ -102,6 +106,7 @@ export const yardSlotsRelations = relations(yardSlots, ({ one }) => ({
 
 export const dockDoors = pgTable("dock_doors", {
   id: serial("id").primaryKey(),
+  tenantId: text("tenant_id").references(() => tenants.id),
   doorNumber: varchar("door_number", { length: 10 }).notNull(),
   status: text("status").notNull().default("available"),
   compatibleType: text("compatible_type").notNull().default("all"),
@@ -112,6 +117,7 @@ export const dockDoors = pgTable("dock_doors", {
 
 export const gates = pgTable("gates", {
   id: serial("id").primaryKey(),
+  tenantId: text("tenant_id").references(() => tenants.id),
   name: text("name").notNull(),
   type: text("type").notNull().default("both"),
   isActive: boolean("is_active").notNull().default(true),
@@ -182,6 +188,7 @@ export const movementTypeEnum = [
 
 export const appointments = pgTable("appointments", {
   id: serial("id").primaryKey(),
+  tenantId: text("tenant_id").references(() => tenants.id),
   referenceNumber: varchar("reference_number", { length: 20 }).notNull(),
   carrierId: integer("carrier_id").references(() => carriers.id),
   scheduledDate: timestamp("scheduled_date").notNull(),
@@ -213,6 +220,7 @@ export const appointmentsRelations = relations(appointments, ({ one }) => ({
 
 export const visits = pgTable("visits", {
   id: serial("id").primaryKey(),
+  tenantId: text("tenant_id").references(() => tenants.id),
   visitNumber: varchar("visit_number", { length: 20 }).notNull(),
   appointmentId: integer("appointment_id").references(() => appointments.id),
   carrierId: integer("carrier_id").references(() => carriers.id),
@@ -262,6 +270,7 @@ export const visitsRelations = relations(visits, ({ one, many }) => ({
 
 export const gateTransactions = pgTable("gate_transactions", {
   id: serial("id").primaryKey(),
+  tenantId: text("tenant_id").references(() => tenants.id),
   visitId: integer("visit_id").notNull().references(() => visits.id),
   type: text("type").notNull(),
   gateId: integer("gate_id").references(() => gates.id),
@@ -272,6 +281,7 @@ export const gateTransactions = pgTable("gate_transactions", {
 
 export const moveTasks = pgTable("move_tasks", {
   id: serial("id").primaryKey(),
+  tenantId: text("tenant_id").references(() => tenants.id),
   visitId: integer("visit_id").notNull().references(() => visits.id),
   moveType: text("move_type").notNull().default("reposition"),
   fromLocationType: text("from_location_type").notNull(),
@@ -303,6 +313,7 @@ export const moveTasksRelations = relations(moveTasks, ({ one }) => ({
 
 export const exceptions = pgTable("exceptions", {
   id: serial("id").primaryKey(),
+  tenantId: text("tenant_id").references(() => tenants.id),
   visitId: integer("visit_id").notNull().references(() => visits.id),
   type: text("type").notNull(),
   severity: text("severity").notNull().default("medium"),
@@ -325,6 +336,7 @@ export const exceptionsRelations = relations(exceptions, ({ one }) => ({
 
 export const photos = pgTable("photos", {
   id: serial("id").primaryKey(),
+  tenantId: text("tenant_id").references(() => tenants.id),
   visitId: integer("visit_id").references(() => visits.id),
   exceptionId: integer("exception_id").references(() => exceptions.id),
   type: text("type").notNull().default("general"),
@@ -361,6 +373,7 @@ export const virtualMoveReasonEnum = [
 
 export const yardAuditItems = pgTable("yard_audit_items", {
   id: serial("id").primaryKey(),
+  tenantId: text("tenant_id").references(() => tenants.id),
   visitId: integer("visit_id").references(() => visits.id),
   trailerNumber: text("trailer_number"),
   systemLocation: text("system_location"),
@@ -407,6 +420,7 @@ export const inspectionTypeEnum = [
 
 export const inspections = pgTable("inspections", {
   id: serial("id").primaryKey(),
+  tenantId: text("tenant_id").references(() => tenants.id),
   visitId: integer("visit_id").references(() => visits.id),
   inspectionType: text("inspection_type").notNull().default("gate_inbound"),
   trailerNumber: text("trailer_number"),
@@ -442,6 +456,7 @@ export type Inspection = typeof inspections.$inferSelect;
 
 export const auditLogs = pgTable("audit_logs", {
   id: serial("id").primaryKey(),
+  tenantId: text("tenant_id").references(() => tenants.id),
   action: text("action").notNull(),
   entityType: text("entity_type").notNull(),
   entityId: integer("entity_id"),
@@ -454,6 +469,7 @@ export const auditLogs = pgTable("audit_logs", {
 
 export const aiConfig = pgTable("ai_config", {
   id: serial("id").primaryKey(),
+  tenantId: text("tenant_id").references(() => tenants.id),
   copilotEnabled: boolean("copilot_enabled").default(true).notNull(),
   chatAssistantEnabled: boolean("chat_assistant_enabled").default(true).notNull(),
   predictiveOpsEnabled: boolean("predictive_ops_enabled").default(true).notNull(),
@@ -480,6 +496,7 @@ export const aiConfig = pgTable("ai_config", {
 
 export const aiAuditLogs = pgTable("ai_audit_logs", {
   id: serial("id").primaryKey(),
+  tenantId: text("tenant_id").references(() => tenants.id),
   createdAt: timestamp("created_at").defaultNow(),
   userId: text("user_id"),
   userRole: text("user_role"),
@@ -500,6 +517,7 @@ export type InsertAiAuditLog = z.infer<typeof insertAiAuditLogSchema>;
 
 export const revenueRates = pgTable("revenue_rates", {
   id: serial("id").primaryKey(),
+  tenantId: text("tenant_id").references(() => tenants.id),
   serviceType: text("service_type").notNull(),
   displayName: text("display_name").notNull(),
   description: text("description"),
@@ -559,6 +577,7 @@ export type InsertGateTransaction = z.infer<typeof insertGateTransactionSchema>;
 
 export const carrierContacts = pgTable("carrier_contacts", {
   id: serial("id").primaryKey(),
+  tenantId: text("tenant_id").references(() => tenants.id),
   carrierName: text("carrier_name").notNull(),
   contactName: text("contact_name").notNull(),
   contactEmail: text("contact_email").notNull().unique(),
@@ -568,6 +587,7 @@ export const carrierContacts = pgTable("carrier_contacts", {
 
 export const inboundEmailLog = pgTable("inbound_email_log", {
   id: serial("id").primaryKey(),
+  tenantId: text("tenant_id").references(() => tenants.id),
   senderEmail: text("sender_email").notNull(),
   subject: text("subject").notNull(),
   emailBody: text("email_body").notNull(),
@@ -586,6 +606,7 @@ export const inboundEmailLog = pgTable("inbound_email_log", {
 
 export const emailAiAlerts = pgTable("email_ai_alerts", {
   id: serial("id").primaryKey(),
+  tenantId: text("tenant_id").references(() => tenants.id),
   inboundEmailId: integer("inbound_email_id").notNull(),
   shipmentId: integer("shipment_id"),
   shipmentRefNo: text("shipment_ref_no"),
@@ -602,6 +623,7 @@ export const emailAiAlerts = pgTable("email_ai_alerts", {
 
 export const emailIntelligenceConfig = pgTable("email_intelligence_config", {
   id: serial("id").primaryKey(),
+  tenantId: text("tenant_id").references(() => tenants.id),
   testModeEnabled: boolean("test_mode_enabled").default(true).notNull(),
   fixedTestSupervisorEmail: text("fixed_test_supervisor_email").default("akhil@ksaptech.com").notNull(),
   allowedSenderValidation: boolean("allowed_sender_validation").default(true).notNull(),
