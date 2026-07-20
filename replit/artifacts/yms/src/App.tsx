@@ -93,7 +93,8 @@ const ReportsPage       = lazy(() => import("@/pages/reports"));
 const AdminAiConfigPage = lazy(() => import("@/pages/admin-ai-config"));
 const RevenuePage       = lazy(() => import("@/pages/revenue"));
 const EmailIntelligencePage  = lazy(() => import("@/pages/email-intelligence"));
-const PlatformAdminPage      = lazy(() => import("@/pages/platform-admin"));
+const PlatformAdminPage        = lazy(() => import("@/pages/platform-admin"));
+const PlatformTenantDetailPage = lazy(() => import("@/pages/platform-tenant-detail"));
 const NotificationsPage = lazy(() => import("@/pages/notifications"));
 const GateGuardPage     = lazy(() => import("@/pages/gate-guard"));
 const CarrierPortalPage = lazy(() => import("@/pages/carrier-portal"));
@@ -596,7 +597,16 @@ function PlatformAdminShell({ onLogout }: { onLogout: () => void }) {
               <Skeleton className="h-64 w-full" />
             </div>
           }>
-            <PlatformAdminPage />
+            <Switch>
+              <Route path="/platform/tenants/:id">
+                {(params: { id: string }) => (
+                  <PlatformTenantDetailPage tenantId={params.id} />
+                )}
+              </Route>
+              <Route>
+                <PlatformAdminPage />
+              </Route>
+            </Switch>
           </Suspense>
         </div>
       </main>

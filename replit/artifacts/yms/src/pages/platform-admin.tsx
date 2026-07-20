@@ -26,7 +26,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Plus, Building2, RefreshCw, PauseCircle, PlayCircle, Loader2 } from "lucide-react";
+import { Plus, Building2, RefreshCw, PauseCircle, PlayCircle, Loader2, Settings2 } from "lucide-react";
+import { useLocation } from "wouter";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 interface TenantRow {
@@ -89,6 +90,7 @@ function PlanBadge({ code, name }: { code: string | null; name: string | null })
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 export default function PlatformAdminPage() {
+  const [, navigate] = useLocation();
   const { toast } = useToast();
   const [createOpen, setCreateOpen] = useState(false);
   const [form, setForm] = useState<CreateForm>(EMPTY_FORM);
@@ -240,27 +242,38 @@ export default function PlatformAdminPage() {
                       {t.createdAt ? new Date(t.createdAt).toLocaleDateString() : "—"}
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button
-                        size="sm"
-                        variant={isSuspended ? "outline" : "ghost"}
-                        className={`h-7 text-xs gap-1 ${isSuspended ? "border-emerald-300 text-emerald-700 hover:bg-emerald-50" : "text-red-600 hover:bg-red-50 hover:text-red-700"}`}
-                        disabled={patchMutation.isPending}
-                        onClick={() =>
-                          patchMutation.mutate({
-                            id: t.id,
-                            status: isSuspended ? "active" : "suspended",
-                          })
-                        }
-                      >
-                        {isPending ? (
-                          <Loader2 className="h-3 w-3 animate-spin" />
-                        ) : isSuspended ? (
-                          <PlayCircle className="h-3 w-3" />
-                        ) : (
-                          <PauseCircle className="h-3 w-3" />
-                        )}
-                        {isSuspended ? "Reactivate" : "Suspend"}
-                      </Button>
+                      <div className="flex items-center justify-end gap-1.5">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-7 text-xs gap-1 border-border text-muted-foreground hover:text-foreground"
+                          onClick={() => navigate(`/platform/tenants/${t.id}`)}
+                        >
+                          <Settings2 className="h-3 w-3" />
+                          Modules
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant={isSuspended ? "outline" : "ghost"}
+                          className={`h-7 text-xs gap-1 ${isSuspended ? "border-emerald-300 text-emerald-700 hover:bg-emerald-50" : "text-red-600 hover:bg-red-50 hover:text-red-700"}`}
+                          disabled={patchMutation.isPending}
+                          onClick={() =>
+                            patchMutation.mutate({
+                              id: t.id,
+                              status: isSuspended ? "active" : "suspended",
+                            })
+                          }
+                        >
+                          {isPending ? (
+                            <Loader2 className="h-3 w-3 animate-spin" />
+                          ) : isSuspended ? (
+                            <PlayCircle className="h-3 w-3" />
+                          ) : (
+                            <PauseCircle className="h-3 w-3" />
+                          )}
+                          {isSuspended ? "Reactivate" : "Suspend"}
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 );
