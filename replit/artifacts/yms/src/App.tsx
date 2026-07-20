@@ -23,6 +23,7 @@ import NotFound from "@/pages/not-found";
 import LoginPage from "@/pages/login";
 import { ProductModeProvider, useProductMode, showAIRecommendations } from "@/lib/product-mode";
 import { ModeSelector } from "@/components/mode-selector";
+import { EntitlementsProvider, useEntitlements, moduleEnabled } from "@/lib/entitlements";
 
 function TabletSidebarSync() {
   const { tabletMode } = useTabletView();
@@ -173,108 +174,154 @@ function RoleGuard({ children, allowedRoles, userRole }: { children: React.React
   return <Redirect to="/" />;
 }
 
+/**
+ * Combines module entitlement check + RBAC role check.
+ * If the module is not licensed for this tenant, redirects to "/" with a toast.
+ * Falls through to RoleGuard for permission-based access control.
+ */
+function ModuleGuard({
+  module: moduleCode,
+  allowedRoles,
+  userRole,
+  children,
+}: {
+  module?: string;
+  allowedRoles?: string[];
+  userRole?: string;
+  children: React.ReactNode;
+}) {
+  const { entitlements, isLoading } = useEntitlements();
+  const { toast } = useToast();
+  const [, navigate] = useLocation();
+
+  const locked = !isLoading && moduleCode != null && !moduleEnabled(entitlements, moduleCode);
+
+  useEffect(() => {
+    if (locked) {
+      toast({
+        title: "Not included in your plan",
+        description: "This module is not available on your current subscription.",
+      });
+      navigate("/");
+    }
+  }, [locked]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  if (locked) return null;
+  return (
+    <RoleGuard allowedRoles={allowedRoles} userRole={userRole}>
+      {children}
+    </RoleGuard>
+  );
+}
+
 function AppRouter({ userRole, currentPersona }: { userRole?: string; currentPersona?: Persona | null }) {
   return (
     <Switch>
+      {/* ── Always-accessible ─────────────────────────────────────────────── */}
       <Route path="/">
         <DashboardPage userRole={userRole} />
       </Route>
-      <Route path="/appointments">
-        <AppointmentsPage userRole={userRole} currentPersona={currentPersona} />
-      </Route>
-      <Route path="/gate/check-in">
-        <RoleGuard allowedRoles={["admin", "yard_manager", "gate_guard"]} userRole={userRole}>
-          <GateCheckInPage />
-        </RoleGuard>
-      </Route>
-      <Route path="/gate/check-out">
-        <RoleGuard allowedRoles={["admin", "yard_manager", "gate_guard"]} userRole={userRole}>
-          <GateCheckOutPage />
-        </RoleGuard>
-      </Route>
-      <Route path="/yard/inventory">
-        <RoleGuard allowedRoles={["admin", "yard_manager", "gate_guard", "yard_jockey", "dock_user"]} userRole={userRole}>
-          <YardInventoryPage userRole={userRole} />
-        </RoleGuard>
-      </Route>
-      <Route path="/yard/map">
-        <RoleGuard allowedRoles={["admin", "yard_manager", "yard_jockey"]} userRole={userRole}>
-          <YardMapPage />
-        </RoleGuard>
-      </Route>
-      <Route path="/dock">
-        <RoleGuard allowedRoles={["admin", "yard_manager", "dock_user"]} userRole={userRole}>
-          <DockManagementPage userRole={userRole} currentPersona={currentPersona} />
-        </RoleGuard>
-      </Route>
-      <Route path="/moves">
-        <RoleGuard allowedRoles={["admin", "yard_manager", "yard_jockey"]} userRole={userRole}>
-          <MoveTasksPage userRole={userRole} currentPersonaId={currentPersona?.id} />
-        </RoleGuard>
-      </Route>
-      <Route path="/exceptions">
-        <RoleGuard allowedRoles={["admin", "yard_manager"]} userRole={userRole}>
-          <ExceptionsPage />
-        </RoleGuard>
+      <Route path="/notifications">
+        <NotificationsPage />
       </Route>
       <Route path="/admin/carriers">
         <RoleGuard allowedRoles={["admin", "yard_manager"]} userRole={userRole}>
           <AdminCarriersPage />
         </RoleGuard>
       </Route>
-      <Route path="/admin/yard-setup">
-        <RoleGuard allowedRoles={["admin"]} userRole={userRole}>
-          <AdminYardSetupPage />
-        </RoleGuard>
+
+      {/* ── Module-gated routes ───────────────────────────────────────────── */}
+      <Route path="/appointments">
+        <ModuleGuard module="appointments" userRole={userRole}>
+          <AppointmentsPage userRole={userRole} currentPersona={currentPersona} />
+        </ModuleGuard>
       </Route>
-      <Route path="/admin/users">
-        <RoleGuard allowedRoles={["admin"]} userRole={userRole}>
-          <AdminUsersPage />
-        </RoleGuard>
+      <Route path="/gate/check-in">
+        <ModuleGuard module="gate" allowedRoles={["admin", "yard_manager", "gate_guard"]} userRole={userRole}>
+          <GateCheckInPage />
+        </ModuleGuard>
       </Route>
-      <Route path="/admin/audit">
-        <RoleGuard allowedRoles={["admin", "yard_manager"]} userRole={userRole}>
-          <AdminAuditPage />
-        </RoleGuard>
-      </Route>
-      <Route path="/yard/audit">
-        <RoleGuard allowedRoles={["admin", "yard_manager"]} userRole={userRole}>
-          <YardAuditPage />
-        </RoleGuard>
-      </Route>
-      <Route path="/inspections">
-        <RoleGuard allowedRoles={["admin", "yard_manager", "gate_guard", "dock_user"]} userRole={userRole}>
-          <InspectionsPage userRole={userRole} currentPersona={currentPersona} />
-        </RoleGuard>
-      </Route>
-      <Route path="/reports">
-        <RoleGuard allowedRoles={["admin", "yard_manager"]} userRole={userRole}>
-          <ReportsPage />
-        </RoleGuard>
-      </Route>
-      <Route path="/admin/ai-config">
-        <RoleGuard allowedRoles={["admin"]} userRole={userRole}>
-          <AdminAiConfigPage />
-        </RoleGuard>
-      </Route>
-      <Route path="/revenue">
-        <RoleGuard allowedRoles={["admin", "yard_manager"]} userRole={userRole}>
-          <RevenuePage />
-        </RoleGuard>
-      </Route>
-      <Route path="/email-intelligence">
-        <RoleGuard allowedRoles={["admin", "yard_manager"]} userRole={userRole}>
-          <EmailIntelligencePage />
-        </RoleGuard>
-      </Route>
-      <Route path="/notifications">
-        <NotificationsPage />
+      <Route path="/gate/check-out">
+        <ModuleGuard module="gate" allowedRoles={["admin", "yard_manager", "gate_guard"]} userRole={userRole}>
+          <GateCheckOutPage />
+        </ModuleGuard>
       </Route>
       <Route path="/gate/guard-mode">
-        <RoleGuard allowedRoles={["admin", "yard_manager", "gate_guard"]} userRole={userRole}>
+        <ModuleGuard module="gate" allowedRoles={["admin", "yard_manager", "gate_guard"]} userRole={userRole}>
           <GateGuardPage />
-        </RoleGuard>
+        </ModuleGuard>
       </Route>
+      <Route path="/yard/inventory">
+        <ModuleGuard module="yard_inventory" allowedRoles={["admin", "yard_manager", "gate_guard", "yard_jockey", "dock_user"]} userRole={userRole}>
+          <YardInventoryPage userRole={userRole} />
+        </ModuleGuard>
+      </Route>
+      <Route path="/yard/map">
+        <ModuleGuard module="yard_map" allowedRoles={["admin", "yard_manager", "yard_jockey"]} userRole={userRole}>
+          <YardMapPage />
+        </ModuleGuard>
+      </Route>
+      <Route path="/dock">
+        <ModuleGuard module="dock" allowedRoles={["admin", "yard_manager", "dock_user"]} userRole={userRole}>
+          <DockManagementPage userRole={userRole} currentPersona={currentPersona} />
+        </ModuleGuard>
+      </Route>
+      <Route path="/moves">
+        <ModuleGuard module="move_tasks" allowedRoles={["admin", "yard_manager", "yard_jockey"]} userRole={userRole}>
+          <MoveTasksPage userRole={userRole} currentPersonaId={currentPersona?.id} />
+        </ModuleGuard>
+      </Route>
+      <Route path="/exceptions">
+        <ModuleGuard module="hold_mgmt" allowedRoles={["admin", "yard_manager"]} userRole={userRole}>
+          <ExceptionsPage />
+        </ModuleGuard>
+      </Route>
+      <Route path="/inspections">
+        <ModuleGuard module="inspections" allowedRoles={["admin", "yard_manager", "gate_guard", "dock_user"]} userRole={userRole}>
+          <InspectionsPage userRole={userRole} currentPersona={currentPersona} />
+        </ModuleGuard>
+      </Route>
+      <Route path="/yard/audit">
+        <ModuleGuard module="yard_audit" allowedRoles={["admin", "yard_manager"]} userRole={userRole}>
+          <YardAuditPage />
+        </ModuleGuard>
+      </Route>
+      <Route path="/reports">
+        <ModuleGuard module="reports" allowedRoles={["admin", "yard_manager"]} userRole={userRole}>
+          <ReportsPage />
+        </ModuleGuard>
+      </Route>
+      <Route path="/revenue">
+        <ModuleGuard module="reports" allowedRoles={["admin", "yard_manager"]} userRole={userRole}>
+          <RevenuePage />
+        </ModuleGuard>
+      </Route>
+      <Route path="/admin/yard-setup">
+        <ModuleGuard module="yard_map" allowedRoles={["admin"]} userRole={userRole}>
+          <AdminYardSetupPage />
+        </ModuleGuard>
+      </Route>
+      <Route path="/admin/users">
+        <ModuleGuard module="user_mgmt" allowedRoles={["admin"]} userRole={userRole}>
+          <AdminUsersPage />
+        </ModuleGuard>
+      </Route>
+      <Route path="/admin/audit">
+        <ModuleGuard module="user_mgmt" allowedRoles={["admin", "yard_manager"]} userRole={userRole}>
+          <AdminAuditPage />
+        </ModuleGuard>
+      </Route>
+      <Route path="/admin/ai-config">
+        <ModuleGuard module="ai_copilot" allowedRoles={["admin"]} userRole={userRole}>
+          <AdminAiConfigPage />
+        </ModuleGuard>
+      </Route>
+      <Route path="/email-intelligence">
+        <ModuleGuard module="ai_copilot" allowedRoles={["admin", "yard_manager"]} userRole={userRole}>
+          <EmailIntelligencePage />
+        </ModuleGuard>
+      </Route>
+
       <Route component={NotFound} />
     </Switch>
   );
@@ -287,9 +334,13 @@ function AuthenticatedApp({ onLogout }: { onLogout: () => void }) {
     queryKey: ["/api/user/profile"],
   });
 
+  const { entitlements } = useEntitlements();
+
   const { data: personas = [] } = useQuery<Persona[]>({
     queryKey: ["/api/admin/users"],
     select: (data: any[]) => data.filter((u) => u.id !== "demo-user" && u.isActive),
+    // Only fetch when user_mgmt is licensed; /api/admin/users returns 403 otherwise
+    enabled: moduleEnabled(entitlements, "user_mgmt"),
   });
 
   const [currentPersonaId, setCurrentPersonaId] = useState<string>(() => {
@@ -359,6 +410,8 @@ function AuthenticatedApp({ onLogout }: { onLogout: () => void }) {
   const { data: aiConfig } = useQuery<{ copilotEnabled: boolean }>({
     queryKey: ["/api/ai-config"],
     select: (d: any) => ({ copilotEnabled: d.copilotEnabled }),
+    // Only fetch when ai_copilot is licensed; /api/ai-config returns 403 otherwise
+    enabled: moduleEnabled(entitlements, "ai_copilot"),
   });
   const aiEnabled = aiConfig?.copilotEnabled !== false && aiModeEnabled;
 
@@ -555,6 +608,7 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ProductModeProvider>
+      <EntitlementsProvider>
       <TabletViewProvider>
       <ThemeProvider>
         <TooltipProvider>
@@ -577,6 +631,7 @@ export default function App() {
         </TooltipProvider>
       </ThemeProvider>
       </TabletViewProvider>
+      </EntitlementsProvider>
       </ProductModeProvider>
     </QueryClientProvider>
   );

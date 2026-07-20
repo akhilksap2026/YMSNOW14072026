@@ -1,6 +1,6 @@
 ---
-name: Phase 0 YMSNOW Multi-Tenant Architecture
-description: Key decisions, constraints, and gotchas from prompts 0.0–0.4 of the YMSNOW hardening series
+name: Phase 0–1 YMSNOW Multi-Tenant + Billing Architecture
+description: Key decisions, constraints, and gotchas from prompts 0.0–1.4 of the YMSNOW hardening series
 ---
 
 ## Session auth (Prompt 0.3)
@@ -31,6 +31,33 @@ description: Key decisions, constraints, and gotchas from prompts 0.0–0.4 of t
 ## Verification
 - Second tenant "Acme Corp" (slug `acme`, user `acme-admin`) created by `replit/scripts/src/verify-tenant-isolation.ts`.
 - Run: `cd replit && pnpm --filter @workspace/scripts run verify-isolation`
-- Add `pool.end()` at the end if you want the script to exit cleanly (currently hangs on idle pool).
+
+## Billing/Entitlement catalog (Prompts 1.1–1.4)
+
+### Schema (replit/lib/db/src/schema/billing.ts)
+Five tables: `modules`, `plans`, `plan_modules`, `subscriptions`, `tenant_module_overrides`.
+- Module codes: `gate`, `appointments`, `yard_inventory`, `yard_map`, `dock`, `move_tasks`, `hold_mgmt`, `ready_to_go`, `inspections`, `yard_audit`, `reports`, `user_mgmt`, `ai_copilot`.
+- Plans: `core` (8 modules), `professional` (11), `enterprise` (13).
+- Northwind → enterprise, Acme → core. Both active subscriptions.
+
+### Resolver (replit/artifacts/api-server/src/lib/entitlements.ts)
+- `resolveEntitlements(tenantId)` → `Record<moduleCode, {enabled, limits?}>`.
+- 30 s in-memory TTL cache keyed by tenantId. `invalidateEntitlements(tenantId)` clears it.
+- Logic: find subscription → if inactive → all disabled; else start from plan modules → apply non-expired tenant_module_overrides.
+- `GET /api/me/entitlements` returns resolved map for `req.auth.tenantId`.
+
+### Server-side module gate (Prompt 1.3)
+- `requireModule(moduleCode)` middleware in `require-module.ts` → 403 `{error:"module_not_licensed",module}`.
+- Applied as `app.use(prefix, requireModule(code))` block at top of `registerYmsRoutes()`.
+- 26 prefix gates covering all 12 operational modules. Always-on: dashboard, carriers, sidebar, notifications, portal, me, admin/reset-to-seed.
+
+### Client-side entitlement layer (Prompt 1.4)
+- `replit/artifacts/yms/src/lib/entitlements.tsx`: `EntitlementsProvider`, `useEntitlements()`, `moduleEnabled()`, `<Gated module="...">`.
+- `replit/artifacts/yms/src/lib/product-mode.tsx`: ceiling derived from entitlements (ai_copilot→enhanced, reports→elevate, else core). Default mode = ceiling on first load; user can downshift; upshift beyond ceiling clamped.
+- Sidebar: `module?` field on `NavItem`; `CollapsibleNavGroup` filters by entitlement before role/AI checks.
+- `ModuleGuard` in `App.tsx` wraps each route; redirects to `/` with toast when module not licensed.
+- `/api/admin/users` and `/api/ai-config` queries gated via `enabled: moduleEnabled(...)` to prevent 403 noise.
+
+**Why ceiling defaults to "enhanced" while loading:** prevents false restriction during the brief entitlements fetch. Once data arrives, real ceiling is applied.
 
 **Why `async_hooks` / `AsyncLocalStorage`:** Avoids threading `tenantId` through every function argument in the 2868-line `register-yms-routes.ts`. The storage proxy is the single choke-point.

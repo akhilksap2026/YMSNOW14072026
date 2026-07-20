@@ -58,6 +58,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import type { Persona } from "@/App";
 import { useProductMode, isStandardMode } from "@/lib/product-mode";
+import { useEntitlements, moduleEnabled } from "@/lib/entitlements";
 
 interface NavItem {
   title: string;
@@ -68,6 +69,8 @@ interface NavItem {
   aiOnly?: boolean;
   subtle?: boolean;
   secondary?: boolean;
+  /** Module code from the billing catalog; item is hidden when module is not licensed. */
+  module?: string;
 }
 
 const dashboardItem: NavItem = {
@@ -78,34 +81,34 @@ const dashboardItem: NavItem = {
 };
 
 const operationsItems: NavItem[] = [
-  { title: "Appointments", url: "/appointments", icon: CalendarDays, roles: ["admin", "yard_manager", "supervisor", "carrier"] },
-  { title: "Gate Operations", url: "/gate/check-in", icon: LogIn, roles: ["admin", "yard_manager", "supervisor", "gate_guard"], badgeKey: "gateExpected" },
-  { title: "Yard Inventory", url: "/yard/inventory", icon: Truck, roles: ["admin", "yard_manager", "supervisor", "gate_guard", "yard_jockey", "dock_user"] },
-  { title: "Yard Map", url: "/yard/map", icon: MapPin, roles: ["admin", "yard_manager", "supervisor", "yard_jockey"], secondary: true },
-  { title: "Dock Management", url: "/dock", icon: DoorOpen, roles: ["admin", "yard_manager", "supervisor", "dock_user"] },
-  { title: "Yard Moves", url: "/moves", icon: ArrowRightLeft, roles: ["admin", "yard_manager", "supervisor", "yard_jockey", "dock_user"], badgeKey: "movePending" },
+  { title: "Appointments",    url: "/appointments",   icon: CalendarDays,    roles: ["admin", "yard_manager", "supervisor", "carrier"],                               module: "appointments"  },
+  { title: "Gate Operations", url: "/gate/check-in",  icon: LogIn,           roles: ["admin", "yard_manager", "supervisor", "gate_guard"], badgeKey: "gateExpected", module: "gate"          },
+  { title: "Yard Inventory",  url: "/yard/inventory", icon: Truck,           roles: ["admin", "yard_manager", "supervisor", "gate_guard", "yard_jockey", "dock_user"],module: "yard_inventory"},
+  { title: "Yard Map",        url: "/yard/map",       icon: MapPin,          roles: ["admin", "yard_manager", "supervisor", "yard_jockey"], secondary: true,          module: "yard_map"      },
+  { title: "Dock Management", url: "/dock",           icon: DoorOpen,        roles: ["admin", "yard_manager", "supervisor", "dock_user"],                             module: "dock"          },
+  { title: "Yard Moves",      url: "/moves",          icon: ArrowRightLeft,  roles: ["admin", "yard_manager", "supervisor", "yard_jockey", "dock_user"], badgeKey: "movePending", module: "move_tasks" },
 ];
 
 const complianceItems: NavItem[] = [
-  { title: "Holds & Exceptions", url: "/exceptions", icon: AlertTriangle, roles: ["admin", "yard_manager", "supervisor"], badgeKey: "exceptionsOpen" },
-  { title: "Inspections", url: "/inspections", icon: ShieldCheck, roles: ["admin", "yard_manager", "supervisor", "gate_guard", "dock_user"], secondary: true },
-  { title: "Yard Audit", url: "/yard/audit", icon: ClipboardCheck, roles: ["admin", "yard_manager", "supervisor"], secondary: true },
+  { title: "Holds & Exceptions", url: "/exceptions",  icon: AlertTriangle, roles: ["admin", "yard_manager", "supervisor"], badgeKey: "exceptionsOpen", module: "hold_mgmt"   },
+  { title: "Inspections",        url: "/inspections",  icon: ShieldCheck,   roles: ["admin", "yard_manager", "supervisor", "gate_guard", "dock_user"], secondary: true, module: "inspections" },
+  { title: "Yard Audit",         url: "/yard/audit",   icon: ClipboardCheck,roles: ["admin", "yard_manager", "supervisor"], secondary: true,           module: "yard_audit"  },
 ];
 
 const analyticsItems: NavItem[] = [
-  { title: "Reports & Analytics", url: "/reports", icon: BarChart3, roles: ["admin", "yard_manager", "supervisor"] },
-  { title: "Revenue", url: "/revenue", icon: TrendingUp, roles: ["admin", "yard_manager", "supervisor"], secondary: true },
-  { title: "Notifications", url: "/notifications", icon: Bell, badgeKey: "notificationsCount", secondary: true },
+  { title: "Reports & Analytics", url: "/reports",       icon: BarChart3,   roles: ["admin", "yard_manager", "supervisor"],                             module: "reports" },
+  { title: "Revenue",             url: "/revenue",       icon: TrendingUp,  roles: ["admin", "yard_manager", "supervisor"], secondary: true,            module: "reports" },
+  { title: "Notifications",       url: "/notifications", icon: Bell,        badgeKey: "notificationsCount", secondary: true }, // always-on
 ];
 
 const adminItems: NavItem[] = [
-  { title: "Carrier Management", url: "/admin/carriers", icon: Building2, roles: ["admin", "yard_manager"] },
-  { title: "Yard Setup", url: "/admin/yard-setup", icon: Settings2, roles: ["admin"], secondary: true },
-  { title: "Users", url: "/admin/users", icon: Users, roles: ["admin"], secondary: true },
-  { title: "Audit Log", url: "/admin/audit", icon: ClipboardList, roles: ["admin", "yard_manager"], secondary: true },
-  { title: "Email Intelligence", url: "/email-intelligence", icon: Mail, roles: ["admin", "yard_manager"], aiOnly: true },
-  { title: "Lifecycle Video", url: "/video", icon: PlayCircle, aiOnly: true, subtle: true },
-  { title: "AI Configuration", url: "/admin/ai-config", icon: Bot, roles: ["admin"], aiOnly: true, subtle: true },
+  { title: "Carrier Management", url: "/admin/carriers",   icon: Building2, roles: ["admin", "yard_manager"]                                                             }, // always-on
+  { title: "Yard Setup",         url: "/admin/yard-setup", icon: Settings2, roles: ["admin"],              secondary: true, module: "yard_map"                          },
+  { title: "Users",              url: "/admin/users",      icon: Users,     roles: ["admin"],              secondary: true, module: "user_mgmt"                         },
+  { title: "Audit Log",          url: "/admin/audit",      icon: ClipboardList, roles: ["admin", "yard_manager"], secondary: true, module: "user_mgmt"                  },
+  { title: "Email Intelligence", url: "/email-intelligence", icon: Mail,    roles: ["admin", "yard_manager"], aiOnly: true,  module: "ai_copilot"                       },
+  { title: "Lifecycle Video",    url: "/video",            icon: PlayCircle, aiOnly: true, subtle: true                                                                  },
+  { title: "AI Configuration",   url: "/admin/ai-config",  icon: Bot,       roles: ["admin"],              aiOnly: true, subtle: true, module: "ai_copilot"             },
 ];
 
 export const allNavItems = [dashboardItem, ...operationsItems, ...complianceItems, ...analyticsItems, ...adminItems];
@@ -177,12 +180,16 @@ function CollapsibleNavGroup({
   hideAI?: boolean;
 }) {
   const [open, setOpen] = useState(defaultOpen);
+  const { entitlements } = useEntitlements();
+
   const filtered = items.filter((item) => {
-    if (!item.roles || !userRole || item.roles.includes(userRole)) {
-      if (hideAI && item.aiOnly) return false;
-      return true;
-    }
-    return false;
+    // Module entitlement: hide if the module is not licensed for this tenant
+    if (item.module && !moduleEnabled(entitlements, item.module)) return false;
+    // AI mode: hide ai-only items in Standard mode
+    if (hideAI && item.aiOnly) return false;
+    // RBAC: hide if the current role doesn't have access
+    if (item.roles && userRole && !item.roles.includes(userRole)) return false;
+    return true;
   });
   if (filtered.length === 0) return null;
 
