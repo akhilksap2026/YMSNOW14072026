@@ -1,1 +1,2 @@
 - [Phase-0 architecture](phase0-arch.md) — YMSNOW multi-tenant hardening prompts 0.0–0.4 decisions and constraints
+- [Phase 4 guardrails](phase4-guardrails.md) — prompt discipline rules, Phase 4 behavior rule (happy path unchanged; only illegal/unsafe/cross-tenant gets 4xx), and verified ground truth (storage exceptions, visit status enum, contended routes)
