@@ -718,19 +718,18 @@ export async function seedRbacIfEmpty() {
     yard_jockey: "Yard Marshal", carrier: "Carrier User",
   };
 
-  // Get the default tenant to stamp user_roles
-  const [tenantRow] = await db.select({ id: tenants.id }).from(tenants).where(eq(tenants.slug, "northwind")).limit(1);
-  const tid = tenantRow?.id ?? null;
-
+  // Assign roles to ALL user profiles, each stamped with their own tenantId.
+  // Previously this was hardcoded to Northwind; fixing it here covers all tenants.
   const allUserProfiles = await db.select().from(userProfiles);
   const userRoleEntries = allUserProfiles
     .map((u) => {
       const roleName = roleKeyToName[u.role];
       const r = insertedRoles.find((ir) => ir.roleName === roleName);
       if (!r) return null;
-      return { userId: u.userId, roleId: r.id, assignedBy: "demo-admin-001", isPrimary: true, tenantId: tid };
+      // Use the profile's own tenantId so Acme/Riverton users get correct context
+      return { userId: u.userId, roleId: r.id, assignedBy: "demo-admin-001", isPrimary: true, tenantId: u.tenantId };
     })
-    .filter(Boolean) as Array<{ userId: string; roleId: number; assignedBy: string; isPrimary: boolean; tenantId: string | null }>;
+    .filter(Boolean) as Array<{ userId: string; roleId: number; assignedBy: string; isPrimary: boolean; tenantId: string }>;
   if (userRoleEntries.length > 0) {
     await db.insert(userRoles).values(userRoleEntries).onConflictDoNothing();
   }
@@ -847,6 +846,96 @@ export async function resetAndReseed() {
   await db.delete(users);
   console.log("All tables cleared. Re-seeding...");
   await seedDatabase();
+}
+
+/**
+ * seedMissingMultiTenantUsers — idempotent patch seed.
+ *
+ * Ensures Acme Corp and Riverton Freight tenants, their demo users, RBAC role
+ * assignments, and billing subscriptions all exist.  Safe to call on every
+ * startup (every insert uses onConflictDoNothing).
+ *
+ * Run order: after seedDatabase + seedRbacIfEmpty + seedBillingIfEmpty.
+ */
+export async function seedMissingMultiTenantUsers(): Promise<void> {
+  // ── Tenants ───────────────────────────────────────────────────────────────
+  const [acmeTenant] = await db
+    .insert(tenants)
+    .values({ name: "Acme Corp", slug: "acme", status: "active" })
+    .onConflictDoUpdate({ target: tenants.slug, set: { name: "Acme Corp", status: "active" } })
+    .returning();
+  const acmeTid = acmeTenant.id;
+
+  const [rivertonTenant] = await db
+    .insert(tenants)
+    .values({ name: "Riverton Freight", slug: "riverton", status: "suspended" })
+    .onConflictDoUpdate({ target: tenants.slug, set: { name: "Riverton Freight", status: "suspended" } })
+    .returning();
+  const rivertonTid = rivertonTenant.id;
+
+  // ── Users + profiles ─────────────────────────────────────────────────────
+  const acmeUsers: Array<{ id: string; firstName: string; lastName: string; email: string; role: string }> = [
+    { id: "acme-admin",    firstName: "James",   lastName: "O'Connor", email: "j.oconnor@acmecorp.com",      role: "admin" },
+    { id: "acme-ym-001",   firstName: "Carlos",  lastName: "Vega",     email: "c.vega@acmecorp.com",         role: "yard_manager" },
+    { id: "acme-gate-001", firstName: "Priya",   lastName: "Sharma",   email: "p.sharma@acmecorp.com",       role: "gate_guard" },
+    { id: "acme-yj-001",   firstName: "Darnell", lastName: "Scott",    email: "d.scott@acmecorp.com",        role: "yard_jockey" },
+    { id: "acme-du-001",   firstName: "Angela",  lastName: "White",    email: "a.white@acmecorp.com",        role: "dock_user" },
+  ];
+  for (const u of acmeUsers) {
+    await db.insert(users).values({ id: u.id, firstName: u.firstName, lastName: u.lastName, email: u.email, tenantId: acmeTid }).onConflictDoNothing();
+    await db.insert(userProfiles).values({ userId: u.id, role: u.role, carrierId: null, tenantId: acmeTid }).onConflictDoNothing();
+  }
+
+  const rivertonUsers: Array<{ id: string; firstName: string; lastName: string; email: string; role: string }> = [
+    { id: "riverton-admin", firstName: "Morgan", lastName: "Reed",  email: "m.reed@rivertonfreight.com",   role: "admin" },
+    { id: "riverton-gate",  firstName: "Devon",  lastName: "Hayes", email: "d.hayes@rivertonfreight.com",  role: "gate_guard" },
+  ];
+  for (const u of rivertonUsers) {
+    await db.insert(users).values({ id: u.id, firstName: u.firstName, lastName: u.lastName, email: u.email, tenantId: rivertonTid }).onConflictDoNothing();
+    await db.insert(userProfiles).values({ userId: u.id, role: u.role, carrierId: null, tenantId: rivertonTid }).onConflictDoNothing();
+  }
+
+  // ── RBAC role assignments ─────────────────────────────────────────────────
+  const roleKeyToName: Record<string, string> = {
+    admin: "Yard Admin", yard_manager: "Yard Supervisor",
+    gate_guard: "Gate Operator", dock_user: "Dock Operator",
+    yard_jockey: "Yard Marshal", carrier: "Carrier User",
+  };
+  const allRoles = await db.select().from(roles);
+  if (allRoles.length > 0) {
+    const allNew = [
+      ...acmeUsers.map(u => ({ ...u, tenantId: acmeTid })),
+      ...rivertonUsers.map(u => ({ ...u, tenantId: rivertonTid })),
+    ];
+    for (const u of allNew) {
+      const roleName = roleKeyToName[u.role];
+      const roleRow = allRoles.find(r => r.roleName === roleName);
+      if (!roleRow) continue;
+      await db.insert(userRoles)
+        .values({ userId: u.id, roleId: roleRow.id, assignedBy: "demo-admin-001", isPrimary: true, tenantId: u.tenantId })
+        .onConflictDoNothing();
+    }
+  }
+
+  // ── Billing subscriptions ────────────────────────────────────────────────
+  const allPlans = await db.select().from(plansTable);
+  const corePlan = allPlans.find(p => p.code === "core");
+  if (corePlan) {
+    // Acme — active Core
+    const [acmeSub] = await db.select().from(subscriptionsTable).where(eq(subscriptionsTable.tenantId, acmeTid)).limit(1);
+    if (!acmeSub) {
+      await db.insert(subscriptionsTable).values({ tenantId: acmeTid, planId: corePlan.id, status: "active" }).onConflictDoNothing();
+    }
+    // Riverton — suspended Core (all modules blocked)
+    const [rivertonSub] = await db.select().from(subscriptionsTable).where(eq(subscriptionsTable.tenantId, rivertonTid)).limit(1);
+    if (!rivertonSub) {
+      await db.insert(subscriptionsTable).values({ tenantId: rivertonTid, planId: corePlan.id, status: "suspended" }).onConflictDoNothing();
+    } else if (rivertonSub.status !== "suspended") {
+      await db.update(subscriptionsTable).set({ status: "suspended" }).where(eq(subscriptionsTable.tenantId, rivertonTid));
+    }
+  }
+
+  console.log("Multi-tenant patch: Acme Corp (5 users) + Riverton Freight (2 users) ensured.");
 }
 
 /**

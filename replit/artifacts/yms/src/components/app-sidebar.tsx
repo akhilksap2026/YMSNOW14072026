@@ -277,11 +277,7 @@ function CollapsibleNavGroup({
         </CollapsibleTrigger>
         <CollapsibleContent>
           <SidebarGroupContent>
-            <SidebarMenu className="gap-px">
-              {filtered.map((item) => (
-                <NavItem key={item.title} item={item} badgeCounts={badgeCounts} />
-              ))}
-            </SidebarMenu>
+            {renderItems()}
           </SidebarGroupContent>
         </CollapsibleContent>
       </SidebarGroup>

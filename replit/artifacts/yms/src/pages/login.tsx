@@ -368,7 +368,11 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
       storeCurrentRole(data.role);
       onLogin(data.userId, data.role);
     } catch (err: any) {
-      setError(err.message?.replace(/^\d+: /, "") || "Login failed. Please try again.");
+      // err.message is like "401: {"error":"User not found"}" — parse it nicely
+      const raw = (err.message ?? "").replace(/^\d+:\s*/, "");
+      let friendly = raw;
+      try { friendly = JSON.parse(raw)?.error ?? raw; } catch {}
+      setError(friendly || "Login failed. Please try again.");
     } finally {
       setLoading(false);
     }
