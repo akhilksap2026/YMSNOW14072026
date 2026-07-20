@@ -20,6 +20,10 @@ import {
   userRoles,
   permissions,
   rolePermissions,
+  modules     as modulesTable,
+  plans       as plansTable,
+  planModules as planModulesTable,
+  subscriptions as subscriptionsTable,
 } from "@workspace/db";
 import { count, eq, sql } from "drizzle-orm";
 
@@ -731,6 +735,90 @@ export async function seedRbacIfEmpty() {
   }
 
   console.log(`RBAC seeded: ${insertedRoles.length} roles, ${insertedPerms.length} permissions, ${rbacMatrix.length} role-permission mappings, ${userRoleEntries.length} user role assignments.`);
+}
+
+// ─── Billing catalog seed ─────────────────────────────────────────────────────
+export async function seedBillingIfEmpty() {
+  const [moduleCount] = await db.select({ c: count() }).from(modulesTable);
+  if (Number(moduleCount.c) > 0) {
+    console.log("Billing catalog already seeded, skipping.");
+    return;
+  }
+  console.log("Seeding billing catalog...");
+
+  // ── 13 module catalog ──────────────────────────────────────────────────────
+  const MODULE_CATALOG = [
+    { code: "gate",          name: "Gate Operations",             category: "operations", description: "Gate check-in, check-out, and driver management" },
+    { code: "appointments",  name: "Appointment Management",      category: "operations", description: "Scheduling, confirmation, and appointment lifecycle" },
+    { code: "yard_inventory",name: "Yard Inventory",              category: "operations", description: "Real-time trailer inventory and status tracking" },
+    { code: "yard_map",      name: "Yard Map & Layout",           category: "operations", description: "Visual yard map with slot and zone management" },
+    { code: "dock",          name: "Dock Door Management",        category: "operations", description: "Dock door assignment, status, and capacity management" },
+    { code: "move_tasks",    name: "Move Task Management",        category: "operations", description: "Yard jockey move task creation and execution" },
+    { code: "hold_mgmt",     name: "Hold Management",             category: "operations", description: "Hold placement, tracking, and removal workflow" },
+    { code: "ready_to_go",   name: "Ready-to-Go Dispatch",        category: "operations", description: "Driver ready-to-go approval and dispatch" },
+    { code: "inspections",   name: "Inspection Management",       category: "compliance", description: "Vehicle and trailer inspection workflows and records" },
+    { code: "yard_audit",    name: "Yard Audit Workflow",         category: "compliance", description: "Physical yard audit and discrepancy reconciliation" },
+    { code: "reports",       name: "Reports & Analytics",         category: "analytics",  description: "Operational reports, KPIs, and data exports" },
+    { code: "user_mgmt",     name: "User & Role Management",      category: "admin",      description: "User accounts, roles, and permission configuration" },
+    { code: "ai_copilot",    name: "AI Copilot & Predictive Ops", category: "ai",         description: "AI-powered insights, predictions, and automation" },
+  ];
+  const insertedModules = await db.insert(modulesTable).values(MODULE_CATALOG).returning();
+  const modByCode = new Map(insertedModules.map((m) => [m.code, m]));
+
+  // ── 3 plans ────────────────────────────────────────────────────────────────
+  const PLAN_DEFS = [
+    { code: "core",         name: "Core",         description: "Essential gate and yard operations for growing facilities" },
+    { code: "professional", name: "Professional", description: "Full operational suite with compliance and reporting" },
+    { code: "enterprise",   name: "Enterprise",   description: "All modules including AI copilot and advanced analytics" },
+  ];
+  const insertedPlans = await db.insert(plansTable).values(PLAN_DEFS).returning();
+  const planByCode = new Map(insertedPlans.map((p) => [p.code, p]));
+
+  // ── Plan → module tier map ─────────────────────────────────────────────────
+  const CORE_CODES = [
+    "gate", "appointments", "yard_inventory", "yard_map",
+    "dock", "move_tasks", "hold_mgmt", "ready_to_go",
+  ]; // 8 modules
+  const PRO_CODES  = [...CORE_CODES, "inspections", "yard_audit", "reports"]; // 11 modules
+  const ENT_CODES  = [...PRO_CODES,  "user_mgmt", "ai_copilot"];              // 13 modules
+
+  const planModuleRows: Array<{ planId: number; moduleId: number; limits: null }> = [];
+  const addTier = (planCode: string, codes: string[]) => {
+    const plan = planByCode.get(planCode)!;
+    for (const code of codes) {
+      const mod = modByCode.get(code);
+      if (mod) planModuleRows.push({ planId: plan.id, moduleId: mod.id, limits: null });
+    }
+  };
+  addTier("core",         CORE_CODES);
+  addTier("professional", PRO_CODES);
+  addTier("enterprise",   ENT_CODES);
+
+  await db.insert(planModulesTable).values(planModuleRows);
+
+  // ── Tenant subscriptions ───────────────────────────────────────────────────
+  // northwind (demo) → Enterprise   acme (test) → Core
+  const tenantSubs: Array<{ tenantId: string; planId: number; status: string }> = [];
+
+  const [northwindRow] = await db.select({ id: tenants.id }).from(tenants).where(eq(tenants.slug, "northwind"));
+  if (northwindRow) {
+    tenantSubs.push({ tenantId: northwindRow.id, planId: planByCode.get("enterprise")!.id, status: "active" });
+  }
+
+  const [acmeRow] = await db.select({ id: tenants.id }).from(tenants).where(eq(tenants.slug, "acme"));
+  if (acmeRow) {
+    tenantSubs.push({ tenantId: acmeRow.id, planId: planByCode.get("core")!.id, status: "active" });
+  }
+
+  if (tenantSubs.length > 0) {
+    await db.insert(subscriptionsTable).values(tenantSubs);
+  }
+
+  console.log(
+    `Billing seeded: ${insertedModules.length} modules, ${insertedPlans.length} plans, ` +
+    `${planModuleRows.length} plan-module entries (core:${CORE_CODES.length} / pro:${PRO_CODES.length} / ent:${ENT_CODES.length}), ` +
+    `${tenantSubs.length} subscriptions.`
+  );
 }
 
 export async function resetAndReseed() {

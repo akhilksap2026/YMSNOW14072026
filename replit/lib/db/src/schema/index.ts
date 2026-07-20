@@ -1,5 +1,6 @@
 export * from "./auth";
 export * from "./rbac";
+export * from "./billing";
 
 import { relations } from "drizzle-orm";
 import {

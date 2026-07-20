@@ -7,6 +7,7 @@
     "hello": "tsx ./src/hello.ts",
     "backfill-tenant": "tsx ./src/backfill-tenant.ts",
     "verify-isolation": "tsx ./src/verify-tenant-isolation.ts",
+    "verify-billing": "tsx ./src/verify-billing-seed.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
