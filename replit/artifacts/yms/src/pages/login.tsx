@@ -286,8 +286,23 @@ function RoleBadge({ role }: { role:string }) {
   );
 }
 
+// Group users by tenant for the dropdown
+const TENANT_ORDER = ["Northwind Logistics", "Acme Corp", "Riverton Freight"];
+const TENANT_COLORS: Record<string, string> = {
+  "Northwind Logistics": "#1d4ed8",
+  "Acme Corp":           "#0d9488",
+  "Riverton Freight":    "#dc2626",
+};
+
 function UserDropdown({ selected, onSelect }: { selected:DemoUser|null; onSelect:(u:DemoUser)=>void }) {
   const [open, setOpen] = useState(false);
+
+  const grouped = TENANT_ORDER.map(t => ({
+    tenant: t,
+    color: TENANT_COLORS[t] ?? "#64748b",
+    users: DEMO_USERS.filter(u => u.tenant === t),
+  }));
+
   return (
     <div className="relative">
       <button type="button" onClick={()=>setOpen(o=>!o)}
@@ -300,7 +315,7 @@ function UserDropdown({ selected, onSelect }: { selected:DemoUser|null; onSelect
             <Avatar firstName={selected.firstName} lastName={selected.lastName} role={selected.role} />
             <div className="flex-1 min-w-0">
               <div className="text-[13px] font-semibold truncate" style={{ color:"#0f172a" }}>{selected.firstName} {selected.lastName}</div>
-              <div className="text-[10px] truncate" style={{ color:"#94a3b8" }}>{selected.email}</div>
+              <div className="text-[10px] truncate" style={{ color: TENANT_COLORS[selected.tenant] ?? "#94a3b8", fontWeight:600 }}>{selected.tenant}</div>
             </div>
             <RoleBadge role={selected.role} />
           </>
@@ -320,31 +335,40 @@ function UserDropdown({ selected, onSelect }: { selected:DemoUser|null; onSelect
           <motion.div
             initial={{ opacity:0, y:-6, scale:0.98 }} animate={{ opacity:1, y:0, scale:1 }}
             exit={{ opacity:0, y:-6, scale:0.98 }} transition={{ duration:0.13 }}
-            className="absolute z-50 left-0 right-0 mt-1.5 rounded-xl overflow-hidden"
-            style={{ background:"#fff", border:"1.5px solid #e2e8f0", boxShadow:"0 12px 36px rgba(0,0,0,0.12)" }}
+            className="absolute z-50 left-0 right-0 mt-1.5 rounded-xl overflow-auto"
+            style={{ background:"#fff", border:"1.5px solid #e2e8f0", boxShadow:"0 12px 36px rgba(0,0,0,0.12)", maxHeight:"340px" }}
           >
-            <div className="p-1">
-              {DEMO_USERS.map(u => {
-                const sel = selected?.id === u.id;
-                return (
-                  <button key={u.id} type="button"
-                    onClick={()=>{ onSelect(u); setOpen(false); }}
-                    className="w-full flex items-center gap-3 px-2.5 py-2 rounded-lg text-left"
-                    style={{ background: sel?"rgba(29,78,216,0.06)":"transparent" }}
-                    onMouseEnter={e=>{ if(!sel)(e.currentTarget as HTMLButtonElement).style.background="#f8fafc"; }}
-                    onMouseLeave={e=>{ if(!sel)(e.currentTarget as HTMLButtonElement).style.background="transparent"; }}
-                  >
-                    <Avatar firstName={u.firstName} lastName={u.lastName} role={u.role} sm />
-                    <div className="flex-1 min-w-0">
-                      <div className="text-[12px] font-semibold truncate" style={{ color:"#0f172a" }}>{u.firstName} {u.lastName}</div>
-                      <div className="text-[10px] truncate" style={{ color:"#94a3b8" }}>{u.email}</div>
-                    </div>
-                    <RoleBadge role={u.role} />
-                    {sel && <Check className="w-3.5 h-3.5 text-blue-600 flex-shrink-0 ml-1" />}
-                  </button>
-                );
-              })}
-            </div>
+            {grouped.map(({ tenant, color, users }) => (
+              <div key={tenant}>
+                {/* Tenant group header */}
+                <div className="flex items-center gap-2 px-3 pt-2.5 pb-1">
+                  <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: color }}/>
+                  <span className="text-[9px] font-bold uppercase tracking-widest" style={{ color }}>{tenant}</span>
+                </div>
+                <div className="px-1 pb-1">
+                  {users.map(u => {
+                    const sel = selected?.id === u.id;
+                    return (
+                      <button key={u.id} type="button"
+                        onClick={()=>{ onSelect(u); setOpen(false); }}
+                        className="w-full flex items-center gap-3 px-2.5 py-2 rounded-lg text-left"
+                        style={{ background: sel?"rgba(29,78,216,0.06)":"transparent" }}
+                        onMouseEnter={e=>{ if(!sel)(e.currentTarget as HTMLButtonElement).style.background="#f8fafc"; }}
+                        onMouseLeave={e=>{ if(!sel)(e.currentTarget as HTMLButtonElement).style.background="transparent"; }}
+                      >
+                        <Avatar firstName={u.firstName} lastName={u.lastName} role={u.role} sm />
+                        <div className="flex-1 min-w-0">
+                          <div className="text-[12px] font-semibold truncate" style={{ color:"#0f172a" }}>{u.firstName} {u.lastName}</div>
+                          <div className="text-[10px] truncate" style={{ color:"#94a3b8" }}>{u.email}</div>
+                        </div>
+                        <RoleBadge role={u.role} />
+                        {sel && <Check className="w-3.5 h-3.5 text-blue-600 flex-shrink-0 ml-1" />}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
           </motion.div>
         )}
       </AnimatePresence>
