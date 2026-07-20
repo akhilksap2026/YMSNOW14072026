@@ -35,9 +35,21 @@ import {
   CheckCircle2,
   XCircle,
   Minus,
+  ClipboardList,
 } from "lucide-react";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
+
+interface ChangeLogEntry {
+  id:          number;
+  actorUserId: string;
+  tenantId:    string;
+  action:      string;
+  moduleCode:  string | null;
+  note:        string | null;
+  createdAt:   string;
+}
+
 type OverrideSource = "plan" | "not-in-plan" | "override-on" | "override-off";
 type OverrideMode   = "default" | "on" | "off";
 
@@ -201,6 +213,21 @@ export default function PlatformTenantDetailPage({ tenantId }: { tenantId: strin
       }));
     ovMutation.mutate({ overrides });
   };
+
+  // ── Change log ────────────────────────────────────────────────────────────
+  const { data: changelog, refetch: refetchLog } = useQuery<ChangeLogEntry[]>({
+    queryKey: ["/api/platform/tenants", tenantId, "changelog"],
+    queryFn: () =>
+      fetch(`/api/platform/tenants/${tenantId}/changelog`, { credentials: "include" })
+        .then((r) => { if (!r.ok) throw new Error(`${r.status}`); return r.json(); }),
+    staleTime: 0,
+  });
+
+  // Refresh log whenever a mutation succeeds
+  useEffect(() => {
+    if (!ovMutation.isSuccess && !subMutation.isSuccess) return;
+    refetchLog();
+  }, [ovMutation.isSuccess, subMutation.isSuccess]); // eslint-disable-line
 
   // ── Group modules by category ──────────────────────────────────────────────
   const grouped = useMemo<Record<string, ModuleRow[]>>(() => {
@@ -447,6 +474,84 @@ export default function PlatformTenantDetailPage({ tenantId }: { tenantId: strin
           </div>
         ))}
       </div>
+
+      {/* ── Change log ── */}
+      <div className="border rounded-lg overflow-hidden">
+        <div className="bg-muted/40 px-4 py-2.5 border-b flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <ClipboardList className="h-3.5 w-3.5 text-muted-foreground" />
+            <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+              Change Log
+            </span>
+            {changelog && changelog.length > 0 && (
+              <span className="text-[10px] text-muted-foreground">
+                ({Math.min(changelog.length, 50)} most recent)
+              </span>
+            )}
+          </div>
+          <button
+            className="text-[10px] text-muted-foreground hover:text-foreground transition-colors"
+            onClick={() => refetchLog()}
+          >
+            Refresh
+          </button>
+        </div>
+
+        {!changelog || changelog.length === 0 ? (
+          <div className="px-4 py-8 text-center text-xs text-muted-foreground">
+            No changes recorded yet.
+          </div>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow className="hover:bg-transparent border-b bg-muted/10">
+                <TableHead className="text-[10px] uppercase tracking-wide font-semibold w-[160px] py-2">Time</TableHead>
+                <TableHead className="text-[10px] uppercase tracking-wide font-semibold w-[130px] py-2">Actor</TableHead>
+                <TableHead className="text-[10px] uppercase tracking-wide font-semibold w-[180px] py-2">Action</TableHead>
+                <TableHead className="text-[10px] uppercase tracking-wide font-semibold py-2">Note</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {changelog.map((entry) => (
+                <TableRow key={entry.id} className="text-xs">
+                  <TableCell className="py-2 text-muted-foreground font-mono text-[10px] whitespace-nowrap">
+                    {new Date(entry.createdAt).toLocaleString()}
+                  </TableCell>
+                  <TableCell className="py-2 font-mono text-[11px] text-muted-foreground">
+                    {entry.actorUserId}
+                  </TableCell>
+                  <TableCell className="py-2">
+                    <ActionBadge action={entry.action} />
+                  </TableCell>
+                  <TableCell className="py-2 text-xs text-muted-foreground">
+                    {entry.note ?? "—"}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
+      </div>
+
     </div>
+  );
+}
+
+// ── Action badge ──────────────────────────────────────────────────────────────
+const ACTION_CFG: Record<string, { label: string; cls: string }> = {
+  tenant_created:      { label: "Created",         cls: "bg-emerald-100 text-emerald-700" },
+  tenant_renamed:      { label: "Renamed",          cls: "bg-slate-100 text-slate-600" },
+  tenant_suspended:    { label: "Suspended",        cls: "bg-red-100 text-red-700" },
+  tenant_reactivated:  { label: "Reactivated",      cls: "bg-emerald-100 text-emerald-700" },
+  subscription_updated:{ label: "Plan Updated",     cls: "bg-blue-100 text-blue-700" },
+  overrides_updated:   { label: "Overrides Updated",cls: "bg-violet-100 text-violet-700" },
+};
+
+function ActionBadge({ action }: { action: string }) {
+  const c = ACTION_CFG[action] ?? { label: action, cls: "bg-muted text-muted-foreground" };
+  return (
+    <span className={`inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-bold tracking-wide whitespace-nowrap ${c.cls}`}>
+      {c.label}
+    </span>
   );
 }

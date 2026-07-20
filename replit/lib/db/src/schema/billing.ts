@@ -72,9 +72,31 @@ export const tenantModuleOverrides = pgTable("tenant_module_overrides", {
   unique("tmo_tenant_module_unique").on(t.tenantId, t.moduleId),
 ]);
 
+// ── Entitlement change log ────────────────────────────────────────────────────
+/**
+ * Append-only governance trail written by platform-admin routes on every
+ * subscription/override/tenant-status change.
+ *
+ * actorUserId — platform admin userId (no FK; spans platform_admins table).
+ * action      — free-form string, e.g. "tenant_created", "subscription_updated",
+ *               "overrides_updated", "tenant_suspended", "tenant_reactivated".
+ * moduleCode  — populated when the action targets a specific module; null otherwise.
+ * note        — human-readable summary of what changed.
+ */
+export const entitlementChanges = pgTable("entitlement_changes", {
+  id:          serial("id").primaryKey(),
+  actorUserId: text("actor_user_id").notNull(),
+  tenantId:    text("tenant_id").notNull().references(() => tenants.id),
+  action:      text("action").notNull(),
+  moduleCode:  text("module_code"),
+  note:        text("note"),
+  createdAt:   timestamp("created_at").defaultNow(),
+});
+
 // ── TypeScript types ──────────────────────────────────────────────────────────
 export type Module               = typeof modules.$inferSelect;
 export type Plan                 = typeof plans.$inferSelect;
 export type PlanModule           = typeof planModules.$inferSelect;
 export type Subscription         = typeof subscriptions.$inferSelect;
 export type TenantModuleOverride = typeof tenantModuleOverrides.$inferSelect;
+export type EntitlementChange    = typeof entitlementChanges.$inferSelect;

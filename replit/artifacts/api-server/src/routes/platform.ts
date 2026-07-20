@@ -15,6 +15,7 @@ import {
   subscriptions,
   modules,
   tenantModuleOverrides,
+  entitlementChanges,
 } from "@workspace/db";
 import { requirePlatformAdmin } from "../lib/auth-middleware";
 import {
@@ -26,6 +27,28 @@ const router = Router();
 
 // Guard every route in this namespace
 router.use(requirePlatformAdmin);
+
+// ── Governance log helper ─────────────────────────────────────────────────────
+async function logChange(
+  actorUserId: string,
+  tenantId:    string,
+  action:      string,
+  note?:       string,
+  moduleCode?: string,
+): Promise<void> {
+  try {
+    await db.insert(entitlementChanges).values({
+      actorUserId,
+      tenantId,
+      action,
+      note:       note       ?? null,
+      moduleCode: moduleCode ?? null,
+    });
+  } catch (err) {
+    // Never let audit logging break the main operation
+    console.error("[entitlement_changes] log failed:", err);
+  }
+}
 
 // ── Probe (identity check) ────────────────────────────────────────────────────
 router.get("/probe", (req, res) => {
@@ -54,13 +77,7 @@ router.get("/tenants", async (_req, res) => {
       .orderBy(desc(tenants.createdAt));
 
     const seen = new Set<string>();
-    const deduped = rows.filter((r) => {
-      if (seen.has(r.id)) return false;
-      seen.add(r.id);
-      return true;
-    });
-
-    res.json(deduped);
+    res.json(rows.filter((r) => { if (seen.has(r.id)) return false; seen.add(r.id); return true; }));
   } catch (err: any) {
     console.error("[platform/tenants GET]", err);
     res.status(500).json({ error: err.message });
@@ -76,12 +93,8 @@ router.post("/tenants", async (req, res) => {
   if (!adminFirstName || !adminLastName)
     return res.status(400).json({ error: "adminFirstName and adminLastName are required" });
 
-  const slug = name.trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, "")
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "");
+  const slug = name.trim().toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, "").replace(/\s+/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "");
 
   const existing = await db.select({ id: tenants.id }).from(tenants).where(eq(tenants.slug, slug)).limit(1);
   if (existing.length > 0)
@@ -97,6 +110,10 @@ router.post("/tenants", async (req, res) => {
     await db.insert(users).values({ id: userId, tenantId: tenant.id, email: adminEmail?.trim() || null, firstName: adminFirstName.trim(), lastName: adminLastName.trim() });
     await db.insert(userProfiles).values({ userId, tenantId: tenant.id, role: "admin", carrierId: null });
     await db.insert(subscriptions).values({ tenantId: tenant.id, planId: corePlan.id, status: "active" });
+
+    await logChange(req.auth!.userId, tenant.id, "tenant_created",
+      `Tenant "${tenant.name}" created with Core plan. Admin user: ${userId}`);
+
     res.status(201).json({ ...tenant, adminUserId: userId });
   } catch (err: any) {
     console.error("[platform/tenants POST]", err);
@@ -109,17 +126,24 @@ router.patch("/tenants/:id", async (req, res) => {
   const { id } = req.params;
   const { name, status } = req.body ?? {};
 
-  const [tenant] = await db.select({ id: tenants.id }).from(tenants).where(eq(tenants.id, id)).limit(1);
+  const [tenant] = await db.select({ id: tenants.id, name: tenants.name }).from(tenants).where(eq(tenants.id, id)).limit(1);
   if (!tenant) return res.status(404).json({ error: "Tenant not found" });
 
   try {
-    if (name && typeof name === "string" && name.trim())
+    if (name && typeof name === "string" && name.trim()) {
+      const oldName = tenant.name;
       await db.update(tenants).set({ name: name.trim() }).where(eq(tenants.id, id));
+      await logChange(req.auth!.userId, id, "tenant_renamed",
+        `Renamed from "${oldName}" to "${name.trim()}"`);
+    }
 
     if (status === "suspended" || status === "active") {
       await db.update(tenants).set({ status }).where(eq(tenants.id, id));
       await db.update(subscriptions).set({ status }).where(eq(subscriptions.tenantId, id));
       invalidateEntitlements(id);
+      await logChange(req.auth!.userId, id,
+        status === "suspended" ? "tenant_suspended" : "tenant_reactivated",
+        `Tenant ${status === "suspended" ? "suspended" : "reactivated"} — subscription status set to ${status}`);
     }
 
     const [updated] = await db
@@ -138,68 +162,32 @@ router.patch("/tenants/:id", async (req, res) => {
 });
 
 // ── Tenant entitlements with source metadata ──────────────────────────────────
-/**
- * GET /api/platform/tenants/:id/entitlements
- * Returns the full module matrix with: enabled, source ("plan" | "not-in-plan" |
- * "override-on" | "override-off"), stored override data, and all plans for the
- * plan-change selector. Uncached — for admin inspection only.
- */
 router.get("/tenants/:id/entitlements", async (req, res) => {
   const { id } = req.params;
 
-  const [tenant] = await db
-    .select({ id: tenants.id, name: tenants.name })
-    .from(tenants)
-    .where(eq(tenants.id, id))
-    .limit(1);
+  const [tenant] = await db.select({ id: tenants.id, name: tenants.name }).from(tenants).where(eq(tenants.id, id)).limit(1);
   if (!tenant) return res.status(404).json({ error: "Tenant not found" });
 
   try {
-    // Subscription + plan details (for the card)
     const [sub] = await db
-      .select({
-        subId:            subscriptions.id,
-        planId:           subscriptions.planId,
-        planCode:         plans.code,
-        planName:         plans.name,
-        status:           subscriptions.status,
-        trialEnd:         subscriptions.trialEnd,
-        currentPeriodEnd: subscriptions.currentPeriodEnd,
-      })
+      .select({ subId: subscriptions.id, planId: subscriptions.planId, planCode: plans.code, planName: plans.name, status: subscriptions.status, trialEnd: subscriptions.trialEnd, currentPeriodEnd: subscriptions.currentPeriodEnd })
       .from(subscriptions)
       .leftJoin(plans, eq(plans.id, subscriptions.planId))
       .where(eq(subscriptions.tenantId, id))
       .orderBy(desc(subscriptions.id))
       .limit(1);
 
-    // All plans for the plan-selector dropdown
-    const allPlans = await db
-      .select({ id: plans.id, code: plans.code, name: plans.name })
-      .from(plans)
-      .orderBy(plans.id);
-
-    // Source-annotated module matrix
+    const allPlans = await db.select({ id: plans.id, code: plans.code, name: plans.name }).from(plans).orderBy(plans.id);
     const moduleRows = await resolveEntitlementsWithSource(id);
 
-    res.json({
-      tenantId:     tenant.id,
-      tenantName:   tenant.name,
-      subscription: sub ?? null,
-      plans:        allPlans,
-      modules:      moduleRows,
-    });
+    res.json({ tenantId: tenant.id, tenantName: tenant.name, subscription: sub ?? null, plans: allPlans, modules: moduleRows });
   } catch (err: any) {
     console.error("[platform/tenants/:id/entitlements GET]", err);
     res.status(500).json({ error: err.message });
   }
 });
 
-// ── Update subscription (plan change / status / trialEnd) ─────────────────────
-/**
- * PUT /api/platform/tenants/:id/subscription
- * Body: { planId?, status?, trialEnd? }
- * Invalidates entitlement cache after write.
- */
+// ── Update subscription ───────────────────────────────────────────────────────
 router.put("/tenants/:id/subscription", async (req, res) => {
   const { id } = req.params;
   const { planId, status, trialEnd } = req.body ?? {};
@@ -217,12 +205,22 @@ router.put("/tenants/:id/subscription", async (req, res) => {
   try {
     await db.update(subscriptions).set(updates).where(eq(subscriptions.tenantId, id));
 
-    // Keep tenant.status in sync with subscription status
-    if (updates.status === "suspended" || updates.status === "active") {
+    if (updates.status === "suspended" || updates.status === "active")
       await db.update(tenants).set({ status: updates.status }).where(eq(tenants.id, id));
-    }
 
     invalidateEntitlements(id);
+
+    // Resolve plan name for the note
+    const parts: string[] = [];
+    if (updates.planId) {
+      const [p] = await db.select({ name: plans.name }).from(plans).where(eq(plans.id, updates.planId)).limit(1);
+      parts.push(`plan → ${p?.name ?? updates.planId}`);
+    }
+    if (updates.status) parts.push(`status → ${updates.status}`);
+    if (updates.trialEnd !== undefined) parts.push(`trialEnd → ${updates.trialEnd ?? "cleared"}`);
+
+    await logChange(req.auth!.userId, id, "subscription_updated", parts.join("; "));
+
     res.json({ ok: true });
   } catch (err: any) {
     console.error("[platform/tenants/:id/subscription PUT]", err);
@@ -231,14 +229,6 @@ router.put("/tenants/:id/subscription", async (req, res) => {
 });
 
 // ── Upsert per-module overrides ───────────────────────────────────────────────
-/**
- * PUT /api/platform/tenants/:id/overrides
- * Body: { overrides: Array<{ moduleCode, enabled, reason?, expiresAt? }> }
- *
- * Full-replace: deletes all existing overrides for this tenant, then inserts
- * the supplied list. Send an empty array to clear all overrides.
- * Invalidates entitlement cache after write.
- */
 router.put("/tenants/:id/overrides", async (req, res) => {
   const { id } = req.params;
   const { overrides } = req.body ?? {};
@@ -249,12 +239,10 @@ router.put("/tenants/:id/overrides", async (req, res) => {
   const [tenant] = await db.select({ id: tenants.id }).from(tenants).where(eq(tenants.id, id)).limit(1);
   if (!tenant) return res.status(404).json({ error: "Tenant not found" });
 
-  // Build moduleCode → id map
   const allMods = await db.select({ id: modules.id, code: modules.code }).from(modules);
   const modIdMap = new Map(allMods.map((m) => [m.code, m.id]));
 
   try {
-    // Full replace: clear then insert
     await db.delete(tenantModuleOverrides).where(eq(tenantModuleOverrides.tenantId, id));
 
     const validRows = overrides
@@ -263,18 +251,54 @@ router.put("/tenants/:id/overrides", async (req, res) => {
         tenantId:  id,
         moduleId:  modIdMap.get(o.moduleCode)!,
         enabled:   o.enabled,
-        reason:    o.reason  ?? null,
+        reason:    o.reason    ?? null,
         expiresAt: o.expiresAt ? new Date(o.expiresAt) : null,
       }));
 
-    if (validRows.length > 0) {
+    if (validRows.length > 0)
       await db.insert(tenantModuleOverrides).values(validRows);
-    }
 
     invalidateEntitlements(id);
+
+    const note = validRows.length === 0
+      ? "All overrides cleared"
+      : validRows.map((r) => {
+          const code = [...modIdMap.entries()].find(([, mid]) => mid === r.moduleId)?.[0] ?? r.moduleId;
+          return `${code}:${r.enabled ? "ON" : "OFF"}${r.reason ? ` (${r.reason})` : ""}`;
+        }).join(", ");
+
+    await logChange(req.auth!.userId, id, "overrides_updated",
+      `${validRows.length} override(s) applied — ${note}`);
+
     res.json({ ok: true, overridesApplied: validRows.length });
   } catch (err: any) {
     console.error("[platform/tenants/:id/overrides PUT]", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ── Change log (read-only governance trail) ───────────────────────────────────
+/**
+ * GET /api/platform/tenants/:id/changelog
+ * Returns the 50 most-recent entitlement change records for this tenant.
+ */
+router.get("/tenants/:id/changelog", async (req, res) => {
+  const { id } = req.params;
+
+  const [tenant] = await db.select({ id: tenants.id }).from(tenants).where(eq(tenants.id, id)).limit(1);
+  if (!tenant) return res.status(404).json({ error: "Tenant not found" });
+
+  try {
+    const rows = await db
+      .select()
+      .from(entitlementChanges)
+      .where(eq(entitlementChanges.tenantId, id))
+      .orderBy(desc(entitlementChanges.createdAt))
+      .limit(50);
+
+    res.json(rows);
+  } catch (err: any) {
+    console.error("[platform/tenants/:id/changelog GET]", err);
     res.status(500).json({ error: err.message });
   }
 });

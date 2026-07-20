@@ -61,3 +61,33 @@ Five tables: `modules`, `plans`, `plan_modules`, `subscriptions`, `tenant_module
 **Why ceiling defaults to "enhanced" while loading:** prevents false restriction during the brief entitlements fetch. Once data arrives, real ceiling is applied.
 
 **Why `async_hooks` / `AsyncLocalStorage`:** Avoids threading `tenantId` through every function argument in the 2868-line `register-yms-routes.ts`. The storage proxy is the single choke-point.
+
+## Phase 2 — KSAP Platform Admin (Prompts 2.1–2.4)
+
+### Platform admin identity (2.1)
+- `platform_admins` table (separate from `users` — `users.tenantId` is NOT NULL).
+- Session token: `{ tenantId: null, isPlatformAdmin: true }`. `authMiddleware` skips `tenantContext.run()` for platform admins.
+- `requirePlatformAdmin` middleware exported from `auth-middleware.ts`.
+- Login endpoint tries `users` first, then `platform_admins`. Seed account: `ksap-admin` / `admin@ksap.io`.
+
+### Platform routes (2.2–2.4) — `routes/platform.ts`
+- All `/api/platform/*` routes require `requirePlatformAdmin`; use `db` directly (never `storage`).
+- Tenant CRUD: `GET/POST /tenants`, `PATCH /tenants/:id` (rename / suspend / reactivate).
+- Module matrix: `GET /tenants/:id/entitlements` (source-annotated, uncached), `PUT /tenants/:id/subscription`, `PUT /tenants/:id/overrides` (full-replace semantics — send complete desired set).
+- Changelog: `GET /tenants/:id/changelog`.
+- `invalidateEntitlements(tenantId)` called after every subscription/override/status write.
+
+### Entitlement source resolver (2.3)
+- `resolveEntitlementsWithSource(tenantId)` in `entitlements.ts` — parallel function to `_resolve`, uncached, returns `source: "plan"|"not-in-plan"|"override-on"|"override-off"` + raw override row.
+- DO NOT modify `resolveEntitlements` or `_resolve` — enforcement path must stay unchanged.
+
+### Governance change log (2.4)
+- `entitlement_changes` table in `schema/billing.ts`: `(id, actorUserId, tenantId, action, moduleCode, note, createdAt)`.
+- `logChange()` helper in `platform.ts` is fire-and-catch — never throws on log failure.
+- Written on: `tenant_created`, `tenant_renamed`, `tenant_suspended`, `tenant_reactivated`, `subscription_updated`, `overrides_updated`.
+- Frontend: change log panel at bottom of `platform-tenant-detail.tsx`, refetches after mutations.
+
+### Frontend platform shell (2.2–2.4)
+- `PlatformAdminShell` in `App.tsx` uses `Switch/Route` from wouter: `/platform/tenants/:id` → detail page; catch-all → list.
+- Pages: `platform-admin.tsx` (list + "Modules" button), `platform-tenant-detail.tsx` (plan selector + module matrix + changelog).
+- `AppGate` forks on `user.isPlatformAdmin` before `AuthenticatedApp` — platform admin sees no tenant UI.
